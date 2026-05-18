@@ -11,6 +11,7 @@
     <style>
         :root {
             --naranja: #FF7A00;
+            --naranja-hover: #E06B00;
             --oscuro: #1A1A1A;
             --texto: #4A4A4A;
             --fondo-claro: #FAF9F6;
@@ -20,11 +21,12 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
         
+        /* NAVBAR HOMOLOGADO */
         header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
         .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; color: var(--oscuro); }
         .logo span { color: var(--naranja); }
-        nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; }
-        nav a:hover { color: var(--naranja); }
+        nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
+        nav a:hover, nav a.active { color: var(--naranja); }
 
         /* DISEÑO DEL ARTÍCULO */
         .article-container { max-width: 800px; margin: 60px auto; padding: 0 20px; text-align: left; }
@@ -43,7 +45,15 @@
         .btn-regresar { display: inline-flex; align-items: center; gap: 8px; color: var(--texto); text-decoration: none; font-weight: 600; margin-bottom: 40px; font-size: 15px; transition: color 0.3s; }
         .btn-regresar:hover { color: var(--naranja); }
 
+        /* FOOTER HOMOLOGADO */
         footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; margin-top: 100px; }
+        footer a { color: var(--naranja); text-decoration: none; margin: 0 10px; }
+
+        @media (max-width: 968px) {
+            header { flex-direction: column; gap: 20px; }
+            nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+            nav a { margin-left: 0; padding: 5px 10px; }
+        }
     </style>
 </head>
 <body>
@@ -55,7 +65,9 @@
             <a href="nosotros.html">Nosotros</a>
             <a href="osc.html">Para OSC</a>
             <a href="empresas.html">Para Empresas</a>
+            <a href="recursos.html">Recursos Gratuitos</a>
             <a href="blog.html" class="active">Blog</a>
+            <a href="index.html#contacto">Contacto</a>
         </nav>
     </header>
 
@@ -70,14 +82,16 @@
     </main>
 
     <footer>
-        <p>&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
+        <p style="margin-bottom: 15px;">&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
+        <div class="redes">
+            <a href="#">LinkedIn</a> | <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | <a href="https://wa.me/525532004855">WhatsApp</a>
+        </div>
     </footer>
 
     <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const urlBase = "https://resplendent-syrniki-662e52.netlify.app";
             
-            // Leemos el nombre de la nota desde la URL (ejemplo: articulo.html?nota=2026-05-18-entrada-de-prueba.md)
             const params = new URLSearchParams(window.location.search);
             const nombreNota = params.get('nota') || "2026-05-18-entrada-de-prueba.md";
 
@@ -86,12 +100,10 @@
                 if (!res.ok) throw new Error();
                 const texto = await res.text();
 
-                // Separamos los metadatos del cuerpo
                 const partes = texto.split('---');
                 const metadatosTexto = partes[1];
                 const cuerpoMarkdown = partes.slice(2).join('---');
 
-                // Procesamos metadatos
                 const lineas = metadatosTexto.split('\n');
                 const meta = { title: "Artículo sin título", date: "Reciente", image: "" };
                 for (let l of lineas) {
@@ -105,7 +117,6 @@
                     }
                 }
 
-                // Pintamos los metadatos en la estructura linda
                 document.getElementById('art-titulo').innerText = meta.title;
                 document.title = `${meta.title} | VÍNCULO`;
                 document.getElementById('art-fecha').innerText = meta.date;
@@ -117,7 +128,6 @@
                     banner.style.display = 'block';
                 }
 
-                // Usamos la librería Marked para convertir el cuerpo a HTML estético
                 document.getElementById('art-cuerpo').innerHTML = marked.parse(cuerpoMarkdown);
 
             } catch (e) {
