@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artículo | VÍNCULO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        :root {
+            --naranja: #FF7A00;
+            --oscuro: #1A1A1A;
+            --texto: #4A4A4A;
+            --fondo-claro: #FAF9F6;
+            --blanco: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
+        
+        header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; color: var(--oscuro); }
+        .logo span { color: var(--naranja); }
+        nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; }
+        nav a:hover { color: var(--naranja); }
+
+        /* DISEÑO DEL ARTÍCULO */
+        .article-container { max-width: 800px; margin: 60px auto; padding: 0 20px; text-align: left; }
+        .article-meta { color: var(--naranja); font-weight: 600; font-size: 14px; text-transform: uppercase; display: block; margin-bottom: 15px; }
+        .article-title { font-size: 42px; font-weight: 700; line-height: 1.2; margin-bottom: 30px; letter-spacing: -1px; }
+        .article-banner { width: 100%; height: 400px; background-size: cover; background-position: center; border-radius: 20px; margin-bottom: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.04); }
+        
+        /* Estilos para el cuerpo del texto convertido */
+        .article-content { color: var(--texto); font-size: 17px; line-height: 1.8; }
+        .article-content p { margin-bottom: 25px; }
+        .article-content h2 { font-size: 26px; font-weight: 700; margin: 40px 0 20px 0; color: var(--oscuro); }
+        .article-content h3 { font-size: 22px; font-weight: 700; margin: 30px 0 15px 0; color: var(--oscuro); }
+        .article-content ul, .article-content ol { margin-left: 25px; margin-bottom: 25px; }
+        .article-content li { margin-bottom: 10px; }
+
+        .btn-regresar { display: inline-flex; align-items: center; gap: 8px; color: var(--texto); text-decoration: none; font-weight: 600; margin-bottom: 40px; font-size: 15px; transition: color 0.3s; }
+        .btn-regresar:hover { color: var(--naranja); }
+
+        footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; margin-top: 100px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">VÍNCULO<span>.</span></a>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="nosotros.html">Nosotros</a>
+            <a href="osc.html">Para OSC</a>
+            <a href="empresas.html">Para Empresas</a>
+            <a href="blog.html" class="active">Blog</a>
+        </nav>
+    </header>
+
+    <main class="article-container">
+        <a href="blog.html" class="btn-regresar">← Volver al blog</a>
+        
+        <span class="article-meta" id="art-fecha">Cargando...</span>
+        <h1 class="article-title" id="art-titulo">Cargando artículo...</h1>
+        <div class="article-banner" id="art-banner" style="background-image: url('https://via.placeholder.com/800x400'); display: none;"></div>
+        
+        <div class="article-content" id="art-cuerpo"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async function() {
+            const urlBase = "https://resplendent-syrniki-662e52.netlify.app";
+            
+            // Leemos el nombre de la nota desde la URL (ejemplo: articulo.html?nota=2026-05-18-entrada-de-prueba.md)
+            const params = new URLSearchParams(window.location.search);
+            const nombreNota = params.get('nota') || "2026-05-18-entrada-de-prueba.md";
+
+            try {
+                const res = await fetch(`${urlBase}/blog/${nombreNota}`);
+                if (!res.ok) throw new Error();
+                const texto = await res.text();
+
+                // Separamos los metadatos del cuerpo
+                const partes = texto.split('---');
+                const metadatosTexto = partes[1];
+                const cuerpoMarkdown = partes.slice(2).join('---');
+
+                // Procesamos metadatos
+                const lineas = metadatosTexto.split('\n');
+                const meta = { title: "Artículo sin título", date: "Reciente", image: "" };
+                for (let l of lineas) {
+                    const p = l.split(':');
+                    if (p.length >= 2) {
+                        const llave = p[0].trim().toLowerCase();
+                        const valor = p.slice(1).join(':').trim().replace(/['"]/g, '');
+                        if (llave === 'title') meta.title = valor;
+                        if (llave === 'date') meta.date = valor;
+                        if (llave === 'image') meta.image = valor;
+                    }
+                }
+
+                // Pintamos los metadatos en la estructura linda
+                document.getElementById('art-titulo').innerText = meta.title;
+                document.title = `${meta.title} | VÍNCULO`;
+                document.getElementById('art-fecha').innerText = meta.date;
+                
+                if (meta.image) {
+                    const imgUrl = meta.image.startsWith('http') ? meta.image : `${urlBase}/${meta.image}`;
+                    const banner = document.getElementById('art-banner');
+                    banner.style.backgroundImage = `url('${imgUrl}')`;
+                    banner.style.display = 'block';
+                }
+
+                // Usamos la librería Marked para convertir el cuerpo a HTML estético
+                document.getElementById('art-cuerpo').innerHTML = marked.parse(cuerpoMarkdown);
+
+            } catch (e) {
+                document.getElementById('art-titulo').innerText = "Artículo no encontrado";
+                document.getElementById('art-cuerpo').innerHTML = "<p>No pudimos cargar la publicación. Por favor, regresa al blog e intenta de nuevo.</p>";
+            }
+        });
+    </script>
+</body>
+</html>
