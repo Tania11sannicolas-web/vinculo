@@ -206,74 +206,56 @@
 
    <script>
         document.addEventListener("DOMContentLoaded", async function() {
-            const grid = document.querySelector('.blog-grid');
-            
-            // Ponemos aquí la ruta directa a los archivos en tu propio dominio de Netlify
+            const gridHome = document.querySelector('.blog-home-grid');
             const urlBase = "https://resplendent-syrniki-662e52.netlify.app";
             
             try {
-                // Buscamos directamente el archivo de texto en tu carpeta de producción
-                // Como ya hiciste una nota llamada "2026-05-18-entrada-de-prueba", vamos a intentar jalarla directo
+                // Jalamos directamente tu nota de prueba
                 const nombreNota = "2026-05-18-entrada-de-prueba.md"; 
+                const res = await fetch(`${urlBase}/blog/${nombreNota}`);
+                if (!res.ok) throw new Error();
                 
-                const respuesta = await fetch(`${urlBase}/blog/${nombreNota}`);
-                if (!respuesta.ok) throw new Error();
-                
-                const textoMarkdown = await respuesta.text();
-                grid.innerHTML = ""; // Borramos el mensaje de error o carga
+                const texto = await res.res.text();
+                gridHome.innerHTML = ""; // Limpiamos el texto de carga
 
-                // Procesamos los metadatos del archivo .md
-                const lineas = textoMarkdown.split('\n');
-                const metadatos = { title: "Entrada de Prueba", image: "", description: "" };
-                let dentroDeMetadatos = false;
-
-                for (let linea of lineas) {
-                    if (linea.trim() === '---') {
-                        dentroDeMetadatos = !dentroDeMetadatos;
-                        continue;
-                    }
-                    if (dentroDeMetadatos) {
-                        const indexCol = linea.indexOf(':');
-                        if (indexCol !== -1) {
-                            const llave = linea.substring(0, indexCol).trim().toLowerCase();
-                            const valor = linea.substring(indexCol + 1).trim().replace(/['"]/g, '');
-                            if (llave === 'title') metadatos.title = valor;
-                            if (llave === 'image') metadatos.image = valor;
-                            if (llave === 'description' || llave === 'resumen') metadatos.description = valor;
+                // Procesamos metadatos
+                const lineas = texto.split('\n');
+                const meta = { title: "Entrada de Prueba", image: "", description: "" };
+                let enMeta = false;
+                for (let l of lineas) {
+                    if (l.trim() === '---') { enMeta = !enMeta; continue; }
+                    if (enMeta) {
+                        const p = l.split(':');
+                        if (p.length >= 2) {
+                            const llave = p[0].trim().toLowerCase();
+                            const valor = p.slice(1).join(':').trim().replace(/['"]/g, '');
+                            if (llave === 'title') meta.title = valor;
+                            if (llave === 'image') meta.image = valor;
+                            if (llave === 'description' || llave === 'resumen') meta.description = valor;
                         }
                     }
                 }
 
-                // Asegurar ruta correcta para la imagen
-                if (metadatos.image && !metadatos.image.startsWith('http')) {
-                    metadatos.image = `${urlBase}/${metadatos.image}`;
+                if (meta.image && !meta.image.startsWith('http')) {
+                    meta.image = `${urlBase}/${meta.image}`;
                 }
 
-                // Pintamos la tarjeta de forma nativa
-                const card = document.createElement('article');
-                card.className = 'card-post';
-                card.innerHTML = `
-                    <div class="post-image" style="background-image: url('${metadatos.image || 'https://via.placeholder.com/400x200'}');"></div>
-                    <div class="post-body">
-                        <div>
-                            <span class="post-meta">18 de Mayo, 2026 | Desarrollo Social</span>
-                            <h3><a href="${urlBase}/blog/${nombreNota}" target="_blank">${metadatos.title}</a></h3>
-                            <p>${metadatos.description || 'Haz clic abajo para leer esta nota completa...'}</p>
-                        </div>
-                        <a href="${urlBase}/blog/${nombreNota}" target="_blank" class="link-leer">Leer artículo <span>→</span></a>
+                // Creamos la tarjeta para el Home
+                const art = document.createElement('div');
+                art.style.cssText = "background: #FFFFFF; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 25px; text-align: left;";
+                art.innerHTML = `
+                    <div style="height: 180px; background-image: url('${meta.image || 'https://via.placeholder.com/400x200'}'); background-size: cover; background-position: center;"></div>
+                    <div style="padding: 25px 25px 10px 25px;">
+                        <span style="font-size: 12px; color: #FF7A00; font-weight: 600;">Reciente</span>
+                        <h3 style="font-size: 18px; font-weight: 700; margin: 10px 0; line-height: 1.4; color: #1A1A1A;">${meta.title}</h3>
+                        <p style="color: #4A4A4A; font-size: 14px; line-height: 1.5; margin-bottom: 15px;">${meta.description || 'Haz clic para leer la nota completa...'}</p>
                     </div>
+                    <a href="blog.html" style="color: #FF7A00; text-decoration: none; font-weight: 700; font-size: 14px; margin-left: 25px;">Leer nota →</a>
                 `;
-                grid.appendChild(card);
-
-            } catch (error) {
-                // Si el script automático falla por el caché, dejamos un botón de respaldo limpio
-                grid.innerHTML = `
-                    <div class="card-post" style="grid-column: 1/-1; text-align: center; padding: 40px;">
-                        <h3>¡Tu blog ya está conectado al panel! 🚀</h3>
-                        <p style="margin: 15px 0;">Tu primera nota ya se guardó de forma segura en el servidor.</p>
-                        <a href="${urlBase}/blog/2026-05-18-entrada-de-prueba.md" target="_blank" class="btn" style="display:inline-block;">Leer nota de prueba en crudo</a>
-                    </div>
-                `;
+                gridHome.appendChild(art);
+            } catch (e) {
+                // Respaldo por si tarda en reflejar
+                gridHome.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>¡Blog conectado! Visita la sección de Blog para conocer las notas.</p>";
             }
         });
     </script>
