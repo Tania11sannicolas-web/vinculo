@@ -4,18 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Panel de Administración | VÍNCULO</title>
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css" />
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
     <script>
-        // LE DECIMOS AL PANEL CUÁL ES SU MÁQUINA DE CONTRASEÑAS
-        document.addEventListener("DOMContentLoaded", function() {
-            window.netlifyIdentity.on("init", () => {
-                // AQUÍ PEGA TU ENLACE DE NETLIFY POR DEFAULT (Déjale las comillas)
-                window.netlifyIdentity.setURL("https://resplendent-syrniki-662e52.netlify.app/");
+        if (window.netlifyIdentity) {
+            window.netlifyIdentity.init({
+                APIUrl: "https://resplendent-syrniki-662e52.netlify.app/.netlify/identity"
             });
-        });
+        }
     </script>
+    
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 </body>
 </html>
