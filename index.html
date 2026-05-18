@@ -25,7 +25,7 @@
         header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
         .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; color: var(--oscuro); }
         .logo span { color: var(--naranja); }
-        nav a { margin-left: 30px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
+        nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
         nav a:hover, nav a.active { color: var(--naranja); }
         
         /* HERO */
@@ -51,7 +51,7 @@
         .card-acceso p { color: var(--texto); font-size: 15px; margin-bottom: 30px; min-height: 72px; }
         .card-acceso .link-arrow { color: var(--naranja); text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
 
-        /* TESTIMONIOS / CASOS DE ÉXITO */
+        /* TESTIMONIOS */
         .testimonios { padding: 90px 8%; text-align: center; background-color: var(--blanco); }
         .testimonios h2 { font-size: 36px; margin-bottom: 15px; font-weight: 700; }
         .grid-testimonios { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1200px; margin: 40px auto 0 auto; }
@@ -62,12 +62,10 @@
         .autor-info h5 { font-size: 16px; font-weight: 700; color: var(--oscuro); }
         .autor-info span { font-size: 13px; color: var(--naranja); font-weight: 500; }
 
-        /* LEAD MAGNET BANNER (CTA DESTACADO) */
+        /* LEAD MAGNET BANNER */
         .cta-banner { background: linear-gradient(135deg, var(--naranja) 0%, #FF9E44 100%); color: var(--blanco); padding: 60px 8%; text-align: center; border-radius: 24px; max-width: 1200px; margin: 40px auto; box-shadow: 0 15px 40px rgba(255, 122, 0, 0.15); }
         .cta-banner h3 { font-size: 30px; margin-bottom: 15px; font-weight: 700; }
         .cta-banner p { font-size: 16px; margin-bottom: 25px; max-width: 600px; margin-left: auto; margin-right: auto; opacity: 0.9; }
-        .cta-banner .btn-white { background-color: var(--blanco); color: var(--naranja); padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: 700; display: inline-block; transition: transform 0.3s; }
-        .cta-banner .btn-white:hover { transform: scale(1.05); }
 
         /* CONTACTO */
         .contacto { padding: 90px 8%; text-align: center; background-color: var(--fondo-claro); }
@@ -96,7 +94,8 @@
             <a href="nosotros.html">Nosotros</a>
             <a href="osc.html">Para OSC</a>
             <a href="empresas.html">Para Empresas</a>
-            <a href="blog.html">Blog / Recursos</a>
+            <a href="recursos.html">Recursos Gratuitos</a>
+            <a href="blog.html">Blog</a>
             <a href="index.html#contacto">Contacto</a>
         </nav>
     </header>
@@ -167,21 +166,21 @@
         </div>
         
         <div style="text-align: center; margin-top: 50px;">
-            <a href="blog.html" style="background-color: #1A1A1A; color: #FFFFFF; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: 700; display: inline-block; transition: 0.3s;">Ver todas las publicaciones</a>
+            <a href="blog.html" style="background-color: #1A1A1A; color: #FFFFFF; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: 700; display: inline-block; transition: 0.3s;">Ver todo el blog</a>
         </div>
     </section>
 
     <section class="cta-banner">
         <h3>¿Quieres empezar a notar el cambio hoy mismo?</h3>
-        <p>Preparamos una guía práctica y gratuita con los errores más comunes en el fortalecimiento institucional y cómo evitarlos de forma sencilla.</p>
-        <a href="blog.html" class="btn-white" style="background-color: #FFFFFF; color: #FF7A00; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: 700; display: inline-block;">Descargar Guía Gratuita</a>
+        <p>Preparamos un espacio lleno de e-books, plantillas y herramientas listas para descargar.</p>
+        <a href="recursos.html" class="btn-white" style="background-color: #FFFFFF; color: #FF7A00; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: 700; display: inline-block;">Explorar Recursos Gratuitos</a>
     </section>
 
     <section id="contacto" class="contacto">
         <h2>Demos el primer paso</h2>
         <p style="color: var(--texto);">Cuéntanos en qué punto se encuentra tu proyecto. Personalmente revisaré tu mensaje para platicar.</p>
         <div class="contacto-container">
-            <p style="font-weight: 600; color: var(--naranja);">[Pega aquí el código del formulario que crees en tu panel de Brevo]</p>
+            <p style="font-weight: 600; color: var(--naranja);">[Pega aquí el código del formulario de Brevo]</p>
         </div>
     </section>
 
@@ -193,32 +192,18 @@
     </footer>
 
     <script>
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", user => {
-          if (!user) {
-            window.netlifyIdentity.on("login", () => {
-              document.location.href = "/admin/";
-            });
-          }
-        });
-      }
-    </script>
-
-   <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const gridHome = document.querySelector('.blog-home-grid');
             const urlBase = "https://resplendent-syrniki-662e52.netlify.app";
             
             try {
-                // Jalamos directamente tu nota de prueba
                 const nombreNota = "2026-05-18-entrada-de-prueba.md"; 
                 const res = await fetch(`${urlBase}/blog/${nombreNota}`);
                 if (!res.ok) throw new Error();
                 
-                const texto = await res.res.text();
-                gridHome.innerHTML = ""; // Limpiamos el texto de carga
+                const texto = await res.text(); // CORREGIDO AQUÍ (Eliminado .res duplicado)
+                gridHome.innerHTML = ""; 
 
-                // Procesamos metadatos
                 const lineas = texto.split('\n');
                 const meta = { title: "Entrada de Prueba", image: "", description: "" };
                 let enMeta = false;
@@ -240,13 +225,12 @@
                     meta.image = `${urlBase}/${meta.image}`;
                 }
 
-                // Creamos la tarjeta para el Home
                 const art = document.createElement('div');
-                art.style.cssText = "background: #FFFFFF; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 25px; text-align: left;";
+                art.style.cssText = "background: #FFFFFF; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 25px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.02);";
                 art.innerHTML = `
                     <div style="height: 180px; background-image: url('${meta.image || 'https://via.placeholder.com/400x200'}'); background-size: cover; background-position: center;"></div>
                     <div style="padding: 25px 25px 10px 25px;">
-                        <span style="font-size: 12px; color: #FF7A00; font-weight: 600;">Reciente</span>
+                        <span style="font-size: 12px; color: #FF7A00; font-weight: 600;">Blog Reciente</span>
                         <h3 style="font-size: 18px; font-weight: 700; margin: 10px 0; line-height: 1.4; color: #1A1A1A;">${meta.title}</h3>
                         <p style="color: #4A4A4A; font-size: 14px; line-height: 1.5; margin-bottom: 15px;">${meta.description || 'Haz clic para leer la nota completa...'}</p>
                     </div>
@@ -254,7 +238,6 @@
                 `;
                 gridHome.appendChild(art);
             } catch (e) {
-                // Respaldo por si tarda en reflejar
                 gridHome.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>¡Blog conectado! Visita la sección de Blog para conocer las notas.</p>";
             }
         });
