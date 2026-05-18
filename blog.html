@@ -123,17 +123,29 @@
         </div>
     </footer>
 
-    <script>
+<script>
         document.addEventListener("DOMContentLoaded", async function() {
             const usuarioGitHub = "Tania11sannicolas-web"; 
             const repositorio = "vinculo-web"; 
             const grid = document.querySelector('.blog-grid');
             
+            // Forzamos la detección de la carpeta en minúscula o mayúscula
             try {
-                const respuesta = await fetch(`https://api.github.com/repos/${usuarioGitHub}/${repositorio}/contents/blog`);
-                if (!respuesta.ok) throw new Error();
-                const archivos = await respuesta.json();
+                let urlAPI = `https://api.github.com/repos/${usuarioGitHub}/${repositorio}/contents/blog`;
+                let respuesta = await fetch(urlAPI);
                 
+                // Si da error en minúsculas, intentamos con mayúscula
+                if (!respuesta.ok) {
+                    urlAPI = `https://api.github.com/repos/${usuarioGitHub}/${repositorio}/contents/Blog`;
+                    respuesta = await fetch(urlAPI);
+                }
+                
+                if (!respuesta.ok) {
+                    grid.innerHTML = "<p style='text-align: center; color: #4A4A4A; grid-column: 1/-1;'>¡Falta publicar tu primera nota en el panel administrativo! Recuerda darle al botón 'Publish'.</p>";
+                    return;
+                }
+                
+                const archivos = await respuesta.json();
                 const notasValidas = archivos.filter(archivo => archivo.name.endsWith('.md'));
                 
                 if (notasValidas.length === 0) {
@@ -141,14 +153,15 @@
                     return;
                 }
 
-                grid.innerHTML = ""; // Borramos el mensaje de carga definitivo
+                grid.innerHTML = ""; // Limpiamos
 
                 for (let archivo of notasValidas) {
                     const contenidoRespuesta = await fetch(archivo.download_url);
                     const textoMarkdown = await contenidoRespuesta.text();
                     
+                    // Separador de metadatos ultra robusto
                     const lineas = textoMarkdown.split('\n');
-                    const metadatos = { title: "Artículo sin título", image: "https://via.placeholder.com/400x200" };
+                    const metadatos = { title: archivo.name.replace('.md', ''), image: "https://via.placeholder.com/400x200", description: "" };
                     let dentroDeMetadatos = false;
 
                     for (let linea of lineas) {
@@ -157,16 +170,17 @@
                             continue;
                         }
                         if (dentroDeMetadatos) {
-                            const partes = linea.split(':');
-                            if (partes.length >= 2) {
-                                const llave = partes[0].trim();
-                                const valor = partes.slice(1).join(':').trim().replace(/['"]/g, '');
-                                metadatos[llave] = valor;
+                            const indexCol = linea.indexOf(':');
+                            if (indexCol !== -1) {
+                                const llave = linea.substring(0, indexCol).trim().toLowerCase();
+                                const valor = linea.substring(indexCol + 1).trim().replace(/['"]/g, '');
+                                if (llave === 'title') metadatos.title = valor;
+                                if (llave === 'image') metadatos.image = valor;
+                                if (llave === 'description' || llave === 'resumen') metadatos.description = valor;
                             }
                         }
                     }
 
-                    // Forzar ruta absoluta para la imagen de GitHub
                     if (metadatos.image && !metadatos.image.startsWith('http')) {
                         metadatos.image = `https://raw.githubusercontent.com/${usuarioGitHub}/${repositorio}/main/${metadatos.image}`;
                     }
@@ -177,9 +191,9 @@
                         <div class="post-image" style="background-image: url('${metadatos.image}');"></div>
                         <div class="post-body">
                             <div>
-                                <span class="post-meta">${metadatos.date || 'Reciente'}</span>
+                                <span class="post-meta">Publicación Automatizada</span>
                                 <h3><a href="${archivo.html_url}" target="_blank">${metadatos.title}</a></h3>
-                                <p>${metadatos.description || 'Haz clic en el enlace para leer este artículo completo en el repositorio institucional...'}</p>
+                                <p>${metadatos.description || 'Haz clic abajo para leer este artículo completo...'}</p>
                             </div>
                             <a href="${archivo.html_url}" target="_blank" class="link-leer">Leer artículo <span>→</span></a>
                         </div>
@@ -187,7 +201,7 @@
                     grid.appendChild(card);
                 }
             } catch (error) {
-                grid.innerHTML = "<p style='text-align: center; color: #4A4A4A; grid-column: 1/-1;'>Ocurrió un error al conectar con las publicaciones. Revisa tu conexión.</p>";
+                grid.innerHTML = "<p style='text-align: center; color: #4A4A4A; grid-column: 1/-1;'>Ocurrió un error de sincronización con la API de GitHub. Intenta de nuevo en un momento.</p>";
             }
         });
     </script>
