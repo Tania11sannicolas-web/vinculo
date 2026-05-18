@@ -8,5 +8,14 @@
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
+    <script>
+        // LE DECIMOS AL PANEL CUÁL ES SU MÁQUINA DE CONTRASEÑAS
+        document.addEventListener("DOMContentLoaded", function() {
+            window.netlifyIdentity.on("init", () => {
+                // AQUÍ PEGA TU ENLACE DE NETLIFY POR DEFAULT (Déjale las comillas)
+                window.netlifyIdentity.setURL("https://resplendent-syrniki-662e52.netlify.app/");
+            });
+        });
+    </script>
 </body>
 </html>
