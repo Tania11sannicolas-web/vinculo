@@ -61,6 +61,21 @@
         .autor-info h5 { font-size: 16px; font-weight: 700; color: var(--oscuro); }
         .autor-info span { font-size: 13px; color: var(--naranja); font-weight: 500; }
 
+        <section id="blog-home" style="padding: 80px 8%; background-color: #FAF9F6;">
+    <div style="text-align: center; margin-bottom: 50px;">
+        <span style="color: #FF7A00; font-weight: 700; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Nuestro Espacio</span>
+        <h2 style="font-size: 36px; font-weight: 700; margin-top: 10px; letter-spacing: -1px;">Ideas e Impacto Reciente</h2>
+    </div>
+    
+    <div class="blog-home-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto;">
+        <p style="text-align: center; color: #4A4A4A; grid-column: 1/-1;">Cargando las últimas publicaciones...</p>
+    </div>
+    
+    <div style="text-align: center; margin-top: 50px;">
+        <a href="blog.html" style="background-color: #1A1A1A; color: #FFFFFF; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: 700; display: inline-block; transition: 0.3s;">Ver todas las publicaciones</a>
+    </div>
+</section>
+
         /* LEAD MAGNET BANNER (CTA DESTACADO) */
         .cta-banner { background: linear-gradient(135deg, var(--naranja) 0%, #FF9E44 100%); color: var(--blanco); padding: 60px 8%; text-align: center; border-radius: 24px; max-width: 1200px; margin: 40px auto; box-shadow: 0 15px 40px rgba(255, 122, 0, 0.15); }
         .cta-banner h3 { font-size: 30px; margin-bottom: 15px; font-weight: 700; }
@@ -96,6 +111,63 @@
       }
     });
   }
+</script>
+    <script>
+    document.addEventListener("DOMContentLoaded", async function() {
+        // REEMPLAZA CON TU USUARIO REAL DE GITHUB
+        const usuario = "TU_USUARIO_DE_GITHUB"; 
+        const repo = "vinculo-web";
+        const gridHome = document.querySelector('.blog-home-grid');
+        
+        try {
+            const res = await fetch(`https://api.github.com/repos/${usuario}/${repo}/contents/blog`);
+            if (!res.ok) throw new Error();
+            const archivos = await res.json();
+            
+            // Filtramos solo archivos .md y agarramos máximo los últimos 3
+            const notasProcesadas = archivos.filter(f => f.name.endsWith('.md')).slice(-3);
+            
+            if(notasProcesadas.length === 0) {
+                gridHome.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>Próximamente más artículos.</p>";
+                return;
+            }
+            
+            gridHome.innerHTML = ""; // Limpiamos el texto de carga
+
+            for (let nota of notasProcesadas) {
+                const contenidoRes = await fetch(nota.download_url);
+                const texto = await contenidoRes.text();
+                
+                // Procesamos metadatos de forma rápida
+                const lineas = texto.split('\n');
+                const meta = { title: "Artículo sin título", image: "https://via.placeholder.com/400x200" };
+                let enMeta = false;
+                for (let l of lineas) {
+                    if (l.trim() === '---') { enMeta = !enMeta; continue; }
+                    if (enMeta) {
+                        const p = l.split(':');
+                        if (p.length >= 2) meta[p[0].trim()] = p.slice(1).join(':').trim().replace(/['"]/g, '');
+                    }
+                }
+
+                // Creamos la tarjeta para el Home
+                const art = document.createElement('div');
+                art.style.cssText = "background: #FFFFFF; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 25px;";
+                art.innerHTML = `
+                    <div style="height: 180px; background-image: url('${meta.image}'); background-size: cover; background-position: center;"></div>
+                    <div style="padding: 25px 25px 10px 25px;">
+                        <span style="font-size: 12px; color: #FF7A00; font-weight: 600;">${meta.date || 'Reciente'}</span>
+                        <h3 style="font-size: 18px; font-weight: 700; margin: 10px 0; line-height: 1.4; color: #1A1A1A;">${meta.title}</h3>
+                        <p style="color: #4A4A4A; font-size: 14px; line-height: 1.5; margin-bottom: 15px;">${meta.description || 'Haz clic para leer la nota completa...'}</p>
+                    </div>
+                    <a href="blog.html" style="color: #1A1A1A; text-decoration: none; font-weight: 700; font-size: 14px; margin-left: 25px;">Leer nota →</a>
+                `;
+                gridHome.appendChild(art);
+            }
+        } catch (e) {
+            gridHome.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>Visita nuestra sección de Blog para conocer más.</p>";
+        }
+    });
 </script>
     <body>
 
