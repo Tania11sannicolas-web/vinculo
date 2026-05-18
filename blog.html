@@ -77,6 +77,85 @@
         }
     </style>
 </head>
+<script>
+    // 1. Configura tus datos de GitHub aquí
+    const usuarioGitHub = "Tania11sannicolas-web"; // Pon aquí tu nombre de usuario de GitHub
+    const repositorio = "vinculo-web"; // El nombre de tu repositorio
+    
+    const urlAPI = `https://api.github.com/repos/${usuarioGitHub}/${repositorio}/contents/blog`;
+
+    async function cargarBlog() {
+        const grid = document.querySelector('.blog-grid');
+        
+        try {
+            // Llamamos a GitHub para ver qué archivos hay en la carpeta "blog"
+            const respuesta = await fetch(urlAPI);
+            if (!respuesta.ok) throw new Error("No se encontraron notas aún.");
+            const archivos = await fetch(urlAPI).then(res => res.json());
+            
+            // Limpiamos las notas de ejemplo del HTML
+            grid.innerHTML = "";
+
+            // Leemos cada archivo .md generado por el panel administrador
+            for (let archivo of archivos) {
+                if (archivo.name.endsWith('.md')) {
+                    const contenidoRespuesta = await fetch(archivo.download_url);
+                    const textoMarkdown = await contenidoRespuesta.text();
+                    
+                    // Procesamos los datos de la nota (Título, Fecha, Imagen)
+                    const metadatos = procesarMetadatos(textoMarkdown);
+                    
+                    // Creamos la tarjeta visual de forma automática
+                    const card = document.createElement('article');
+                    card.className = 'card-post';
+                    card.innerHTML = `
+                        <div class="post-image" style="background-image: url('${metadatos.image || 'https://via.placeholder.com/400x200'}');"></div>
+                        <div class="post-body">
+                            <div>
+                                <span class="post-meta">${metadatos.date || 'Reciente'}</span>
+                                <h3><a href="${archivo.html_url}" target="_blank">${metadatos.title}</a></h3>
+                                <p>${metadatos.description || 'Haz clic para leer esta nota completa...'}</p>
+                            </div>
+                            <a href="${archivo.html_url}" target="_blank" class="link-leer">Leer artículo <span>→</span></a>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                }
+            }
+        } catch (error) {
+            console.log("Error cargando el blog:", error);
+            // Si no hay notas reales, se quedan las de ejemplo que ya tenías
+        }
+    }
+
+    // Función auxiliar para separar el texto del archivo .md
+    function procesarMetadatos(texto) {
+        const lineas = texto.split('\n');
+        const resultado = { body: "" };
+        let dentroDeMetadatos = false;
+
+        for (let linea of lineas) {
+            if (linea.trim() === '---') {
+                dentroDeMetadatos = !dentroDeMetadatos;
+                continue;
+            }
+            if (dentroDeMetadatos) {
+                const partes = linea.split(':');
+                if (partes.length >= 2) {
+                    const llave = partes[0].trim();
+                    const valor = partes.slice(1).join(':').trim().replace(/['"]/g, '');
+                    resultado[llave] = valor;
+                }
+            } else {
+                resultado.body += linea + '\n';
+            }
+        }
+        return resultado;
+    }
+
+    // Arranca la magia cuando se carga la página
+    document.addEventListener("DOMContentLoaded", cargarBlog);
+</script>
 <body>
 
     <header>
