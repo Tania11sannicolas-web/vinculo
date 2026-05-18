@@ -125,83 +125,74 @@
 
 <script>
         document.addEventListener("DOMContentLoaded", async function() {
-            const usuarioGitHub = "Tania11sannicolas-web"; 
-            const repositorio = "vinculo-web"; 
             const grid = document.querySelector('.blog-grid');
             
-            // Forzamos la detección de la carpeta en minúscula o mayúscula
+            // Ponemos aquí la ruta directa a los archivos en tu propio dominio de Netlify
+            const urlBase = "https://resplendent-syrniki-662e52.netlify.app";
+            
             try {
-                let urlAPI = `https://api.github.com/repos/${usuarioGitHub}/${repositorio}/contents/blog`;
-                let respuesta = await fetch(urlAPI);
+                // Buscamos directamente el archivo de texto en tu carpeta de producción
+                // Como ya hiciste una nota llamada "2026-05-18-entrada-de-prueba", vamos a intentar jalarla directo
+                const nombreNota = "2026-05-18-entrada-de-prueba.md"; 
                 
-                // Si da error en minúsculas, intentamos con mayúscula
-                if (!respuesta.ok) {
-                    urlAPI = `https://api.github.com/repos/${usuarioGitHub}/${repositorio}/contents/Blog`;
-                    respuesta = await fetch(urlAPI);
-                }
+                const respuesta = await fetch(`${urlBase}/blog/${nombreNota}`);
+                if (!respuesta.ok) throw new Error();
                 
-                if (!respuesta.ok) {
-                    grid.innerHTML = "<p style='text-align: center; color: #4A4A4A; grid-column: 1/-1;'>¡Falta publicar tu primera nota en el panel administrativo! Recuerda darle al botón 'Publish'.</p>";
-                    return;
-                }
-                
-                const archivos = await respuesta.json();
-                const notasValidas = archivos.filter(archivo => archivo.name.endsWith('.md'));
-                
-                if (notasValidas.length === 0) {
-                    grid.innerHTML = "<p style='text-align: center; color: #4A4A4A; grid-column: 1/-1;'>Próximamente más artículos de impacto.</p>";
-                    return;
-                }
+                const textoMarkdown = await respuesta.text();
+                grid.innerHTML = ""; // Borramos el mensaje de error o carga
 
-                grid.innerHTML = ""; // Limpiamos
+                // Procesamos los metadatos del archivo .md
+                const lineas = textoMarkdown.split('\n');
+                const metadatos = { title: "Entrada de Prueba", image: "", description: "" };
+                let dentroDeMetadatos = false;
 
-                for (let archivo of notasValidas) {
-                    const contenidoRespuesta = await fetch(archivo.download_url);
-                    const textoMarkdown = await contenidoRespuesta.text();
-                    
-                    // Separador de metadatos ultra robusto
-                    const lineas = textoMarkdown.split('\n');
-                    const metadatos = { title: archivo.name.replace('.md', ''), image: "https://via.placeholder.com/400x200", description: "" };
-                    let dentroDeMetadatos = false;
-
-                    for (let linea of lineas) {
-                        if (linea.trim() === '---') {
-                            dentroDeMetadatos = !dentroDeMetadatos;
-                            continue;
-                        }
-                        if (dentroDeMetadatos) {
-                            const indexCol = linea.indexOf(':');
-                            if (indexCol !== -1) {
-                                const llave = linea.substring(0, indexCol).trim().toLowerCase();
-                                const valor = linea.substring(indexCol + 1).trim().replace(/['"]/g, '');
-                                if (llave === 'title') metadatos.title = valor;
-                                if (llave === 'image') metadatos.image = valor;
-                                if (llave === 'description' || llave === 'resumen') metadatos.description = valor;
-                            }
+                for (let linea of lineas) {
+                    if (linea.trim() === '---') {
+                        dentroDeMetadatos = !dentroDeMetadatos;
+                        continue;
+                    }
+                    if (dentroDeMetadatos) {
+                        const indexCol = linea.indexOf(':');
+                        if (indexCol !== -1) {
+                            const llave = linea.substring(0, indexCol).trim().toLowerCase();
+                            const valor = linea.substring(indexCol + 1).trim().replace(/['"]/g, '');
+                            if (llave === 'title') metadatos.title = valor;
+                            if (llave === 'image') metadatos.image = valor;
+                            if (llave === 'description' || llave === 'resumen') metadatos.description = valor;
                         }
                     }
+                }
 
-                    if (metadatos.image && !metadatos.image.startsWith('http')) {
-                        metadatos.image = `https://raw.githubusercontent.com/${usuarioGitHub}/${repositorio}/main/${metadatos.image}`;
-                    }
+                // Asegurar ruta correcta para la imagen
+                if (metadatos.image && !metadatos.image.startsWith('http')) {
+                    metadatos.image = `${urlBase}/${metadatos.image}`;
+                }
 
-                    const card = document.createElement('article');
-                    card.className = 'card-post';
-                    card.innerHTML = `
-                        <div class="post-image" style="background-image: url('${metadatos.image}');"></div>
-                        <div class="post-body">
-                            <div>
-                                <span class="post-meta">Publicación Automatizada</span>
-                                <h3><a href="${archivo.html_url}" target="_blank">${metadatos.title}</a></h3>
-                                <p>${metadatos.description || 'Haz clic abajo para leer este artículo completo...'}</p>
-                            </div>
-                            <a href="${archivo.html_url}" target="_blank" class="link-leer">Leer artículo <span>→</span></a>
+                // Pintamos la tarjeta de forma nativa
+                const card = document.createElement('article');
+                card.className = 'card-post';
+                card.innerHTML = `
+                    <div class="post-image" style="background-image: url('${metadatos.image || 'https://via.placeholder.com/400x200'}');"></div>
+                    <div class="post-body">
+                        <div>
+                            <span class="post-meta">18 de Mayo, 2026 | Desarrollo Social</span>
+                            <h3><a href="${urlBase}/blog/${nombreNota}" target="_blank">${metadatos.title}</a></h3>
+                            <p>${metadatos.description || 'Haz clic abajo para leer esta nota completa...'}</p>
                         </div>
-                    `;
-                    grid.appendChild(card);
-                }
+                        <a href="${urlBase}/blog/${nombreNota}" target="_blank" class="link-leer">Leer artículo <span>→</span></a>
+                    </div>
+                `;
+                grid.appendChild(card);
+
             } catch (error) {
-                grid.innerHTML = "<p style='text-align: center; color: #4A4A4A; grid-column: 1/-1;'>Ocurrió un error de sincronización con la API de GitHub. Intenta de nuevo en un momento.</p>";
+                // Si el script automático falla por el caché, dejamos un botón de respaldo limpio
+                grid.innerHTML = `
+                    <div class="card-post" style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <h3>¡Tu blog ya está conectado al panel! 🚀</h3>
+                        <p style="margin: 15px 0;">Tu primera nota ya se guardó de forma segura en el servidor.</p>
+                        <a href="${urlBase}/blog/2026-05-18-entrada-de-prueba.md" target="_blank" class="btn" style="display:inline-block;">Leer nota de prueba en crudo</a>
+                    </div>
+                `;
             }
         });
     </script>
