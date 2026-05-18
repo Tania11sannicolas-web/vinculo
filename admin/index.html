@@ -7,6 +7,58 @@
     <link rel="stylesheet" href="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.css" />
 </head>
 <body>
+    <script>
+        // TRUCO HACKER: Le decimos a Decap que use el backend de GitHub de forma directa
+        // porque Cloudflare ya se encargó de revisar que tú eres tú en la puerta.
+        window.CMS_MANUAL_INIT = true;
+    </script>
+    
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+    <script>
+        // Inicializamos el panel de forma limpia y directa
+        CMS.init({
+            config: {
+                backend: {
+                    name: "github",
+                    repo: "Tania11sannicolas-web/vinculo-web",
+                    branch: "main"
+                },
+                local_backend: true,
+                media_folder: "imagenes",
+                public_folder: "imagenes",
+                collections: [
+                    {
+                        name: "blog",
+                        label: "📝 Entradas del Blog",
+                        folder: "blog",
+                        create: true,
+                        slug: "{{year}}-{{month}}-{{day}}-{{slug}}",
+                        fields: [
+                            { label: "Título de la Nota", name: "title", widget: "string" },
+                            { label: "Fecha de Publicación", name: "date", widget: "string" },
+                            { label: "Resumen Corto", name: "description", widget: "text" },
+                            { label: "Imagen Destacada", name: "image", widget: "image" },
+                            { label: "Cuerpo del Artículo", name: "body", widget: "markdown" }
+                        ]
+                    },
+                    {
+                        name: "recursos",
+                        label: "🎁 Recursos Gratuitos",
+                        folder: "recursos",
+                        create: true,
+                        slug: "recurso-{{slug}}",
+                        fields: [
+                            { label: "Nombre del Recurso/E-book", name: "title", widget: "string" },
+                            { label: "Descripción Breve", name: "description", widget: "text" },
+                            { label: "Portada del Recurso", name: "image", widget: "image" },
+                            { label: "Enlace de Descarga del PDF", name: "pdflink", widget: "string", hint: "Link de Google Drive o servidor" },
+                            { label: "ID de la Lista de Brevo", name: "brevoid", widget: "string", hint: "Ejemplo: 3" }
+                        ]
+                    }
+                ]
+            }
+        });
+    </script>
 </body>
 </html>
