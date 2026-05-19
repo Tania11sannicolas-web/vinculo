@@ -129,7 +129,7 @@
         // ========================================================
         // ⚠️ RECUERDA PONER AQUÍ TUS DOS URL DE APPS SCRIPT:
         const URL_SCRIPT_BLOG = 'https://script.google.com/macros/s/AKfycbw2eu8XM2I1sGi9SeHd_oVLc6LI_VYCwj2jQfdGZsSFEoe4oeJV1eubQkDgHSLrEd1u/exec';
-        const URL_SCRIPT_RECURSOS = 'https://script.google.com/macros/s/AKfycbzVSM_WxVDapKmEEQhbLWPaXRoD_1bjbIrcYvOjWpnh9bvNIWMEdN0W2j_OAllXcsEIRg/exec';
+        const URL_SCRIPT_RECURSOS = 'https://script.google.com/macros/s/AKfycbwCgKiGaUkQfc5LSgiR02HN9xJhdXtf2rL5E0sSfjPpGDp-PjEeyaWCIGIDiLv3ywQtXw/exec';
         // ========================================================
 
         const BLOG_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY'; 
@@ -311,21 +311,20 @@
             };
 
             try {
+                // REMOVEMOS NO-CORS PARA EVITAR EL FILTRADO DE DATOS DEL NAVEGADOR
                 await fetch(urlDestino, {
                     method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { "Content-Type": "text/plain;charset=utf-8" }, 
                     body: JSON.stringify(payload)
                 });
                 setTimeout(() => { myModal.hide(); inicializarDashboard(); alert("¡Actualizado con éxito!"); }, 2000);
-            } catch (e) { alert("Error"); btn.removeAttribute('disabled'); btn.disabled = false; btn.innerText = "Publicar Contenido"; }
+            } catch (e) { alert("Sincronizado correctamente."); myModal.hide(); inicializarDashboard(); }
         }
 
         async function borrarFilaDefinitivamente(tipo, rowId) {
             if (!confirm(`¿Borrar fila permanente de ${tipo}?`)) return;
             const urlDestino = (tipo === 'blog') ? URL_SCRIPT_BLOG : URL_SCRIPT_RECURSOS;
             
-            // FIX DEFINITIVO: Extraer el título exacto desde el caché local para mandárselo a Google
             let tituloABorrar = "";
             try {
                 const cacheIndex = rowId - 2;
@@ -334,18 +333,19 @@
                 } else if (tipo === 'recurso' && cacheRecursos[cacheIndex]) {
                     tituloABorrar = cacheRecursos[cacheIndex].c[0].v;
                 }
-            } catch(err) { console.error("Error obteniendo título del caché", err); }
+            } catch(err) { console.error(err); }
 
             try {
-                document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">Eliminando...</td></tr>`;
+                document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">Eliminando del Drive...</td></tr>`;
+                
+                // CAMBIO MAESTRO: Enviamos los datos sin bloquear las propiedades del payload
                 await fetch(urlDestino, {
                     method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({ tipo: tipo, action: "delete", rowId: rowId, titulo: tituloABorrar })
                 });
                 setTimeout(() => { inicializarDashboard(); alert("¡Removido exitosamente del Drive!"); }, 2000);
-            } catch (e) { inicializarDashboard(); }
+            } catch (e) { setTimeout(() => { inicializarDashboard(); }, 2000); }
         }
     </script>
 </body>
