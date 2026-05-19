@@ -93,30 +93,38 @@
         </div>
     </footer>
 
-    <script>
+  <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const grid = document.querySelector('.grid-recursos');
             const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
-            const urlRecursos = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Recursos`;
+            
+            // CORRECCIÓN CLAVE: Sintonizamos el nombre exacto con mayúscula "Recursos"
+            // y limitamos el rango de las columnas A a la E para evitar celdas vacías raras
+            const urlRecursos = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Recursos&range=A1:E100`;
             
             try {
                 const res = await fetch(urlRecursos);
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
-                const filas = data.table.rows ? data.table.rows.slice(1) : [];
                 
+                const filas = data.table.rows;
                 grid.innerHTML = ""; 
 
-                if (!filas || filas.length === 0) {
+                // Si la hoja no trae renglones o sólo tiene los títulos (1 sola fila), mostramos mensaje
+                if (!filas || filas.length <= 1) {
                     grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente más recursos gratuitos.</p>`;
                     return;
                 }
 
-                filas.forEach(row => {
-                    // Si el renglón está vacío en Google Sheets, nos lo saltamos sin romper el script
-                    if (!row || !row.c) return;
+                // Recorremos la tabla empezando en la fila 1 para brincarnos los encabezados de la fila 0
+                for (let i = 1; i < filas.length; i++) {
+                    const row = filas[i];
+                    if (!row || !row.c) continue;
                     
-                    const titulo = (row.c[0] && row.c[0].v) ? row.c[0].v : 'Recurso Exclusivo';
+                    // Si el título del recurso está totalmente vacío en el Excel, saltamos la línea
+                    if (!row.c[0] || row.c[0].v === null || row.c[0].v === "") continue;
+                    
+                    const titulo = row.c[0].v;
                     const desc = (row.c[1] && row.c[1].v) ? row.c[1].v : 'Descarga esta herramienta práctica.';
                     const imagen = (row.c[2] && row.c[2].v) ? row.c[2].v : 'https://via.placeholder.com/300x240';
                     const linkPdf = (row.c[3] && row.c[3].v) ? row.c[3].v : '#';
@@ -138,10 +146,15 @@
                         </form>
                     `;
                     grid.appendChild(card);
-                });
+                }
+
+                // Doble validación: si tras el filtro de vacíos la pantalla quedó en blanco
+                if (grid.innerHTML === "") {
+                    grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente más recursos gratuitos.</p>`;
+                }
 
             } catch (error) {
-                console.error(error);
+                console.error("Error al cargar los recursos:", error);
                 grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos conectar con el servidor de herramientas en este momento.</p>`;
             }
         });
