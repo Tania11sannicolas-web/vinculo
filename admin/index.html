@@ -106,7 +106,7 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold" id="lblTitulo">Título Principal</label>
-                            <input type="text" class="form-control" id="formTitulo" required placeholder="Escribe un título conciso e impactante...">
+                            <input type="text" class="form-control" id="formTitulo" required placeholder="Escribe un título conciso...">
                         </div>
 
                         <div class="row" id="rowCamposEspeciales">
@@ -115,12 +115,12 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Imagen de Portada (Subir desde dispositivo)</label>
                             <input type="file" class="form-control" id="formFile" accept="image/*" onchange="procesarArchivoImagen()">
-                            <div class="form-text text-muted">Deja este campo vacío si vas a editar y quieres conservar la imagen que ya tenías.</div>
+                            <div class="form-text text-muted">Deja este campo vacío si vas a editar y quieres conservar la foto actual.</div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-bold" id="lblContenido">Cuerpo del Contenido / Mensaje</label>
-                            <textarea class="form-control" id="formContenido" rows="7" required placeholder="Escribe aquí toda la información detallada..."></textarea>
+                            <textarea class="form-control" id="formContenido" rows="7" required placeholder="Escribe la información aquí..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -136,13 +136,13 @@
     <script>
         // ========================================================
         // ⚠️ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT COMPLETA:
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCvq33hdIZ1MWoqNWYPLN-Yamvjwg_RuDJDgrVh6msMnRNHJg-IhAu0MyazC_u9eKV/exec';
+        const APPS_SCRIPT_URL = 'AQUÍ_PEGA_TU_URL_DE_EXEC';
         // ========================================================
 
-        // HOJAS INDEPENDIENTES SEPARADAS CON ÉXITO
-        const BLOG_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY'; // Base de Datos - Vinculo Web
-        const RECURSOS_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo'; // Recursos - Vinculo Web
-        const RECURSOS_GID = '2047829696'; // Pestaña de Recursos Duplicada
+        // TUS HOJAS DE EXCEL TOTALMENTE SEPARADAS
+        const BLOG_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY'; 
+        const RECURSOS_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo'; 
+        const RECURSOS_GID = '2047829696'; 
 
         let cacheBlog = [], cacheRecursos = [];
         let stringArchivoBase64 = "", nombreArchivoImagen = "";
@@ -158,29 +158,40 @@
                 const tbody = document.getElementById('tabla-contenidos');
                 tbody.innerHTML = '';
 
-                // 1. Lectura en vivo del Blog (Busca la pestaña "Blog")
+                // 1. Lectura de la hoja del Blog
                 const resB = await fetch(`https://docs.google.com/spreadsheets/d/${BLOG_ID}/gviz/tq?tqx=out:json&sheet=Blog`);
                 const textB = await resB.text();
-                cacheBlog = JSON.parse(textB.substr(47).slice(0, -2)).table.rows.slice(1);
+                const dataB = JSON.parse(textB.substr(47).slice(0, -2));
+                cacheBlog = dataB.table.rows ? dataB.table.rows.slice(1) : [];
 
-                // 2. Lectura en vivo de Recursos (Busca su ID de hoja propio y el GID correcto)
+                // 2. Lectura de la hoja de Recursos
                 const resR = await fetch(`https://docs.google.com/spreadsheets/d/${RECURSOS_ID}/gviz/tq?tqx=out:json&gid=${RECURSOS_GID}`);
                 const textR = await resR.text();
-                cacheRecursos = JSON.parse(textR.substr(47).slice(0, -2)).table.rows.slice(1);
+                const dataR = JSON.parse(textR.substr(47).slice(0, -2));
+                cacheRecursos = dataR.table.rows ? dataR.table.rows.slice(1) : [];
 
                 document.getElementById('total-blog').innerText = cacheBlog.length;
                 document.getElementById('total-recursos').innerText = cacheRecursos.length;
 
-                // Render de filas del Blog
+                if (cacheBlog.length === 0 && cacheRecursos.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted"><i class="fa-solid fa-folder-open me-2"></i>No hay publicaciones activas. ¡Crea una nueva nota o recurso!</td></tr>`;
+                    return;
+                }
+
+                // Renderizar renglones de Blog
                 cacheBlog.forEach((row, idx) => {
-                    if(!row.c || !row.c[0]) return;
+                    if(!row || !row.c || !row.c[0]) return;
                     const rId = idx + 2;
+                    const titulo = row.c[0].v;
+                    const fecha = row.c[1] ? row.c[1].v : '-';
+                    const desc = row.c[2] ? row.c[2].v : '';
+                    
                     tbody.innerHTML += `
                         <tr>
                             <td><span class="badge badge-blog"><i class="fa-solid fa-feather me-1"></i> Blog</span></td>
-                            <td class="fw-semibold text-dark">${row.c[0].v}</td>
-                            <td class="text-muted small">${row.c[1] ? row.c[1].v : '-'}</td>
-                            <td class="text-truncate" style="max-width:250px;">${row.c[2] ? row.c[2].v : ''}</td>
+                            <td class="fw-semibold text-dark">${titulo}</td>
+                            <td class="text-muted small">${fecha}</td>
+                            <td class="text-truncate" style="max-width:250px;">${desc}</td>
                             <td class="text-center">
                                 <button class="btn btn-outline-secondary btn-sm" onclick="cargarFilaParaEdicion('blog', ${rId})"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
                             </td>
@@ -188,16 +199,20 @@
                     `;
                 });
 
-                // Render de filas de Recursos
+                // Renderizar renglones de Recursos
                 cacheRecursos.forEach((row, idx) => {
-                    if(!row.c || !row.c[0]) return;
+                    if(!row || !row.c || !row.c[0]) return;
                     const rId = idx + 2;
+                    const nombre = row.c[0].v;
+                    const desc = row.c[1] ? row.c[1].v : '';
+                    const brevoId = row.c[4] ? row.c[4].v : '-';
+                    
                     tbody.innerHTML += `
                         <tr>
                             <td><span class="badge badge-recurso"><i class="fa-solid fa-gift me-1"></i> Recurso</span></td>
-                            <td class="fw-semibold text-dark">${row.c[0].v}</td>
-                            <td class="text-muted small">Brevo ID: ${row.c[4] ? row.c[4].v : '-'}</td>
-                            <td class="text-truncate" style="max-width:250px;">${row.c[1] ? row.c[1].v : ''}</td>
+                            <td class="fw-semibold text-dark">${nombre}</td>
+                            <td class="text-muted small">Brevo ID: ${brevoId}</td>
+                            <td class="text-truncate" style="max-width:250px;">${desc}</td>
                             <td class="text-center">
                                 <button class="btn btn-outline-secondary btn-sm" onclick="cargarFilaParaEdicion('recurso', ${rId})"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
                             </td>
@@ -206,8 +221,8 @@
                 });
 
             } catch (e) {
-                console.error(e);
-                document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center text-danger py-3">Error al sincronizar con las bases de datos de Google.</td></tr>`;
+                console.error("Error cargando dashboard:", e);
+                document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center text-danger py-3"><i class="fa-solid fa-triangle-exclamation me-2"></i>Error al sincronizar con las bases de datos de Google.</td></tr>`;
             }
         }
 
@@ -277,7 +292,7 @@
             const btn = document.getElementById('btnGuardar');
             const btnOriginalText = btn.innerText;
             btn.disabled = true;
-            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Sincronizando con Drive...`;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Sincronizando...`;
 
             const tipo = document.getElementById('formTipo').value;
             const rowId = document.getElementById('formRowId').value;
@@ -298,7 +313,7 @@
             };
 
             try {
-                const response = await fetch(APPS_SCRIPT_URL, {
+                await fetch(APPS_SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
