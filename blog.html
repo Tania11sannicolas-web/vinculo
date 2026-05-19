@@ -86,7 +86,7 @@
         <h2>Últimas publicaciones</h2>
         
         <div class="blog-grid">
-            <p style="text-align: center; color: #4A4A4A; grid-column: 1/-1;">Buscando publicaciones en el servidor...</p>
+            <p style="text-align: center; color: #4A4A4A; grid-column: 1/-1;">Conectando con Google Sheets...</p>
         </div>
     </main>
 
@@ -100,67 +100,50 @@
     <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const grid = document.querySelector('.blog-grid');
-            const urlBase = "https://resplendent-syrniki-662e52.netlify.app";
+            const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
+            const urlBlog = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Blog`;
             
             try {
-                const nombreNota = "2026-05-18-entrada-de-prueba.md"; 
+                const res = await fetch(urlBlog);
+                const text = await res.text();
+                const data = JSON.parse(text.substr(47).slice(0, -2));
+                const filas = data.table.rows.slice(1); // Ignoramos fila de títulos
                 
-                const respuesta = await fetch(`${urlBase}/blog/${nombreNota}`);
-                if (!respuesta.ok) throw new Error();
-                
-                const textoMarkdown = await respuesta.text();
                 grid.innerHTML = ""; 
 
-                const lineas = textoMarkdown.split('\n');
-                const metadatos = { title: "Entrada de Prueba", image: "", description: "", date: "18 de Mayo, 2026" };
-                let dentroDeMetadatos = false;
-
-                for (let linea of lineas) {
-                    if (linea.trim() === '---') {
-                        dentroDeMetadatos = !dentroDeMetadatos;
-                        continue;
-                    }
-                    if (dentroDeMetadatos) {
-                        const indexCol = linea.indexOf(':');
-                        if (indexCol !== -1) {
-                            const llave = linea.substring(0, indexCol).trim().toLowerCase();
-                            const valor = linea.substring(indexCol + 1).trim().replace(/['"]/g, '');
-                            if (llave === 'title') metadatos.title = valor;
-                            if (llave === 'image') metadatos.image = valor;
-                            if (llave === 'date') metadatos.date = valor;
-                            if (llave === 'description' || llave === 'resumen') metadatos.description = valor;
-                        }
-                    }
+                if (filas.length === 0) {
+                    grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente nuevas notas del blog.</p>`;
+                    return;
                 }
 
-                if (metadatos.image && !metadatos.image.startsWith('http')) {
-                    metadatos.image = `${urlBase}/${metadatos.image}`;
-                }
+                // Desplegamos los renglones mapeando el orden de tus columnas fijas
+                filas.forEach((row, index) => {
+                    if(!row.c[0]) return; // Evitar renglones vacíos
+                    
+                    const idFila = index + 2; // Guardamos su número de renglón real en Excel para enlazarlo
+                    const titulo = row.c[0] ? row.c[0].v : 'Artículo sin título';
+                    const fecha = row.c[1] ? row.c[1].v : 'Reciente';
+                    const resumen = row.c[2] ? row.c[2].v : 'Haz clic abajo para leer esta nota completa...';
+                    const imagen = row.c[3] ? row.c[3].v : 'https://via.placeholder.com/400x200';
 
-                // Generamos la tarjeta apuntando dinámicamente a articulo.html en vez del .md crudo
-                const card = document.createElement('article');
-                card.className = 'card-post';
-                card.innerHTML = `
-                    <div class="post-image" style="background-image: url('${metadatos.image || 'https://via.placeholder.com/400x200'}');"></div>
-                    <div class="post-body">
-                        <div>
-                            <span class="post-meta">${metadatos.date} | Desarrollo Social</span>
-                            <h3><a href="articulo.html?nota=${nombreNota}">${metadatos.title}</a></h3>
-                            <p>${metadatos.description || 'Haz clic abajo para leer esta nota completa...'}</p>
+                    const card = document.createElement('article');
+                    card.className = 'card-post';
+                    card.innerHTML = `
+                        <div class="post-image" style="background-image: url('${imagen}');"></div>
+                        <div class="post-body">
+                            <div>
+                                <span class="post-meta">${fecha} | Desarrollo Social</span>
+                                <h3><a href="articulo.html?id=${idFila}">${titulo}</a></h3>
+                                <p>${resumen}</p>
+                            </div>
+                            <a href="articulo.html?id=${idFila}" class="link-leer">Leer artículo <span>→</span></a>
                         </div>
-                        <a href="articulo.html?nota=${nombreNota}" class="link-leer">Leer artículo <span>→</span></a>
-                    </div>
-                `;
-                grid.appendChild(card);
+                    `;
+                    grid.appendChild(card);
+                });
 
             } catch (error) {
-                grid.innerHTML = `
-                    <div class="card-post" style="grid-column: 1/-1; text-align: center; padding: 40px;">
-                        <h3>¡Tu blog ya está conectado al panel! 🚀</h3>
-                        <p style="margin: 15px 0;">Tu primera nota ya se guardó de forma segura en el servidor.</p>
-                        <a href="articulo.html?nota=2026-05-18-entrada-de-prueba.md" class="btn">Leer nota de prueba premium</a>
-                    </div>
-                `;
+                grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos cargar los artículos del blog en este momento.</p>`;
             }
         });
     </script>
