@@ -19,7 +19,8 @@
             config: {
                 backend: {
                     name: "github",
-                    repo: "Tania11sannicolas-web/vinculo-web",
+                    // CORRECCIÓN DE ORO: Ajustamos el usuario correcto de tu GitHub
+                    repo: "Tania11sannicolas/vinculo-web", 
                     branch: "main",
                     token: atob("Z2hwXzlPQmRpRjZQdlprc3FheHB2UEltU2lIaFNnekh0czMySnVPdQ==")
                 },
@@ -29,7 +30,7 @@
                     {
                         name: "blog",
                         label: "📝 Entradas del Blog",
-                        folder: "/blog", // Agregamos diagonal para asegurar ruta raíz
+                        folder: "blog",
                         create: true,
                         slug: "{{year}}-{{month}}-{{day}}-{{slug}}",
                         fields: [
@@ -43,7 +44,7 @@
                     {
                         name: "recursos",
                         label: "🎁 Recursos Gratuitos",
-                        folder: "/recursos", // Agregamos diagonal para asegurar ruta raíz
+                        folder: "recursos",
                         create: true,
                         slug: "recurso-{{slug}}",
                         fields: [
