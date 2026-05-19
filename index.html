@@ -19,7 +19,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
         
-        /* NAVBAR */
+        /* NAVBAR HOMOLOGADO */
         header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
         .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; color: var(--oscuro); }
         .logo span { color: var(--naranja); }
@@ -94,7 +94,7 @@
             <a href="empresas.html">Para Empresas</a>
             <a href="recursos.html">Recursos Gratuitos</a>
             <a href="blog.html">Blog</a>
-            <a href="index.html#contacto">Contacto</a>
+            <a href="#contacto">Contacto</a>
         </nav>
     </header>
 
@@ -171,7 +171,7 @@
     <section class="cta-banner">
         <h3>¿Quieres empezar a notar el cambio hoy mismo?</h3>
         <p>Preparamos un espacio lleno de e-books, plantillas y herramientas listas para descargar.</p>
-        <a href="recursos.html" class="btn-white" style="background-color: #FFFFFF; color: #FF7A00; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: 700; display: inline-block;">Explorar Recursos Gratuitos</a>
+        <a href="recursos.html" style="background-color: #FFFFFF; color: #FF7A00; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: 700; display: inline-block;">Explorar Recursos Gratuitos</a>
     </section>
 
     <section id="contacto" class="contacto">
@@ -208,13 +208,11 @@
                     return;
                 }
 
-                // Tomamos únicamente los 3 artículos más recientes (los últimos de la tabla)
                 const ultimasFilas = filas.reverse().slice(0, 3);
 
                 ultimasFilas.forEach((row, index) => {
-                    if(!row.c[0]) return;
+                    if(!row.c || !row.c[0]) return;
                     
-                    // Calculamos su ID original restaurando el índice invertido
                     const idFila = filas.length - index + 1;
                     const titulo = row.c[0] ? row.c[0].v : 'Artículo sin título';
                     const resumen = row.c[2] ? row.c[2].v : 'Haz clic para leer la nota completa...';
