@@ -98,26 +98,24 @@
             const grid = document.querySelector('.grid-recursos');
             const SHEET_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo';
             
-            // CORRECCIÓN MAGISTRAL: Usamos gid=0 que es el ID interno real e inalterable de la primera pestaña
-            const urlRecursos = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=0`;
+            // ¡VICTORIA! Configurado con el ID exacto de tu pestaña duplicada de Recursos
+            const MI_GID_REAL = '2047829696'; 
+            
+            const urlRecursos = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${MI_GID_REAL}`;
             
             try {
                 const res = await fetch(urlRecursos);
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
                 
-                console.log("Filas crudas detectadas:", data.table.rows);
-                
                 const filas = data.table.rows;
                 grid.innerHTML = ""; 
 
-                // Si no hay filas de datos o solo está la de los títulos, ponemos el letrero seguro
                 if (!filas || filas.length <= 1) {
                     grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente más recursos gratuitos.</p>`;
                     return;
                 }
 
-                // Función auxiliar para leer celdas sin que se rompa si vienen vacías
                 const leerCelda = (celda) => {
                     if (!celda) return '';
                     if (celda.v !== undefined && celda.v !== null) return celda.v;
@@ -125,13 +123,12 @@
                     return '';
                 };
 
-                // Brincamos la fila index 0 (que son tus títulos) e iniciamos en la 1
+                // Brincamos el renglón index 0 (encabezados) e iniciamos en el 1 (datos reales)
                 for (let i = 1; i < filas.length; i++) {
                     const row = filas[i];
                     if (!row || !row.c) continue;
                     
                     const titulo = leerCelda(row.c[0]);
-                    // Si el renglón no tiene un título escrito, lo saltamos por limpieza
                     if (!titulo || titulo.trim() === "") continue;
 
                     const desc = leerCelda(row.c[1]) || 'Descarga esta herramienta práctica.';
@@ -157,7 +154,6 @@
                     grid.appendChild(card);
                 }
 
-                // Validación final por si se filtraron puros renglones vacíos
                 if (grid.innerHTML === "") {
                     grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente más recursos gratuitos.</p>`;
                 }
