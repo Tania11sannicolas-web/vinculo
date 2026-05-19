@@ -8,7 +8,7 @@
 </head>
 <body>
     <script>
-        // Forzamos el modo manual
+        // Modo manual activado
         window.CMS_MANUAL_INIT = true;
     </script>
     
@@ -21,7 +21,6 @@
                     name: "github",
                     repo: "Tania11sannicolas-web/vinculo-web",
                     branch: "main",
-                    // TRUCO DE MAGIA: Desciframos tu token clásico en tiempo real de forma segura
                     token: atob("Z2hwXzlPQmRpRjZQdlprc3FheHB2UEltU2lIaFNnekh0czMySnVPdQ==")
                 },
                 media_folder: "imagenes",
@@ -30,7 +29,7 @@
                     {
                         name: "blog",
                         label: "📝 Entradas del Blog",
-                        folder: "blog",
+                        folder: "/blog", // Agregamos diagonal para asegurar ruta raíz
                         create: true,
                         slug: "{{year}}-{{month}}-{{day}}-{{slug}}",
                         fields: [
@@ -44,7 +43,7 @@
                     {
                         name: "recursos",
                         label: "🎁 Recursos Gratuitos",
-                        folder: "recursos",
+                        folder: "/recursos", // Agregamos diagonal para asegurar ruta raíz
                         create: true,
                         slug: "recurso-{{slug}}",
                         fields: [
