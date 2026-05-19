@@ -8,23 +8,23 @@
 </head>
 <body>
     <script>
-        // Indicamos al CMS que use la inicialización manual por código
+        // Forzamos el modo manual y el puente local directo
         window.CMS_MANUAL_INIT = true;
     </script>
     
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
     <script>
-        // Inicializamos el panel amarrado a tu GitHub usando flujo seguro implícito
         CMS.init({
             config: {
+                // Usamos la configuración de pasarela abierta autorizada por Cloudflare
                 backend: {
-                    name: "github",
-                    repo: "Tania11sannicolas-web/vinculo-web",
-                    branch: "main",
-                    auth_type: "implicit"
+                    name: "git-gateway",
+                    branch: "main"
                 },
-                local_backend: true,
+                local_backend: {
+                    allowed_hosts: ["127.0.0.1", "localhost", "vinculo.tania11sannicolas.workers.dev"]
+                },
                 media_folder: "imagenes",
                 public_folder: "imagenes",
                 collections: [
