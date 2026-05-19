@@ -116,7 +116,6 @@
                 }
 
                 filas.forEach((row, index) => {
-                    // Si el renglón está totalmente vacío de datos, nos lo saltamos
                     if (!row || !row.c) return; 
                     
                     const idFila = index + 2; 
@@ -132,13 +131,13 @@
                         <div class="post-body">
                             <div>
                                 <span class="post-meta">${fecha} | Desarrollo Social</span>
-                                <h3><a href="./articulo.html?id=${idFila}">${titulo}</a></h3>
-                                <p>${resumen}</p>
+                                <h3><a href="articulo?id=${idFila}">${titulo}</a></h3>
                             </div>
-                            <a href="./articulo.html?id=${idFila}" class="link-leer">Leer artículo <span>→</span></a>
+                            <a href="articulo?id=${idFila}" class="link-leer">Leer artículo <span>→</span></a>
                         </div>
                     `;
                     grid.appendChild(card);
+            
                 });
 
             } catch (error) {
