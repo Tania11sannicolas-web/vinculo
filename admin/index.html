@@ -129,7 +129,7 @@
         // ========================================================
         // ⚠️ RECUERDA PONER AQUÍ TUS DOS URL DE APPS SCRIPT:
         const URL_SCRIPT_BLOG = 'https://script.google.com/macros/s/AKfycbw2eu8XM2I1sGi9SeHd_oVLc6LI_VYCwj2jQfdGZsSFEoe4oeJV1eubQkDgHSLrEd1u/exec';
-        const URL_SCRIPT_RECURSOS = 'https://script.google.com/macros/s/AKfycby0lkqUiif0xqLtY99skoaJAjh4uVX7zU5Ll9wsguRXzIAovaoikBvAINIhqlVBl5AqPQ/exec';
+        const URL_SCRIPT_RECURSOS = 'https://script.google.com/macros/s/AKfycbzVSM_WxVDapKmEEQhbLWPaXRoD_1bjbIrcYvOjWpnh9bvNIWMEdN0W2j_OAllXcsEIRg/exec';
         // ========================================================
 
         const BLOG_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY'; 
@@ -295,7 +295,6 @@
             const rowId = document.getElementById('formRowId').value;
             const urlDestino = (tipo === 'blog') ? URL_SCRIPT_BLOG : URL_SCRIPT_RECURSOS;
 
-            // FIX DE ORO: Mapeo exacto de variables dinámicas según el tipo de formulario
             const payload = {
                 tipo: tipo,
                 action: rowId ? "edit" : "create",
@@ -325,6 +324,17 @@
         async function borrarFilaDefinitivamente(tipo, rowId) {
             if (!confirm(`¿Borrar fila permanente de ${tipo}?`)) return;
             const urlDestino = (tipo === 'blog') ? URL_SCRIPT_BLOG : URL_SCRIPT_RECURSOS;
+            
+            // FIX DEFINITIVO: Extraer el título exacto desde el caché local para mandárselo a Google
+            let tituloABorrar = "";
+            try {
+                const cacheIndex = rowId - 2;
+                if (tipo === 'blog' && cacheBlog[cacheIndex]) {
+                    tituloABorrar = cacheBlog[cacheIndex].c[0].v;
+                } else if (tipo === 'recurso' && cacheRecursos[cacheIndex]) {
+                    tituloABorrar = cacheRecursos[cacheIndex].c[0].v;
+                }
+            } catch(err) { console.error("Error obteniendo título del caché", err); }
 
             try {
                 document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">Eliminando...</td></tr>`;
@@ -332,9 +342,9 @@
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ tipo: tipo, action: "delete", rowId: rowId })
+                    body: JSON.stringify({ tipo: tipo, action: "delete", rowId: rowId, titulo: tituloABorrar })
                 });
-                setTimeout(() => { inicializarDashboard(); alert("¡Removido!"); }, 2000);
+                setTimeout(() => { inicializarDashboard(); alert("¡Removido exitosamente del Drive!"); }, 2000);
             } catch (e) { inicializarDashboard(); }
         }
     </script>
