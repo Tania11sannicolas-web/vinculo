@@ -19,41 +19,41 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
         
-        /* NAVBAR */
+        /* NAVBAR HOMOLOGADO CENTRALIZADO */
         header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
         .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; color: var(--oscuro); }
         .logo span { color: var(--naranja); }
-        nav a { margin-left: 30px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
+        nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
         nav a:hover, nav a.active { color: var(--naranja); }
         
         /* HEADER DE SECCIÓN */
         .section-header { background-color: var(--fondo-claro); padding: 80px 8%; text-align: center; }
         .section-header span { color: var(--naranja); font-weight: 700; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; }
         .section-header h1 { font-size: 40px; font-weight: 700; margin: 10px 0 20px 0; letter-spacing: -1px; }
-        .section-header p { color: var(--texto); font-size: 18px; max-width: 700px; margin: 0 auto; }
+        .section-header p { color: var(--texto); font-size: 18px; max-width: 750px; margin: 0 auto; }
 
         /* GRID DE SERVICIOS */
         .servicios-container { padding: 80px 8%; }
-        .grid-servicios { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
+        .grid-servicios { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
         
         .card-servicio { background: var(--blanco); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.04); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; }
         .card-servicio:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(255, 122, 0, 0.05); border-color: rgba(255, 122, 0, 0.1); }
         
         .badge-numero { background-color: rgba(255, 122, 0, 0.1); color: var(--naranja); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 700; font-size: 14px; margin-bottom: 20px; }
-        .card-servicio h3 { font-size: 22px; font-weight: 700; margin-bottom: 15px; color: var(--oscuro); }
-        .card-servicio p { color: var(--texto); font-size: 15px; margin-bottom: 20px; flex-grow: 1; }
+        .card-servicio h3 { font-size: 21px; font-weight: 700; margin-bottom: 15px; color: var(--oscuro); line-height: 1.3; }
+        .card-servicio p { color: var(--texto); font-size: 14.5px; margin-bottom: 20px; flex-grow: 1; }
         
-        .lista-detalles { list-style: none; margin-bottom: 25px; }
-        .lista-detalles li { font-size: 14px; color: var(--texto); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-        .lista-detalles li::before { content: "✓"; color: var(--naranja); font-weight: 700; }
+        .lista-detalles { list-style: none; margin-bottom: 25px; border-top: 1px solid rgba(0,0,0,0.04); padding-top: 15px; }
+        .lista-detalles li { font-size: 14px; color: var(--texto); margin-bottom: 10px; display: flex; align-items: flex-start; gap: 8px; line-height: 1.4; }
+        .lista-detalles li::before { content: "✓"; color: var(--naranja); font-weight: 700; margin-top: 1px; }
 
         /* BANNER DE RECURSOS (CTA DESTACADO) */
-        .cta-recursos { background: var(--oscuro); color: var(--blanco); padding: 70px 8%; text-align: center; border-radius: 24px; max-width: 1200px; margin: 40px auto; }
+        .cta-recursos { background: var(--oscuro); color: var(--blanco); padding: 70px 8%; text-align: center; border-radius: 24px; max-width: 1200px; margin: 40px auto; box-shadow: 0 15px 40px rgba(0,0,0,0.05); }
         .cta-recursos h3 { font-size: 32px; font-weight: 700; margin-bottom: 15px; }
         .cta-recursos p { color: #aaaaaa; font-size: 16px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; }
         
-        .btn { background-color: var(--naranja); color: var(--blanco); padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(255, 122, 0, 0.2); border: none; font-size: 16px; }
-        .btn:hover { background-color: var(--naranja-hover); transform: translateY(-3px); }
+        .btn { background-color: var(--naranja); color: var(--blanco); padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(255, 122, 0, 0.2); border: none; font-size: 16px; text-align: center; }
+        .btn:hover { background-color: var(--naranja-hover); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(255, 122, 0, 0.3); }
 
         footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; border-top: 1px solid #2a2a2a; }
         footer a { color: var(--naranja); text-decoration: none; margin: 0 10px; }
@@ -76,15 +76,16 @@
             <a href="nosotros.html">Nosotros</a>
             <a href="osc.html" class="active">Para OSC</a>
             <a href="empresas.html">Para Empresas</a>
-            <a href="blog.html">Blog / Recursos</a>
+            <a href="recursos.html">Recursos Gratuitos</a>
+            <a href="blog.html">Blog</a>
             <a href="index.html#contacto">Contacto</a>
         </nav>
     </header>
 
     <section class="section-header">
-        <span>Acompañamiento Institucional</span>
-        <h1>Soluciones para Organizaciones Sociales</h1>
-        <p>Sé perfectamente el esfuerzo gigante que implica mantener viva una causa. Por eso, no te ofrezco manuales teóricos; me pongo la camiseta contigo para profesionalizar tu estructura y asegurar el futuro de tu impacto.</p>
+        <span>Acompañamiento Institucional de Fondo</span>
+        <h1>Soluciones para Organizaciones de la Sociedad Civil</h1>
+        <p>Acompañamos la transformación de las organizaciones sociales hacia modelos sostenibles, eficientes y con un impacto social verificable. Co-creamos herramientas prácticas que protegen tu causa e impulsan tu misión en el tiempo.</p>
     </section>
 
     <section class="servicios-container">
@@ -94,70 +95,105 @@
                 <div>
                     <div class="badge-numero">01</div>
                     <h3>Fortalecimiento Organizacional Estratégico</h3>
-                    <p>Ordenamos la casa por dentro. Te ayudo a profesionalizar tu gestión interna para incrementar la legitimidad de tu OSC y garantizar que sea sostenible en el tiempo.</p>
+                    <p>Ordenamos la estructura interna de tu organización mediante un diagnóstico y diseño operativo que robustece el funcionamiento relacional y directivo.</p>
                     <ul class="lista-detalles">
-                        <li>Diagnóstico institucional completo</li>
-                        <li>Planes estratégicos a la medida de tu misión</li>
-                        <li>Modelos de gobernanza y juntas directivas funcionales</li>
+                        <li>Realización de un diagnóstico organizacional completo y estructural</li>
+                        <li>Diseño de planes estratégicos multianuales alineados a la misión</li>
+                        <li>Estructuración de manuales operativos y delimitación clara de puestos</li>
+                        <li>Modelos de gobernanza eficientes y asambleas institucionales funcionales</li>
                     </ul>
                 </div>
-                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Me interesa este pilar</a>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
             </div>
 
             <div class="card-servicio">
                 <div>
                     <div class="badge-numero">02</div>
                     <h3>Gestión de Proyectos de Impacto Social</h3>
-                    <p>Elevamos las capacidades técnicas de tu equipo en el diseño, monitoreo y evaluación de programas sociales con un enfoque estricto en resultados comprobables.</p>
+                    <p>Estructuramos técnicamente los programas sociales de tu OSC bajo enfoques metodológicos rigurosos orientados al monitoreo y la comprobación de resultados.</p>
                     <ul class="lista-detalles">
-                        <li>Modelos de intervención basados en evidencia</li>
-                        <li>Formulación técnica de proyectos sociales</li>
-                        <li>Diseño de indicadores y sistemas de monitoreo</li>
+                        <li>Diseño de modelos de intervención basados en metodologías de evidencia</li>
+                        <li>Formulación técnica de proyectos para convocatorias nacionales y globales</li>
+                        <li>Desarrollo de matrices de indicadores de impacto y metas claras</li>
+                        <li>Diseño e implementación de sistemas de monitoreo y evaluación continua</li>
                     </ul>
                 </div>
-                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Me interesa este pilar</a>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
             </div>
 
             <div class="card-servicio">
                 <div>
                     <div class="badge-numero">03</div>
-                    <h3>Procuración de Fondos y Alianzas</h3>
-                    <p>No dependas de una sola fuente. Diseñamos juntos una estrategia para diversificar tus ingresos y conectar con los aliados correctos a nivel nacional e internacional.</p>
+                    <h3>Estrategia de Procuración de Fondos y Alianzas</h3>
+                    <p>Diversificamos tus ingresos institucionales diseñando planes sustentables de captación económica para que la causa no dependa de un único donante.</p>
                     <ul class="lista-detalles">
-                        <li>Mapeo estratégico de donantes potenciales</li>
-                        <li>Estrategias efectivas de recaudación de fondos</li>
-                        <li>Diseño de campañas de fondeo institucional</li>
+                        <li>Mapeo estratégico de donantes corporativos, fundaciones e internacionales</li>
+                        <li>Elaboración del plan institucional anual de procuración de fondos</li>
+                        <li>Diseño y conceptualización de campañas de fondeo y eventos de impacto</li>
+                        <li>Estrategias de vinculación y retención a largo plazo con aliados clave</li>
                     </ul>
                 </div>
-                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Me interesa este pilar</a>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
             </div>
 
             <div class="card-servicio">
                 <div>
                     <div class="badge-numero">04</div>
-                    <h3>Programas de Voluntariado Estructurados</h3>
-                    <p>Transforma el entusiasmo de la gente en una fuerza organizada. Diseñamos un programa de voluntariado formal con reglas y objetivos claros.</p>
+                    <h3>Estructuración de Programas de Voluntariado</h3>
+                    <p>Canalizamos el entusiasmo comunitario en una fuerza operativa estructurada, disminuyendo la rotación y aumentando el compromiso real del equipo de voluntarios.</p>
                     <ul class="lista-detalles">
-                        <li>Creación de manuales operativos de voluntariado</li>
-                        <li>Mecanismos de convocatoria y seguimiento</li>
-                        <li>Estrategias de retención y reconocimiento</li>
+                        <li>Desarrollo integral del manual operativo para el área de voluntariado</li>
+                        <li>Establecimiento de mecanismos técnicos de convocatoria y selección</li>
+                        <li>Estrategias formativas de seguimiento, inducción y retención</li>
+                        <li>Modelos de evaluación de desempeño y sistemas de reconocimiento</li>
                     </ul>
                 </div>
-                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Me interesa este pilar</a>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
             </div>
 
             <div class="card-servicio">
                 <div>
                     <div class="badge-numero">05</div>
-                    <h3>Atracción de Talento Especializado</h3>
-                    <p>Te ayudo a identificar, seleccionar e inducir a los profesionales idóneos que robustecerán tu área de desarrollo institucional y recaudación.</p>
+                    <h3>Atracción de Talento para Desarrollo Institucional</h3>
+                    <p>Identificamos y seleccionamos a los perfiles profesionales adecuados para potenciar las áreas de recaudación de fondos y comunicación institucional de tu OSC.</p>
                     <ul class="lista-detalles">
-                        <li>Elaboración de perfiles de puesto clave</li>
-                        <li>Filtros técnicos y entrevistas por competencias</li>
-                        <li>Acompañamiento en el proceso de inducción</li>
+                        <li>Elaboración técnica del perfil de puesto según tus retos operativos</li>
+                        <li>Coordinación de los procesos de reclutamiento y búsquedas focalizadas</li>
+                        <li>Aplicación de filtros evaluativos técnicos y entrevistas por competencias</li>
+                        <li>Acompañamiento en los procesos iniciales de inducción e integración al cargo</li>
                     </ul>
                 </div>
-                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Me interesa este pilar</a>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
+            </div>
+
+            <div class="card-servicio">
+                <div>
+                    <div class="badge-numero">06</div>
+                    <h3>Acompañamiento Sistémico Relacional para Líderes sociales</h3>
+                    <p>Abordamos de raíz los desórdenes internos y los bloqueos relacionales crónicos que merman el desempeño de los equipos operativos y directivos en las OSC.</p>
+                    <ul class="lista-detalles">
+                        <li>Mapeo relacional profundo mediante metodologías de representación espacial</li>
+                        <li>Identificación de lealtades invisibles, fatiga por compasión y desgaste de liderazgo</li>
+                        <li>Sesiones de intervención focalizada para desatar bloqueos en la toma de decisiones</li>
+                        <li>Modelos de contención humana para directores, fundadores y patronatos</li>
+                    </ul>
+                </div>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
+            </div>
+
+            <div class="card-servicio">
+                <div>
+                    <div class="badge-numero">07</div>
+                    <h3>Modelos de Buen Gobierno y Cumplimiento Regulatorio</h3>
+                    <p>Preparamos institucionalmente a tu organización para auditorías externas, incrementando tus niveles de transparencia y legitimidad en el ecosistema.</p>
+                    <ul class="lista-detalles">
+                        <li>Estructuración de políticas internas de transparencia y códigos de ética</li>
+                        <li>Alineación con manuales e indicadores de debida diligencia institucional</li>
+                        <li>Profesionalización del Consejo Directivo y delimitación de roles con Dirección</li>
+                        <li>Estrategias de cumplimiento normativo técnico para donatarias autorizadas</li>
+                    </ul>
+                </div>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
             </div>
 
         </div>
@@ -166,7 +202,7 @@
     <section class="cta-recursos">
         <h3>¿Quieres herramientas listas para usar?</h3>
         <p>En nuestra sección de recursos compartimos constantemente guías prácticas sobre convocatorias, procuración de fondos y plantillas de planeación completamente gratis.</p>
-        <a href="blog.html" class="btn">Explorar Recursos Gratuitos</a>
+        <a href="recursos.html" class="btn">Explorar Recursos Gratuitos</a>
     </section>
 
     <footer>
