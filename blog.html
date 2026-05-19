@@ -19,7 +19,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
         
-        /* NAVBAR */
+        /* NAVBAR HOMOLOGADO CENTRALIZADO */
         header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
         .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; color: var(--oscuro); }
         .logo span { color: var(--naranja); }
@@ -40,15 +40,13 @@
         .card-post:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.04); }
         .post-image { height: 200px; background-size: cover; background-position: center; background-color: #eee; }
         
-        .post-body { padding: 30px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .post-body { padding: 30px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 240px; }
         .post-meta { font-size: 13px; color: var(--naranja); font-weight: 600; margin-bottom: 10px; }
         .post-body h3 { font-size: 20px; font-weight: 700; margin-bottom: 12px; line-height: 1.4; }
         .post-body h3 a { text-decoration: none; color: var(--oscuro); transition: color 0.3s; }
         .post-body h3 a:hover { color: var(--naranja); }
         .post-body p { color: var(--texto); font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
         .link-leer { color: #FF7A00; text-decoration: none; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; }
-
-        .btn { background-color: var(--naranja); color: var(--blanco); padding: 14px 24px; border-radius: 10px; text-decoration: none; font-weight: 700; border: none; cursor: pointer; font-size: 14px; display: inline-block; }
 
         footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; margin-top: 60px; }
         footer a { color: var(--naranja); text-decoration: none; margin: 0 10px; }
@@ -96,7 +94,8 @@
             <a href="#">LinkedIn</a> | <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | <a href="https://wa.me/525532004855">WhatsApp</a>
         </div>
     </footer>
-<script>
+
+    <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const grid = document.querySelector('.blog-grid');
             const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
@@ -115,11 +114,16 @@
                     return;
                 }
 
-                filas.forEach((row, index) => {
-                    if (!row || !row.c) return; 
+                // Invertimos las filas para que los artículos recientes salgan arriba primero
+                const filasCronologicas = [...filas].reverse();
+
+                filasCronologicas.forEach((row, index) => {
+                    if (!row || !row.c || !row.c[0]) return; 
                     
-                    const idFila = index + 2; 
-                    const titulo = (row.c[0] && row.c[0].v) ? row.c[0].v : 'Artículo sin título';
+                    // Calculamos el ID real de la fila en Google Sheets revirtiendo el índice invertido
+                    const idFila = filas.length - index + 1; 
+                    
+                    const titulo = row.c[0].v ? row.c[0].v : 'Artículo sin título';
                     const fecha = (row.c[1] && row.c[1].v) ? row.c[1].v : 'Reciente';
                     const resumen = (row.c[2] && row.c[2].v) ? row.c[2].v : 'Haz clic abajo para leer esta nota completa...';
                     const imagen = (row.c[3] && row.c[3].v) ? row.c[3].v : 'https://via.placeholder.com/400x200';
@@ -130,17 +134,18 @@
                         <div class="post-image" style="background-image: url('${imagen}');"></div>
                         <div class="post-body">
                             <div>
-                                <span class="post-meta">${fecha} | Desarrollo Social</span>
-                                <h3><a href="articulo?id=${idFila}">${titulo}</a></h3>
+                                <span class="post-meta">${fecha} | Conocimiento Compartido</span>
+                                <h3><a href="articulo.html?id=${idFila}">${titulo}</a></h3>
+                                <p>${resumen}</p>
                             </div>
-                            <a href="articulo?id=${idFila}" class="link-leer">Leer artículo <span>→</span></a>
+                            <a href="articulo.html?id=${idFila}" class="link-leer">Leer artículo <span>→</span></a>
                         </div>
                     `;
                     grid.appendChild(card);
-            
                 });
 
             } catch (error) {
+                console.error(error);
                 grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos cargar los artículos del blog en este momento.</p>`;
             }
         });
