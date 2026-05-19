@@ -6,8 +6,6 @@
     <title>VÍNCULO | Estrategia Humana para Proyectos con Impacto</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
     <style>
         :root {
             --naranja: #FF7A00;
@@ -194,51 +192,50 @@
     <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const gridHome = document.querySelector('.blog-home-grid');
-            const urlBase = "https://resplendent-syrniki-662e52.netlify.app";
+            const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
+            const urlBlog = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Blog`;
             
             try {
-                const nombreNota = "2026-05-18-entrada-de-prueba.md"; 
-                const res = await fetch(`${urlBase}/blog/${nombreNota}`);
-                if (!res.ok) throw new Error();
+                const res = await fetch(urlBlog);
+                const text = await res.text();
+                const data = JSON.parse(text.substr(47).slice(0, -2));
+                const filas = data.table.rows.slice(1);
                 
-                const texto = await res.text(); // CORREGIDO AQUÍ (Eliminado .res duplicado)
                 gridHome.innerHTML = ""; 
 
-                const lineas = texto.split('\n');
-                const meta = { title: "Entrada de Prueba", image: "", description: "" };
-                let enMeta = false;
-                for (let l of lineas) {
-                    if (l.trim() === '---') { enMeta = !enMeta; continue; }
-                    if (enMeta) {
-                        const p = l.split(':');
-                        if (p.length >= 2) {
-                            const llave = p[0].trim().toLowerCase();
-                            const valor = p.slice(1).join(':').trim().replace(/['"]/g, '');
-                            if (llave === 'title') meta.title = valor;
-                            if (llave === 'image') meta.image = valor;
-                            if (llave === 'description' || llave === 'resumen') meta.description = valor;
-                        }
-                    }
+                if (filas.length === 0) {
+                    gridHome.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>Próximamente más publicaciones.</p>";
+                    return;
                 }
 
-                if (meta.image && !meta.image.startsWith('http')) {
-                    meta.image = `${urlBase}/${meta.image}`;
-                }
+                // Tomamos únicamente los 3 artículos más recientes (los últimos de la tabla)
+                const ultimasFilas = filas.reverse().slice(0, 3);
 
-                const art = document.createElement('div');
-                art.style.cssText = "background: #FFFFFF; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 25px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.02);";
-                art.innerHTML = `
-                    <div style="height: 180px; background-image: url('${meta.image || 'https://via.placeholder.com/400x200'}'); background-size: cover; background-position: center;"></div>
-                    <div style="padding: 25px 25px 10px 25px;">
-                        <span style="font-size: 12px; color: #FF7A00; font-weight: 600;">Blog Reciente</span>
-                        <h3 style="font-size: 18px; font-weight: 700; margin: 10px 0; line-height: 1.4; color: #1A1A1A;">${meta.title}</h3>
-                        <p style="color: #4A4A4A; font-size: 14px; line-height: 1.5; margin-bottom: 15px;">${meta.description || 'Haz clic para leer la nota completa...'}</p>
-                    </div>
-                    <a href="articulo.html?nota=${nombreNota}" style="color: #FF7A00; text-decoration: none; font-weight: 700; font-size: 14px; margin-left: 25px;">Leer nota →</a>
-                `;
-                gridHome.appendChild(art);
+                ultimasFilas.forEach((row, index) => {
+                    if(!row.c[0]) return;
+                    
+                    // Calculamos su ID original restaurando el índice invertido
+                    const idFila = filas.length - index + 1;
+                    const titulo = row.c[0] ? row.c[0].v : 'Artículo sin título';
+                    const resumen = row.c[2] ? row.c[2].v : 'Haz clic para leer la nota completa...';
+                    const imagen = row.c[3] ? row.c[3].v : 'https://via.placeholder.com/400x200';
+
+                    const art = document.createElement('div');
+                    art.style.cssText = "background: #FFFFFF; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 25px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.02);";
+                    art.innerHTML = `
+                        <div style="height: 180px; background-image: url('${imagen}'); background-size: cover; background-position: center;"></div>
+                        <div style="padding: 25px 25px 10px 25px;">
+                            <span style="font-size: 12px; color: #FF7A00; font-weight: 600;">Blog Reciente</span>
+                            <h3 style="font-size: 18px; font-weight: 700; margin: 10px 0; line-height: 1.4; color: #1A1A1A;">${titulo}</h3>
+                            <p style="color: #4A4A4A; font-size: 14px; line-height: 1.5; margin-bottom: 15px;">${resumen}</p>
+                        </div>
+                        <a href="articulo.html?id=${idFila}" style="color: #FF7A00; text-decoration: none; font-weight: 700; font-size: 14px; margin-left: 25px;">Leer nota →</a>
+                    `;
+                    gridHome.appendChild(art);
+                });
+
             } catch (e) {
-                gridHome.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>¡Blog conectado! Visita la sección de Blog para conocer las notas.</p>";
+                gridHome.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>No se pudieron cargar las novedades del blog.</p>";
             }
         });
     </script>
