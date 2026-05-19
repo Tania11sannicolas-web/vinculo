@@ -34,7 +34,7 @@
         <div class="row mb-4">
             <div class="col-12 text-center text-md-start">
                 <h2 class="header-title">¡Hola, Tania y Mayra! 👋</h2>
-                <p class="text-muted">Ecosistema de administración directa. Desde aquí pueden publicar y editar contenido visual en tiempo real para el Blog y Recursos sin tocar bases de datos.</p>
+                <p class="text-muted">Ecosistema de administración directa. Desde aquí pueden publicar, editar y eliminar contenido visual en tiempo real para el Blog y Recursos sin tocar las bases de datos.</p>
             </div>
         </div>
 
@@ -74,7 +74,7 @@
                                 <th>Título / Nombre</th>
                                 <th>Identificador</th>
                                 <th>Detalles del contenido</th>
-                                <th class="text-center">Acciones</th>
+                                <th class="text-center" style="width: 220px;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-contenidos">
@@ -109,7 +109,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Imagen de Portada (Subir desde dispositivo)</label>
                             <input type="file" class="form-control" id="formFile" accept="image/*" onchange="procesarArchivoImagen()">
-                            <div class="form-text text-muted">Deja este campo vacío si vas a editar y quieres conservar la foto actual.</div>
+                            <div class="form-text text-muted">Deja este campo vacío si vas a editar y deseas conservar la foto actual.</div>
                         </div>
 
                         <div class="mb-3">
@@ -130,7 +130,7 @@
     <script>
         // ========================================================
         // ⚠️ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT COMPLETA:
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCvq33hdIZ1MWoqNWYPLN-Yamvjwg_RuDJDgrVh6msMnRNHJg-IhAu0MyazC_u9eKV/exec';
+        const APPS_SCRIPT_URL = 'AQUÍ_PEGA_TU_URL_DE_EXEC';
         // ========================================================
 
         const BLOG_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY'; 
@@ -141,7 +141,6 @@
         let stringArchivoBase64 = "", nombreArchivoImagen = "";
         let myModal;
 
-        // Inicialización inmediata de la interfaz para que funcionen los botones pase lo que pase
         document.addEventListener("DOMContentLoaded", function() {
             myModal = new bootstrap.Modal(document.getElementById('formModal'));
             inicializarDashboard();
@@ -156,7 +155,6 @@
                     </td>
                 </tr>`;
             
-            // Disparamos las dos consultas al mismo tiempo sin que se estorben entre sí
             Promise.all([cargarNotasBlog(), cargarHerramientasRecursos()]).then(() => {
                 const filaEspera = document.getElementById('fila-carga-espera');
                 if (filaEspera) filaEspera.remove();
@@ -187,7 +185,8 @@
                             <td class="text-muted small">${row.c[1] ? row.c[1].v : '-'}</td>
                             <td class="text-truncate" style="max-width:250px;">${row.c[2] ? row.c[2].v : ''}</td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cargarFilaParaEdicion('blog', ${rId})"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="cargarFilaParaEdicion('blog', ${rId})"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('blog', ${rId})"><i class="fa-solid fa-trash"></i> Borrar</button>
                             </td>
                         </tr>`;
                 });
@@ -215,7 +214,8 @@
                             <td class="text-muted small">Brevo ID: ${row.c[4] ? row.c[4].v : '-'}</td>
                             <td class="text-truncate" style="max-width:250px;">${row.c[1] ? row.c[1].v : ''}</td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cargarFilaParaEdicion('recurso', ${rId})"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="cargarFilaParaEdicion('recurso', ${rId})"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('recurso', ${rId})"><i class="fa-solid fa-trash"></i> Borrar</button>
                             </td>
                         </tr>`;
                 });
@@ -256,7 +256,7 @@
             abrirModal(tipo);
             document.getElementById('formRowId').value = rowId;
             document.getElementById('btnGuardar').innerText = "Guardar Cambios Editados";
-            document.getElementById('modalTitle').innerText = `✏️ Editando Fila #${rowId} de Contenidos`;
+            document.getElementById('modalTitle').innerText = `✏️ Editando Fila #${rowId} de ${tipo === 'blog' ? 'Blog' : 'Recursos'}`;
 
             const cacheIndex = rowId - 2;
             if (tipo === 'blog') {
@@ -321,7 +321,7 @@
                 setTimeout(() => {
                     myModal.hide();
                     inicializarDashboard();
-                    alert("¡Ecosistema VÍNCULO actualizado con éxito! Revisa la web pública en 10 segundos.");
+                    alert("¡Ecosistema VÍNCULO actualizado con éxito! Cambios reflejados en 10 segundos.");
                 }, 2000);
 
             } catch (e) {
@@ -329,6 +329,44 @@
                 alert("Ocurrió un inconveniente al inyectar los datos.");
                 btn.disabled = false;
                 btn.innerText = btnOriginalText;
+            }
+        }
+
+        async function borrarFilaDefinitivamente(tipo, rowId) {
+            const confirmar = confirm(`¿Estás completamente segura de borrar este elemento de forma permanente en las listas de Google Sheets? Esta acción no se puede deshacer.`);
+            if (!confirmar) return;
+
+            const payload = {
+                tipo: tipo,
+                action: "delete",
+                rowId: rowId
+            };
+
+            try {
+                document.getElementById('tabla-contenidos').innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-danger py-4">
+                            <div class="spinner-border spinner-border-sm text-danger me-2" role="status"></div>
+                            Eliminando renglón e indexando bases de datos de Google...
+                        </td>
+                    </tr>`;
+
+                await fetch(APPS_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                setTimeout(() => {
+                    inicializarDashboard();
+                    alert("¡Elemento removido con éxito de la base de datos!");
+                }, 2000);
+
+            } catch (e) {
+                console.error("Error al borrar:", e);
+                alert("No se pudo completar la eliminación.");
+                inicializarDashboard();
             }
         }
     </script>
