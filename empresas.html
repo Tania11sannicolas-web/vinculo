@@ -19,11 +19,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
         
-        /* NAVBAR */
+        /* NAVBAR HOMOLOGADO CENTRALIZADO */
         header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
         .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; color: var(--oscuro); }
         .logo span { color: var(--naranja); }
-        nav a { margin-left: 30px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
+        nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
         nav a:hover, nav a.active { color: var(--naranja); }
         
         /* HEADER DE SECCIÓN */
@@ -32,20 +32,20 @@
         .section-header h1 { font-size: 40px; font-weight: 700; margin: 10px 0 20px 0; letter-spacing: -1px; }
         .section-header p { color: var(--texto); font-size: 18px; max-width: 750px; margin: 0 auto; }
 
-        /* GRID DE SERVICIOS CORPORATIVOS */
+        /* GRID DE SERVICIOS CORPORATIVOS ACCESIBLES */
         .servicios-container { padding: 80px 8%; }
-        .grid-servicios { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
+        .grid-servicios { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
         
         .card-servicio { background: var(--blanco); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.04); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; }
         .card-servicio:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(255, 122, 0, 0.05); border-color: rgba(255, 122, 0, 0.1); }
         
         .badge-numero { background-color: rgba(255, 122, 0, 0.1); color: var(--naranja); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 700; font-size: 14px; margin-bottom: 20px; }
-        .card-servicio h3 { font-size: 22px; font-weight: 700; margin-bottom: 15px; color: var(--oscuro); }
-        .card-servicio p { color: var(--texto); font-size: 15px; margin-bottom: 20px; flex-grow: 1; }
+        .card-servicio h3 { font-size: 21px; font-weight: 700; margin-bottom: 15px; color: var(--oscuro); line-height: 1.3; }
+        .card-servicio p { color: var(--texto); font-size: 14.5px; margin-bottom: 20px; flex-grow: 1; }
         
-        .lista-detalles { list-style: none; margin-bottom: 25px; }
-        .lista-detalles li { font-size: 14px; color: var(--texto); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-        .lista-detalles li::before { content: "✓"; color: var(--naranja); font-weight: 700; }
+        .lista-detalles { list-style: none; margin-bottom: 25px; border-top: 1px solid rgba(0,0,0,0.04); padding-top: 15px; }
+        .lista-detalles li { font-size: 14px; color: var(--texto); margin-bottom: 10px; display: flex; align-items: flex-start; gap: 8px; line-height: 1.4; }
+        .lista-detalles li::before { content: "✓"; color: var(--naranja); font-weight: 700; margin-top: 1px; }
 
         /* CTA BANNER DIAGNÓSTICO */
         .cta-diagnostico { background: var(--oscuro); color: var(--blanco); padding: 70px 8%; text-align: center; border-radius: 24px; max-width: 1200px; margin: 40px auto; }
@@ -76,15 +76,16 @@
             <a href="nosotros.html">Nosotros</a>
             <a href="osc.html">Para OSC</a>
             <a href="empresas.html" class="active">Para Empresas</a>
-            <a href="blog.html">Blog / Recursos</a>
+            <a href="recursos.html">Recursos Gratuitos</a>
+            <a href="blog.html">Blog</a>
             <a href="index.html#contacto">Contacto</a>
         </nav>
     </header>
 
     <section class="section-header">
         <span>Evolución y Sostenibilidad Corporativa</span>
-        <h1>Soluciones con Enfoque en RSE y ESG</h1>
-        <p>Hacer negocios rentables y cuidar del entorno no son metas opuestas. Te acompaño a alinear tus operaciones con las demandas ambientales, sociales y de gobernanza actuales, convirtiendo la responsabilidad en una ventaja competitiva real.</p>
+        <h1>Soluciones con Enfoque en RSE, ESG y Sostenibilidad</h1>
+        <p>Aceleramos la evolución empresarial hacia modelos sostenibles, competitivos y socialmente responsables. Integramos la rentabilidad financiera con un impacto positivo verificado en tu entorno relacional y ambiental.</p>
     </section>
 
     <section class="servicios-container">
@@ -93,12 +94,13 @@
             <div class="card-servicio">
                 <div>
                     <div class="badge-numero">01</div>
-                    <h3>Diseño de Estrategias Sostenibles e ESG</h3>
-                    <p>Integramos la sostenibilidad directamente en tu modelo de negocio. Identificamos tus riesgos clave y los transformamos en oportunidades alineadas con marcos globales.</p>
+                    <h3>Diseño e Implementación de Estrategias de Sostenibilidad y ESG</h3>
+                    <p>Alineamos las operaciones de la empresa con los marcos de sostenibilidad e inversión globales más rigurosos, convirtiendo los criterios ESG en verdaderas ventajas competitivas.</p>
                     <ul class="lista-detalles">
-                        <li>Identificación de riesgos y oportunidades ESG estratégicas</li>
-                        <li>Definición de metas sustentables e indicadores clave</li>
-                        <li>Alineación con marcos mundiales (ODS, GRI, SASB)</li>
+                        <li>Identificación minuciosa de riesgos y oportunidades ESG materiales</li>
+                        <li>Definición de metas corporativas sustentables e indicadores clave</li>
+                        <li>Desarrollo e implementación de la hoja de ruta estratégica integral</li>
+                        <li>Posicionamiento y legitimación con inversionistas y stakeholders</li>
                     </ul>
                 </div>
                 <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Consultar este pilar</a>
@@ -107,12 +109,13 @@
             <div class="card-servicio">
                 <div>
                     <div class="badge-numero">02</div>
-                    <h3>Reportes de Sostenibilidad y Comunicación</h3>
-                    <p>Fortalecemos la reputación y transparencia de tu empresa frente a inversionistas, clientes y aliados mediante informes estructurados con rigor internacional.</p>
+                    <h3>Reportes de Sostenibilidad y Comunicación de Impacto</h3>
+                    <p>Fortalecemos la transparencia, confianza y reputación corporativa en el mercado mediante la estructuración y narrativa visual de informes de nivel internacional.</p>
                     <ul class="lista-detalles">
-                        <li>Diagnóstico y ordenamiento de la información existente</li>
-                        <li>Redacción narrativa de impacto institucional</li>
-                        <li>Estructuración bajo estándares GRI, SASB y ODS</li>
+                        <li>Diagnóstico profundo y ordenamiento de la información interna disponible</li>
+                        <li>Redacción y estructuración basada en estándares GRI, SASB y ODS</li>
+                        <li>Diseño gráfico editorial y redacción narrativa de alto impacto institucional</li>
+                        <li>Estrategias efectivas para la rendición de cuentas e informes públicos</li>
                     </ul>
                 </div>
                 <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Consultar este pilar</a>
@@ -122,11 +125,12 @@
                 <div>
                     <div class="badge-numero">03</div>
                     <h3>Consultoría Sistémica Organizacional</h3>
-                    <p>Resolvemos problemas internos de raíz. Ideal para empresas familiares o fundaciones que experimentan conflictos persistentes, bloqueos operativos o alta rotación.</p>
+                    <p>Abordamos y resolvemos problemas relacionales e institucionales internos desde la raíz. Metodología ideal para desórdenes complejos en estructuras corporativas.</p>
                     <ul class="lista-detalles">
-                        <li>Identificación de desórdenes en jerarquías y roles</li>
-                        <li>Sesiones estratégicas y dinámicas de representación espacial</li>
-                        <li>Planes de reordenamiento operativo y relacional</li>
+                        <li>Mapeo y diagnóstico con herramientas avanzadas de representación espacial</li>
+                        <li>Identificación de exclusiones, roles incongruentes y jerarquías rotas</li>
+                        <li>Intervención mediante sesiones estratégicas facilitadas (1 a 3 sesiones)</li>
+                        <li>Especial para empresas familiares o con retos en sucesión generacional</li>
                     </ul>
                 </div>
                 <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Consultar este pilar</a>
@@ -136,11 +140,42 @@
                 <div>
                     <div class="badge-numero">04</div>
                     <h3>Gestión del Cambio y Transformación Cultural</h3>
-                    <p>Acompañamos a tu organización en procesos críticos de crecimiento, fusiones o renovación de propósito, mitigando la resistencia interna.</p>
+                    <p>Acompañamos procesos críticos de transformación institucional minimizando la fricción y resistencia operativa, uniendo al talento bajo metas comunes.</p>
                     <ul class="lista-detalles">
-                        <li>Diagnóstico de cultura organizacional actual</li>
-                        <li>Talleres interactivos de liderazgo adaptativo</li>
-                        <li>Estrategias integrales de alineación y cohesión</li>
+                        <li>Diagnóstico cultural sistémico y detección de focos de resistencia</li>
+                        <li>Talleres enfocados de liderazgo adaptativo y alineación interna</li>
+                        <li>Estrategias de cohesión orientadas a la renovación de propósitos</li>
+                        <li>Acompañamiento en procesos de fusión, adquisición o alta rotación</li>
+                    </ul>
+                </div>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Consultar este pilar</a>
+            </div>
+
+            <div class="card-servicio">
+                <div>
+                    <div class="badge-numero">05</div>
+                    <h3>Inversión Social Estratégica y Alianzas con OSC</h3>
+                    <p>Diseñamos e implementamos convocatorias, fondos y vínculos estratégicos para que la inversión social comunitaria de tu empresa genere retornos sociales medibles.</p>
+                    <ul class="lista-detalles">
+                        <li>Estructuración de convocatorias públicas de inversión social</li>
+                        <li>Filtros técnicos de selección y debida diligencia para aliados (OSC)</li>
+                        <li>Monitoreo, auditoría de fondos y evaluación del impacto social</li>
+                        <li>Modelos eficientes de voluntariado corporativo estratégico</li>
+                    </ul>
+                </div>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Consultar este pilar</a>
+            </div>
+
+            <div class="card-servicio">
+                <div>
+                    <div class="badge-numero">06</div>
+                    <h3>Diagnóstico e Índices de Responsabilidad Social (RSE)</h3>
+                    <p>Evaluamos el estado de madurez de tu organización frente a distintivos y certificaciones de responsabilidad social, preparando al negocio para auditorías.</p>
+                    <ul class="lista-detalles">
+                        <li>Auditorías internas bajo normativas e índices de RSE nacionales</li>
+                        <li>Detección de brechas operativas en derechos humanos y ética</li>
+                        <li>Manuales de cumplimiento normativo y políticas anticorrupción</li>
+                        <li>Hojas de ruta de gobernanza para comités directivos de sostenibilidad</li>
                     </ul>
                 </div>
                 <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Consultar este pilar</a>
