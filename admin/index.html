@@ -139,9 +139,10 @@
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCvq33hdIZ1MWoqNWYPLN-Yamvjwg_RuDJDgrVh6msMnRNHJg-IhAu0MyazC_u9eKV/exec';
         // ========================================================
 
-        const BLOG_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
-        const RECURSOS_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo';
-        const RECURSOS_GID = '2047829696';
+        // HOJAS INDEPENDIENTES SEPARADAS CON ÉXITO
+        const BLOG_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY'; // Base de Datos - Vinculo Web
+        const RECURSOS_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo'; // Recursos - Vinculo Web
+        const RECURSOS_GID = '2047829696'; // Pestaña de Recursos Duplicada
 
         let cacheBlog = [], cacheRecursos = [];
         let stringArchivoBase64 = "", nombreArchivoImagen = "";
@@ -157,12 +158,12 @@
                 const tbody = document.getElementById('tabla-contenidos');
                 tbody.innerHTML = '';
 
-                // Lectura en vivo del Blog
+                // 1. Lectura en vivo del Blog (Busca la pestaña "Blog")
                 const resB = await fetch(`https://docs.google.com/spreadsheets/d/${BLOG_ID}/gviz/tq?tqx=out:json&sheet=Blog`);
                 const textB = await resB.text();
                 cacheBlog = JSON.parse(textB.substr(47).slice(0, -2)).table.rows.slice(1);
 
-                // Lectura en vivo de Recursos
+                // 2. Lectura en vivo de Recursos (Busca su ID de hoja propio y el GID correcto)
                 const resR = await fetch(`https://docs.google.com/spreadsheets/d/${RECURSOS_ID}/gviz/tq?tqx=out:json&gid=${RECURSOS_GID}`);
                 const textR = await resR.text();
                 cacheRecursos = JSON.parse(textR.substr(47).slice(0, -2)).table.rows.slice(1);
@@ -206,7 +207,7 @@
 
             } catch (e) {
                 console.error(e);
-                document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center text-danger py-3">Error al actualizar la vista.</td></tr>`;
+                document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center text-danger py-3">Error al sincronizar con las bases de datos de Google.</td></tr>`;
             }
         }
 
@@ -299,12 +300,11 @@
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: "POST",
-                    mode: "no-cors", // Evita bloqueos de políticas CORS entre servidores ajenos
+                    mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
 
-                // Al usar no-cors no podemos inspeccionar la respuesta del json, pero forzamos el refresco exitoso
                 setTimeout(() => {
                     bsModal.hide();
                     cargarDashboardGlobal();
