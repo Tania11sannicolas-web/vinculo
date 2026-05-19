@@ -14,8 +14,8 @@
         .table { background: #fff; border-radius: 12px; overflow: hidden; }
         .badge-blog { background-color: #3498db; color: white; }
         .badge-recurso { background-color: #2ecc71; color: white; }
-        .btn-orange { background-color: #FF7A00; color: white; font-weight: 600; }
-        .btn-orange:hover { background-color: #E06B00; color: white; }
+        .btn-orange { background-color: #FF7A00 !important; color: white !important; font-weight: 600; opacity: 1 !important; }
+        .btn-orange:hover { background-color: #E06B00 !important; color: white !important; }
     </style>
 </head>
 <body>
@@ -100,7 +100,7 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold" id="lblTitulo">Título</label>
-                            <input type="text" class="form-control" id="formTitulo" required>
+                            <input type="text" class="form-control" id="formTitulo" required placeholder="Escribe el título aquí...">
                         </div>
 
                         <div class="row" id="rowCamposEspeciales"></div>
@@ -112,12 +112,12 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold" id="lblContenido">Cuerpo</label>
-                            <textarea class="form-control" id="formContenido" rows="6" required></textarea>
+                            <textarea class="form-control" id="formContenido" rows="6" required placeholder="Escribe el contenido aquí..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-orange" id="btnGuardar">Publicar</button>
+                        <button type="submit" class="btn btn-orange" id="btnGuardar">Publicar Contenido</button>
                     </div>
                 </form>
             </div>
@@ -222,8 +222,9 @@
             document.getElementById('formImagenActual').value = "";
             document.getElementById('modalTitle').innerText = tipo === 'blog' ? '📝 Nueva Entrada de Blog' : '🎁 Nuevo Recurso Descargable';
             
-            // Asegurar que el botón de guardar esté activo y disponible al crear nuevo
+            // Forzamos al botón a estar 100% libre, encendido y sin propiedad disabled
             const btn = document.getElementById('btnGuardar');
+            btn.removeAttribute('disabled');
             btn.disabled = false;
             btn.innerText = "Publicar Contenido";
 
@@ -233,7 +234,7 @@
                 document.getElementById('lblContenido').innerText = "Cuerpo del Artículo";
                 extraRow.innerHTML = `
                     <div class="col-md-6 mb-3"><label class="form-label fw-bold">Fecha</label><input type="text" class="form-control" id="formExtra1" required placeholder="Ej: 18 de Mayo, 2026"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Resumen Corto</label><input type="text" class="form-control" id="formExtra2" required placeholder="Tarjeta de presentación..."></div>
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Resumen Corto</label><input type="text" class="form-control" id="formExtra2" required placeholder="Frase para la tarjeta..."></div>
                 `;
             } else {
                 document.getElementById('lblTitulo').innerText = "Nombre del Recurso";
@@ -275,13 +276,12 @@
             if (!file) return;
             
             const btn = document.getElementById('btnGuardar');
-            btn.disabled = true; // Bloqueo momentáneo solo mientras procesa la lectura local
-            
             nombreArchivoImagen = file.name;
             const reader = new FileReader();
             reader.onload = function(e) { 
                 stringArchivoBase64 = e.target.result; 
-                btn.disabled = false; // Desbloqueo inmediato en cuanto termina de leer
+                btn.removeAttribute('disabled');
+                btn.disabled = false;
             };
             reader.readAsDataURL(file);
         }
@@ -319,7 +319,7 @@
                     body: JSON.stringify(payload)
                 });
                 setTimeout(() => { myModal.hide(); inicializarDashboard(); alert("¡Actualizado con éxito!"); }, 2000);
-            } catch (e) { alert("Error"); btn.disabled = false; }
+            } catch (e) { alert("Error"); btn.removeAttribute('disabled'); btn.disabled = false; btn.innerText = "Publicar Contenido"; }
         }
 
         async function borrarFilaDefinitivamente(tipo, rowId) {
