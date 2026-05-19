@@ -96,71 +96,51 @@
     <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const grid = document.querySelector('.grid-recursos');
-            const urlBase = "https://resplendent-syrniki-662e52.netlify.app";
+            const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
+            const urlRecursos = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Recursos`;
             
             try {
-                // Nombre asignado a tu primer recurso guía en el panel administrador
-                const nombreRecurso = "recurso-guia-procuracion.md"; 
+                const res = await fetch(urlRecursos);
+                const text = await res.text();
+                const data = JSON.parse(text.substr(47).slice(0, -2));
+                const filas = data.table.rows.slice(1);
                 
-                const respuesta = await fetch(`${urlBase}/recursos/${nombreRecurso}`);
-                if (!respuesta.ok) throw new Error();
-                
-                const textoMarkdown = await respuesta.text();
-                grid.innerHTML = ""; // Limpiamos el cargando
+                grid.innerHTML = ""; 
 
-                // Procesamos los metadatos del recurso
-                const lineas = textoMarkdown.split('\n');
-                const metadatos = { title: "Recurso Exclusivo", description: "", image: "", pdflink: "#", brevoid: "" };
-                let dentroDeMetadatos = false;
-
-                for (let linea of lineas) {
-                    if (linea.trim() === '---') {
-                        dentroDeMetadatos = !dentroDeMetadatos;
-                        continue;
-                    }
-                    if (dentroDeMetadatos) {
-                        const indexCol = linea.indexOf(':');
-                        if (indexCol !== -1) {
-                            const llave = linea.substring(0, indexCol).trim().toLowerCase();
-                            const valor = linea.substring(indexCol + 1).trim().replace(/['"]/g, '');
-                            if (llave === 'title') metadatos.title = valor;
-                            if (llave === 'description') metadatos.description = valor;
-                            if (llave === 'image') metadatos.image = valor;
-                            if (llave === 'pdflink') metadatos.pdflink = valor;
-                            if (llave === 'brevoid') metadatos.brevoid = valor;
-                        }
-                    }
+                if(filas.length === 0) {
+                    grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente más recursos gratuitos.</p>`;
+                    return;
                 }
 
-                if (metadatos.image && !metadatos.image.startsWith('http')) {
-                    metadatos.image = `${urlBase}/${metadatos.image}`;
-                }
-
-                // Creamos la tarjeta interactiva conectada a la API de suscripción de Brevo
-                const card = document.createElement('div');
-                card.className = 'card-recurso';
-                card.innerHTML = `
-                    <div class="portada-recurso" style="background-image: url('${metadatos.image || 'https://via.placeholder.com/300x200'}');"></div>
-                    <div>
-                        <h2>${metadatos.title}</h2>
-                        <p>${metadatos.description}</p>
-                    </div>
+                filas.forEach(row => {
+                    if(!row.c[0]) return;
                     
-                    <form class="form-mini" action="https://sibautomation.com/theform/post?id=${metadatos.brevoid}" method="POST" target="_blank">
-                        <input type="email" name="EMAIL" placeholder="Tu correo electrónico institucional" required>
-                        <input type="hidden" name="success_url" value="${metadatos.pdflink}">
-                        <button type="submit">Validar y Descargar Guía</button>
-                    </form>
-                `;
-                grid.appendChild(card);
+                    const titulo = row.c[0] ? row.c[0].v : 'Recurso Exclusivo';
+                    const desc = row.c[1] ? row.c[1].v : '';
+                    const imagen = row.c[2] ? row.c[2].v : 'https://via.placeholder.com/300x200';
+                    const linkPdf = row.c[3] ? row.c[3].v : '#';
+                    const brevoId = row.c[4] ? row.c[4].v : '';
+
+                    const card = document.createElement('div');
+                    card.className = 'card-recurso';
+                    card.innerHTML = `
+                        <div class="portada-recurso" style="background-image: url('${imagen}');"></div>
+                        <div>
+                            <h2>${titulo}</h2>
+                            <p>${desc}</p>
+                        </div>
+                        
+                        <form class="form-mini" action="https://sibautomation.com/theform/post?id=${brevoId}" method="POST" target="_blank">
+                            <input type="email" name="EMAIL" placeholder="Tu correo electrónico institucional" required>
+                            <input type="hidden" name="success_url" value="${linkPdf}">
+                            <button type="submit">Validar y Descargar Guía</button>
+                        </form>
+                    `;
+                    grid.appendChild(card);
+                });
 
             } catch (error) {
-                grid.innerHTML = `
-                    <div class="card-recurso" style="grid-column: 1/-1; text-align: center; padding: 40px;">
-                        <h3>¡Ecosistema de Recursos Activado! 🎁</h3>
-                        <p style="margin: 15px 0;">Entra a tu panel secreto, selecciona 'Recursos Gratuitos' y publica tu primera herramienta para verla reflejada aquí.</p>
-                    </div>
-                `;
+                grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos conectar con el servidor de herramientas.</p>`;
             }
         });
     </script>
