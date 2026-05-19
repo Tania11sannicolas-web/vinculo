@@ -180,7 +180,7 @@
                             <td class="text-truncate" style="max-width:250px;">${row.c[2] ? row.c[2].v : ''}</td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="cargarFilaParaEdicion('blog', ${rId})"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('blog', ${rId})"><i class="fa-solid fa-trash"></i> Borrar</button>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('blog', ${rId})"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>`;
                 });
@@ -207,7 +207,7 @@
                             <td class="text-truncate" style="max-width:250px;">${row.c[1] ? row.c[1].v : ''}</td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="cargarFilaParaEdicion('recurso', ${rId})"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('recurso', ${rId})"><i class="fa-solid fa-trash"></i> Borrar</button>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('recurso', ${rId})"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>`;
                 });
@@ -222,7 +222,6 @@
             document.getElementById('formImagenActual').value = "";
             document.getElementById('modalTitle').innerText = tipo === 'blog' ? '📝 Nueva Entrada de Blog' : '🎁 Nuevo Recurso Descargable';
             
-            // Forzamos al botón a estar 100% libre, encendido y sin propiedad disabled
             const btn = document.getElementById('btnGuardar');
             btn.removeAttribute('disabled');
             btn.disabled = false;
@@ -296,6 +295,7 @@
             const rowId = document.getElementById('formRowId').value;
             const urlDestino = (tipo === 'blog') ? URL_SCRIPT_BLOG : URL_SCRIPT_RECURSOS;
 
+            // FIX DE ORO: Mapeo exacto de variables dinámicas según el tipo de formulario
             const payload = {
                 tipo: tipo,
                 action: rowId ? "edit" : "create",
