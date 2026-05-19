@@ -93,14 +93,15 @@
         </div>
     </footer>
 
-  <script>
+    <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const grid = document.querySelector('.grid-recursos');
-            const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
             
-            // CORRECCIÓN CLAVE: Sintonizamos el nombre exacto con mayúscula "Recursos"
-            // y limitamos el rango de las columnas A a la E para evitar celdas vacías raras
-            const urlRecursos = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Recursos&range=A1:E100`;
+            // YA CONFIGURADO CON TU NUEVO ID PREMIUM LIMPIO:
+            const SHEET_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo';
+            
+            // Apuntamos a la primera pestaña ("Hoja 1") forzando el rango A-E
+            const urlRecursos = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=0&range=A1:E100`;
             
             try {
                 const res = await fetch(urlRecursos);
@@ -110,18 +111,18 @@
                 const filas = data.table.rows;
                 grid.innerHTML = ""; 
 
-                // Si la hoja no trae renglones o sólo tiene los títulos (1 sola fila), mostramos mensaje
+                // Si no hay filas de contenido, pintamos mensaje
                 if (!filas || filas.length <= 1) {
                     grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente más recursos gratuitos.</p>`;
                     return;
                 }
 
-                // Recorremos la tabla empezando en la fila 1 para brincarnos los encabezados de la fila 0
+                // Brincamos el renglón 0 (encabezados) y empezamos en el 1
                 for (let i = 1; i < filas.length; i++) {
                     const row = filas[i];
                     if (!row || !row.c) continue;
                     
-                    // Si el título del recurso está totalmente vacío en el Excel, saltamos la línea
+                    // Si el título viene vacío, nos saltamos esa fila por seguridad
                     if (!row.c[0] || row.c[0].v === null || row.c[0].v === "") continue;
                     
                     const titulo = row.c[0].v;
@@ -148,13 +149,12 @@
                     grid.appendChild(card);
                 }
 
-                // Doble validación: si tras el filtro de vacíos la pantalla quedó en blanco
                 if (grid.innerHTML === "") {
                     grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente más recursos gratuitos.</p>`;
                 }
 
             } catch (error) {
-                console.error("Error al cargar los recursos:", error);
+                console.error("Error al jalar recursos:", error);
                 grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos conectar con el servidor de herramientas en este momento.</p>`;
             }
         });
