@@ -96,40 +96,48 @@
     <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const grid = document.querySelector('.grid-recursos');
-            
-            // YA CONFIGURADO CON TU NUEVO ID PREMIUM LIMPIO:
             const SHEET_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo';
             
-            // Apuntamos a la primera pestaña ("Hoja 1") forzando el rango A-E
-            const urlRecursos = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=0&range=A1:E100`;
+            // Le quitamos el filtro de rangos para que traiga la información completa sin importar cómo esté formateada
+            const urlRecursos = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
             
             try {
                 const res = await fetch(urlRecursos);
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
                 
+                console.log("Estructura completa de Google:", data);
+                
                 const filas = data.table.rows;
                 grid.innerHTML = ""; 
 
-                // Si no hay filas de contenido, pintamos mensaje
+                // Si Google nos entrega información, la procesamos ignorando el validador estricto de longitud
                 if (!filas || filas.length <= 1) {
                     grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente más recursos gratuitos.</p>`;
                     return;
                 }
 
-                // Brincamos el renglón 0 (encabezados) y empezamos en el 1
+                // Función auxiliar para leer celdas de forma inteligente (v, f o texto directo)
+                const leerCelda = (celda) => {
+                    if (!celda) return '';
+                    if (celda.v !== undefined && celda.v !== null) return celda.v;
+                    if (celda.f !== undefined && celda.f !== null) return celda.f;
+                    return '';
+                };
+
+                // Brincamos la fila 0 de encabezados
                 for (let i = 1; i < filas.length; i++) {
                     const row = filas[i];
                     if (!row || !row.c) continue;
                     
-                    // Si el título viene vacío, nos saltamos esa fila por seguridad
-                    if (!row.c[0] || row.c[0].v === null || row.c[0].v === "") continue;
-                    
-                    const titulo = row.c[0].v;
-                    const desc = (row.c[1] && row.c[1].v) ? row.c[1].v : 'Descarga esta herramienta práctica.';
-                    const imagen = (row.c[2] && row.c[2].v) ? row.c[2].v : 'https://via.placeholder.com/300x240';
-                    const linkPdf = (row.c[3] && row.c[3].v) ? row.c[3].v : '#';
-                    const brevoId = (row.c[4] && row.c[4].v) ? row.c[4].v : '';
+                    const titulo = leerCelda(row.c[0]);
+                    // Si no hay título escrito en ese renglón, nos saltamos la tarjeta
+                    if (!titulo || titulo.trim() === "") continue;
+
+                    const desc = leerCelda(row.c[1]) || 'Descarga esta herramienta práctica.';
+                    const imagen = leerCelda(row.c[2]) || 'https://via.placeholder.com/300x240';
+                    const linkPdf = leerCelda(row.c[3]) || '#';
+                    const brevoId = leerCelda(row.c[4]) || '';
 
                     const card = document.createElement('div');
                     card.className = 'card-recurso';
@@ -149,12 +157,13 @@
                     grid.appendChild(card);
                 }
 
+                // Si al final del día ningún renglón tenía título válido
                 if (grid.innerHTML === "") {
                     grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente más recursos gratuitos.</p>`;
                 }
 
             } catch (error) {
-                console.error("Error al jalar recursos:", error);
+                console.error("Error crítico en el render de recursos:", error);
                 grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos conectar con el servidor de herramientas en este momento.</p>`;
             }
         });
