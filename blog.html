@@ -96,8 +96,7 @@
             <a href="#">LinkedIn</a> | <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | <a href="https://wa.me/525532004855">WhatsApp</a>
         </div>
     </footer>
-
-    <script>
+<script>
         document.addEventListener("DOMContentLoaded", async function() {
             const grid = document.querySelector('.blog-grid');
             const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
@@ -107,24 +106,24 @@
                 const res = await fetch(urlBlog);
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
-                const filas = data.table.rows.slice(1); // Ignoramos fila de títulos
+                const filas = data.table.rows.slice(1); 
                 
                 grid.innerHTML = ""; 
 
-                if (filas.length === 0) {
+                if (!filas || filas.length === 0) {
                     grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente nuevas notas del blog.</p>`;
                     return;
                 }
 
-                // Desplegamos los renglones mapeando el orden de tus columnas fijas
                 filas.forEach((row, index) => {
-                    if(!row.c[0]) return; // Evitar renglones vacíos
+                    // Si el renglón está totalmente vacío de datos, nos lo saltamos
+                    if (!row || !row.c) return; 
                     
-                    const idFila = index + 2; // Guardamos su número de renglón real en Excel para enlazarlo
-                    const titulo = row.c[0] ? row.c[0].v : 'Artículo sin título';
-                    const fecha = row.c[1] ? row.c[1].v : 'Reciente';
-                    const resumen = row.c[2] ? row.c[2].v : 'Haz clic abajo para leer esta nota completa...';
-                    const imagen = row.c[3] ? row.c[3].v : 'https://via.placeholder.com/400x200';
+                    const idFila = index + 2; 
+                    const titulo = (row.c[0] && row.c[0].v) ? row.c[0].v : 'Artículo sin título';
+                    const fecha = (row.c[1] && row.c[1].v) ? row.c[1].v : 'Reciente';
+                    const resumen = (row.c[2] && row.c[2].v) ? row.c[2].v : 'Haz clic abajo para leer esta nota completa...';
+                    const imagen = (row.c[3] && row.c[3].v) ? row.c[3].v : 'https://via.placeholder.com/400x200';
 
                     const card = document.createElement('article');
                     card.className = 'card-post';
@@ -133,10 +132,10 @@
                         <div class="post-body">
                             <div>
                                 <span class="post-meta">${fecha} | Desarrollo Social</span>
-                                <h3><a href="articulo.html?id=${idFila}">${titulo}</a></h3>
+                                <h3><a href="./articulo.html?id=${idFila}">${titulo}</a></h3>
                                 <p>${resumen}</p>
                             </div>
-                            <a href="articulo.html?id=${idFila}" class="link-leer">Leer artículo <span>→</span></a>
+                            <a href="./articulo.html?id=${idFila}" class="link-leer">Leer artículo <span>→</span></a>
                         </div>
                     `;
                     grid.appendChild(card);
