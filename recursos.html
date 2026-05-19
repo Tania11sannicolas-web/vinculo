@@ -93,18 +93,19 @@
         </div>
     </footer>
 
-<script>
+    <script>
         document.addEventListener("DOMContentLoaded", async function() {
             const grid = document.querySelector('.grid-recursos');
             const SHEET_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo';
-            const MI_GID_REAL = '2047829696'; 
-            
+            const MI_GID_REAL = '2047829696';
             const urlRecursos = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${MI_GID_REAL}`;
             
             try {
                 const res = await fetch(urlRecursos);
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
+                
+                console.log("Filas crudas detectadas:", data.table.rows);
                 
                 const filas = data.table.rows;
                 grid.innerHTML = ""; 
@@ -121,8 +122,6 @@
                     return '';
                 };
 
-                // MODIFICACIÓN DE ORO: Si solo viene 1 fila, la leemos como datos directos. 
-                // Si vienen más, brincamos los encabezados de la fila 0 de forma normal.
                 const inicioFila = filas.length === 1 ? 0 : 1;
 
                 for (let i = inicioFila; i < filas.length; i++) {
@@ -130,7 +129,6 @@
                     if (!row || !row.c) continue;
                     
                     const titulo = leerCelda(row.c[0]);
-                    // Si la celda dice literalmente "Título" o está vacía, la ignoramos por limpieza
                     if (!titulo || titulo.trim() === "" || titulo.toLowerCase() === "título") continue;
 
                     const desc = leerCelda(row.c[1]) || 'Descarga esta herramienta práctica.';
@@ -166,6 +164,5 @@
             }
         });
     </script>
-
 </body>
 </html>
