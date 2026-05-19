@@ -106,7 +106,7 @@
                         <div class="row" id="rowCamposEspeciales"></div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Imagen de Portada</label>
+                            <label class="form-label fw-bold">Imagen de Portada (Opcional)</label>
                             <input type="file" class="form-control" id="formFile" accept="image/*" onchange="procesarArchivoImagen()">
                         </div>
 
@@ -127,7 +127,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // ========================================================
-        // ⚠️ PEGA AQUÍ TUS DOS URL DE REEMPLAZO EXACTAS:
+        // ⚠️ RECUERDA PONER AQUÍ TUS DOS URL DE APPS SCRIPT:
         const URL_SCRIPT_BLOG = 'https://script.google.com/macros/s/AKfycbw2eu8XM2I1sGi9SeHd_oVLc6LI_VYCwj2jQfdGZsSFEoe4oeJV1eubQkDgHSLrEd1u/exec';
         const URL_SCRIPT_RECURSOS = 'https://script.google.com/macros/s/AKfycbwQQYe3s9wVT9YVuR1XQJYTPvdXlaIpo3xGQHlEgOP_ugddfSvZZyup8o97YJ9ExX2BOA/exec';
         // ========================================================
@@ -222,23 +222,27 @@
             document.getElementById('formImagenActual').value = "";
             document.getElementById('modalTitle').innerText = tipo === 'blog' ? '📝 Nueva Entrada de Blog' : '🎁 Nuevo Recurso Descargable';
             
+            // Asegurar que el botón de guardar esté activo y disponible al crear nuevo
+            const btn = document.getElementById('btnGuardar');
+            btn.disabled = false;
+            btn.innerText = "Publicar Contenido";
+
             const extraRow = document.getElementById('rowCamposEspeciales');
             if (tipo === 'blog') {
                 document.getElementById('lblTitulo').innerText = "Título de la Nota";
                 document.getElementById('lblContenido').innerText = "Cuerpo del Artículo";
                 extraRow.innerHTML = `
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Fecha</label><input type="text" class="form-control" id="formExtra1" required></div>
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Resumen Corto</label><input type="text" class="form-control" id="formExtra2" required></div>
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Fecha</label><input type="text" class="form-control" id="formExtra1" required placeholder="Ej: 18 de Mayo, 2026"></div>
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Resumen Corto</label><input type="text" class="form-control" id="formExtra2" required placeholder="Tarjeta de presentación..."></div>
                 `;
             } else {
                 document.getElementById('lblTitulo').innerText = "Nombre del Recurso";
                 document.getElementById('lblContenido').innerText = "Descripción Detallada";
                 extraRow.innerHTML = `
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Enlace PDF (Drive)</label><input type="url" class="form-control" id="formExtra1" required></div>
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">ID de Lista Brevo</label><input type="number" class="form-control" id="formExtra2" required></div>
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Enlace PDF (Drive)</label><input type="url" class="form-control" id="formExtra1" required placeholder="https://drive.google.com/..."></div>
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">ID de Lista Brevo</label><input type="number" class="form-control" id="formExtra2" required placeholder="Ej: 3"></div>
                 `;
             }
-            document.getElementById('btnGuardar').innerText = "Publicar Contenido";
             myModal.show();
         }
 
@@ -269,9 +273,16 @@
         function procesarArchivoImagen() {
             const file = document.getElementById('formFile').files[0];
             if (!file) return;
+            
+            const btn = document.getElementById('btnGuardar');
+            btn.disabled = true; // Bloqueo momentáneo solo mientras procesa la lectura local
+            
             nombreArchivoImagen = file.name;
             const reader = new FileReader();
-            reader.onload = function(e) { stringArchivoBase64 = e.target.result; };
+            reader.onload = function(e) { 
+                stringArchivoBase64 = e.target.result; 
+                btn.disabled = false; // Desbloqueo inmediato en cuanto termina de leer
+            };
             reader.readAsDataURL(file);
         }
 
