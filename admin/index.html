@@ -8,7 +8,7 @@
 </head>
 <body>
     <script>
-        // Forzamos el modo manual y el puente local directo
+        // Forzamos el modo manual
         window.CMS_MANUAL_INIT = true;
     </script>
     
@@ -17,14 +17,15 @@
     <script>
         CMS.init({
             config: {
-                // Usamos la configuración de pasarela abierta autorizada por Cloudflare
                 backend: {
-                    name: "git-gateway",
-                    branch: "main"
+                    name: "github",
+                    repo: "Tania11sannicolas-web/vinculo-web",
+                    branch: "main",
+                    // TU NUEVO MOTOR PROPIO EN CLOUDFLARE WORKERS
+                    base_url: "https://mute-mountain-2478.tania11sannicolas.workers.dev",
+                    auth_endpoint: "auth"
                 },
-                local_backend: {
-                    allowed_hosts: ["127.0.0.1", "localhost", "vinculo.tania11sannicolas.workers.dev"]
-                },
+                local_backend: true,
                 media_folder: "imagenes",
                 public_folder: "imagenes",
                 collections: [
