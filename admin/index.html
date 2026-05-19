@@ -12,8 +12,8 @@
         .card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .header-title { color: #2c3e50; font-weight: 700; margin-bottom: 25px; }
         .table { background: #fff; border-radius: 12px; overflow: hidden; }
-        .badge-blog { background-color: #3498db; }
-        .badge-recurso { background-color: #2ecc71; }
+        .badge-blog { background-color: #3498db; color: white; }
+        .badge-recurso { background-color: #2ecc71; color: white; }
         .btn-orange { background-color: #FF7A00; color: white; font-weight: 600; }
         .btn-orange:hover { background-color: #E06B00; color: white; }
     </style>
@@ -24,8 +24,8 @@
         <div class="container">
             <a class="navbar-brand" href="#"><i class="fa-solid fa-circle-nodes me-2"></i>VÍNCULO Centro de Control</a>
             <div>
-                <button class="btn btn-primary btn-sm me-2" onclick="abrirModal('blog')"><i class="fa-solid fa-feather me-2"></i>+ Redactar Nota</button>
-                <button class="btn btn-success btn-sm" onclick="abrirModal('recurso')"><i class="fa-solid fa-gift me-2"></i>+ Subir Recurso</button>
+                <button type="button" class="btn btn-primary btn-sm me-2" onclick="abrirModal('blog')"><i class="fa-solid fa-feather me-2"></i>+ Redactar Nota</button>
+                <button type="button" class="btn btn-success btn-sm" onclick="abrirModal('recurso')"><i class="fa-solid fa-gift me-2"></i>+ Subir Recurso</button>
             </div>
         </div>
     </nav>
@@ -44,7 +44,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <h6 class="text-muted text-uppercase small">Notas de Blog Activas</h6>
-                            <h3 class="fw-bold m-0" id="total-blog">Cargando...</h3>
+                            <h3 class="fw-bold m-0" id="total-blog">0</h3>
                         </div>
                         <div class="fs-1 text-primary"><i class="fa-solid fa-feather"></i></div>
                     </div>
@@ -55,7 +55,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
                             <h6 class="text-muted text-uppercase small">Recursos Gratuitos Publicados</h6>
-                            <h3 class="fw-bold m-0" id="total-recursos">Cargando...</h3>
+                            <h3 class="fw-bold m-0" id="total-recursos">0</h3>
                         </div>
                         <div class="fs-1 text-success"><i class="fa-solid fa-gift"></i></div>
                     </div>
@@ -78,13 +78,7 @@
                             </tr>
                         </thead>
                         <tbody id="tabla-contenidos">
-                            <tr>
-                                <td colspan="5" class="text-center text-muted py-4">
-                                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
-                                    Sincronizando consola con Google Services...
-                                </td>
-                            </tr>
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -136,93 +130,97 @@
     <script>
         // ========================================================
         // ⚠️ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT COMPLETA:
-        const APPS_SCRIPT_URL = 'AQUÍ_PEGA_TU_URL_DE_EXEC';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCvq33hdIZ1MWoqNWYPLN-Yamvjwg_RuDJDgrVh6msMnRNHJg-IhAu0MyazC_u9eKV/exec';
         // ========================================================
 
-        // TUS HOJAS DE EXCEL TOTALMENTE SEPARADAS
         const BLOG_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY'; 
         const RECURSOS_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo'; 
         const RECURSOS_GID = '2047829696'; 
 
         let cacheBlog = [], cacheRecursos = [];
         let stringArchivoBase64 = "", nombreArchivoImagen = "";
-        let bsModal;
+        let myModal;
 
+        // Inicialización inmediata de la interfaz para que funcionen los botones pase lo que pase
         document.addEventListener("DOMContentLoaded", function() {
-            bsModal = new Bootstrap.Modal(document.getElementById('formModal'));
-            cargarDashboardGlobal();
+            myModal = new bootstrap.Modal(document.getElementById('formModal'));
+            inicializarDashboard();
         });
 
-        async function cargarDashboardGlobal() {
-            try {
-                const tbody = document.getElementById('tabla-contenidos');
-                tbody.innerHTML = '';
-
-                // 1. Lectura de la hoja del Blog
-                const resB = await fetch(`https://docs.google.com/spreadsheets/d/${BLOG_ID}/gviz/tq?tqx=out:json&sheet=Blog`);
-                const textB = await resB.text();
-                const dataB = JSON.parse(textB.substr(47).slice(0, -2));
-                cacheBlog = dataB.table.rows ? dataB.table.rows.slice(1) : [];
-
-                // 2. Lectura de la hoja de Recursos
-                const resR = await fetch(`https://docs.google.com/spreadsheets/d/${RECURSOS_ID}/gviz/tq?tqx=out:json&gid=${RECURSOS_GID}`);
-                const textR = await resR.text();
-                const dataR = JSON.parse(textR.substr(47).slice(0, -2));
-                cacheRecursos = dataR.table.rows ? dataR.table.rows.slice(1) : [];
-
-                document.getElementById('total-blog').innerText = cacheBlog.length;
-                document.getElementById('total-recursos').innerText = cacheRecursos.length;
-
+        function inicializarDashboard() {
+            document.getElementById('tabla-contenidos').innerHTML = `
+                <tr id="fila-carga-espera">
+                    <td colspan="5" class="text-center text-muted py-4">
+                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                        Sincronizando con bases de datos de Google Sheets...
+                    </td>
+                </tr>`;
+            
+            // Disparamos las dos consultas al mismo tiempo sin que se estorben entre sí
+            Promise.all([cargarNotasBlog(), cargarHerramientasRecursos()]).then(() => {
+                const filaEspera = document.getElementById('fila-carga-espera');
+                if (filaEspera) filaEspera.remove();
+                
                 if (cacheBlog.length === 0 && cacheRecursos.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted"><i class="fa-solid fa-folder-open me-2"></i>No hay publicaciones activas. ¡Crea una nueva nota o recurso!</td></tr>`;
-                    return;
+                    document.getElementById('tabla-contenidos').innerHTML = `
+                        <tr><td colspan="5" class="text-center py-4 text-muted"><i class="fa-solid fa-folder-open me-2"></i>No hay publicaciones creadas todavía.</td></tr>`;
                 }
+            });
+        }
 
-                // Renderizar renglones de Blog
+        async function cargarNotasBlog() {
+            try {
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${BLOG_ID}/gviz/tq?tqx=out:json&sheet=Blog`);
+                const text = await res.text();
+                const data = JSON.parse(text.substr(47).slice(0, -2));
+                cacheBlog = data.table.rows ? data.table.rows.slice(1) : [];
+                document.getElementById('total-blog').innerText = cacheBlog.length;
+
+                const tbody = document.getElementById('tabla-contenidos');
                 cacheBlog.forEach((row, idx) => {
                     if(!row || !row.c || !row.c[0]) return;
                     const rId = idx + 2;
-                    const titulo = row.c[0].v;
-                    const fecha = row.c[1] ? row.c[1].v : '-';
-                    const desc = row.c[2] ? row.c[2].v : '';
-                    
                     tbody.innerHTML += `
                         <tr>
                             <td><span class="badge badge-blog"><i class="fa-solid fa-feather me-1"></i> Blog</span></td>
-                            <td class="fw-semibold text-dark">${titulo}</td>
-                            <td class="text-muted small">${fecha}</td>
-                            <td class="text-truncate" style="max-width:250px;">${desc}</td>
+                            <td class="fw-semibold text-dark">${row.c[0].v || 'Sin título'}</td>
+                            <td class="text-muted small">${row.c[1] ? row.c[1].v : '-'}</td>
+                            <td class="text-truncate" style="max-width:250px;">${row.c[2] ? row.c[2].v : ''}</td>
                             <td class="text-center">
-                                <button class="btn btn-outline-secondary btn-sm" onclick="cargarFilaParaEdicion('blog', ${rId})"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cargarFilaParaEdicion('blog', ${rId})"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
                             </td>
-                        </tr>
-                    `;
+                        </tr>`;
                 });
+            } catch (e) {
+                console.error("Error en lectura de Blog:", e);
+            }
+        }
 
-                // Renderizar renglones de Recursos
+        async function cargarHerramientasRecursos() {
+            try {
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${RECURSOS_ID}/gviz/tq?tqx=out:json&gid=${RECURSOS_GID}`);
+                const text = await res.text();
+                const data = JSON.parse(text.substr(47).slice(0, -2));
+                cacheRecursos = data.table.rows ? data.table.rows.slice(1) : [];
+                document.getElementById('total-recursos').innerText = cacheRecursos.length;
+
+                const tbody = document.getElementById('tabla-contenidos');
                 cacheRecursos.forEach((row, idx) => {
                     if(!row || !row.c || !row.c[0]) return;
                     const rId = idx + 2;
-                    const nombre = row.c[0].v;
-                    const desc = row.c[1] ? row.c[1].v : '';
-                    const brevoId = row.c[4] ? row.c[4].v : '-';
-                    
                     tbody.innerHTML += `
                         <tr>
                             <td><span class="badge badge-recurso"><i class="fa-solid fa-gift me-1"></i> Recurso</span></td>
-                            <td class="fw-semibold text-dark">${nombre}</td>
-                            <td class="text-muted small">Brevo ID: ${brevoId}</td>
-                            <td class="text-truncate" style="max-width:250px;">${desc}</td>
+                            <td class="fw-semibold text-dark">${row.c[0].v || 'Sin nombre'}</td>
+                            <td class="text-muted small">Brevo ID: ${row.c[4] ? row.c[4].v : '-'}</td>
+                            <td class="text-truncate" style="max-width:250px;">${row.c[1] ? row.c[1].v : ''}</td>
                             <td class="text-center">
-                                <button class="btn btn-outline-secondary btn-sm" onclick="cargarFilaParaEdicion('recurso', ${rId})"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cargarFilaParaEdicion('recurso', ${rId})"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
                             </td>
-                        </tr>
-                    `;
+                        </tr>`;
                 });
-
             } catch (e) {
-                console.error("Error cargando dashboard:", e);
-                document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center text-danger py-3"><i class="fa-solid fa-triangle-exclamation me-2"></i>Error al sincronizar con las bases de datos de Google.</td></tr>`;
+                console.error("Error en lectura de Recursos:", e);
             }
         }
 
@@ -251,7 +249,7 @@
                 `;
             }
             document.getElementById('btnGuardar').innerText = "Publicar Contenido";
-            bsModal.show();
+            myModal.show();
         }
 
         function cargarFilaParaEdicion(tipo, rowId) {
@@ -321,8 +319,8 @@
                 });
 
                 setTimeout(() => {
-                    bsModal.hide();
-                    cargarDashboardGlobal();
+                    myModal.hide();
+                    inicializarDashboard();
                     alert("¡Ecosistema VÍNCULO actualizado con éxito! Revisa la web pública en 10 segundos.");
                 }, 2000);
 
