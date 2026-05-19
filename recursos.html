@@ -93,31 +93,31 @@
         </div>
     </footer>
 
-    <script>
+<script>
         document.addEventListener("DOMContentLoaded", async function() {
             const grid = document.querySelector('.grid-recursos');
             const SHEET_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo';
             
-            // Le quitamos el filtro de rangos para que traiga la información completa sin importar cómo esté formateada
-            const urlRecursos = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+            // CORRECCIÓN MAGISTRAL: Usamos gid=0 que es el ID interno real e inalterable de la primera pestaña
+            const urlRecursos = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=0`;
             
             try {
                 const res = await fetch(urlRecursos);
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
                 
-                console.log("Estructura completa de Google:", data);
+                console.log("Filas crudas detectadas:", data.table.rows);
                 
                 const filas = data.table.rows;
                 grid.innerHTML = ""; 
 
-                // Si Google nos entrega información, la procesamos ignorando el validador estricto de longitud
+                // Si no hay filas de datos o solo está la de los títulos, ponemos el letrero seguro
                 if (!filas || filas.length <= 1) {
                     grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente más recursos gratuitos.</p>`;
                     return;
                 }
 
-                // Función auxiliar para leer celdas de forma inteligente (v, f o texto directo)
+                // Función auxiliar para leer celdas sin que se rompa si vienen vacías
                 const leerCelda = (celda) => {
                     if (!celda) return '';
                     if (celda.v !== undefined && celda.v !== null) return celda.v;
@@ -125,13 +125,13 @@
                     return '';
                 };
 
-                // Brincamos la fila 0 de encabezados
+                // Brincamos la fila index 0 (que son tus títulos) e iniciamos en la 1
                 for (let i = 1; i < filas.length; i++) {
                     const row = filas[i];
                     if (!row || !row.c) continue;
                     
                     const titulo = leerCelda(row.c[0]);
-                    // Si no hay título escrito en ese renglón, nos saltamos la tarjeta
+                    // Si el renglón no tiene un título escrito, lo saltamos por limpieza
                     if (!titulo || titulo.trim() === "") continue;
 
                     const desc = leerCelda(row.c[1]) || 'Descarga esta herramienta práctica.';
@@ -157,13 +157,13 @@
                     grid.appendChild(card);
                 }
 
-                // Si al final del día ningún renglón tenía título válido
+                // Validación final por si se filtraron puros renglones vacíos
                 if (grid.innerHTML === "") {
                     grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente más recursos gratuitos.</p>`;
                 }
 
             } catch (error) {
-                console.error("Error crítico en el render de recursos:", error);
+                console.error("Error crítico en recursos:", error);
                 grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos conectar con el servidor de herramientas en este momento.</p>`;
             }
         });
