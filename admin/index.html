@@ -238,11 +238,10 @@
 
         function abrirModal(tipo) {
             document.getElementById('publicarForm').reset();
-            quill.setContents([]); // Limpia el editor de texto enriquecido
+            quill.setContents([]); 
             stringArchivoBase64 = ""; 
             nombreArchivoImagen = "";
             
-            // Forzar la limpieza física del input de archivo para evitar bloqueos
             const fileInput = document.getElementById('formFile');
             if(fileInput) fileInput.value = "";
 
@@ -277,30 +276,34 @@
 
         function cargarFilaParaEdicion(tipo, rowId) {
             abrirModal(tipo);
-            document.getElementById('formRowId').value = rowId;
-            document.getElementById('btnGuardar').innerText = "Guardar Cambios Editados";
-            document.getElementById('modalTitle').innerText = `✏️ Editando Fila #${rowId}`;
+            
+            // El setTimeout asegura que el DOM haya procesado 'abrirModal' antes de meterle datos
+            setTimeout(() => {
+                document.getElementById('formRowId').value = rowId;
+                document.getElementById('btnGuardar').innerText = "Guardar Cambios Editados";
+                document.getElementById('modalTitle').innerText = `✏️ Editando Fila #${rowId}`;
 
-            const cacheIndex = rowId - 2;
-            if (tipo === 'blog') {
-                const r = cacheBlog[cacheIndex].c;
-                document.getElementById('formTitulo').value = r[0] ? r[0].v : '';
-                document.getElementById('formExtra1').value = r[1] ? r[1].v : '';
-                document.getElementById('formExtra2').value = r[2] ? r[2].v : '';
-                document.getElementById('formImagenActual').value = r[3] ? r[3].v : '';
-                
-                const contenidoHtml = r[4] ? r[4].v : '';
-                quill.clipboard.dangerouslyPasteHTML(contenidoHtml);
-            } else {
-                const r = cacheRecursos[cacheIndex].c;
-                document.getElementById('formTitulo').value = r[0] ? r[0].v : '';
-                document.getElementById('formImagenActual').value = r[2] ? r[2].v : '';
-                document.getElementById('formExtra1').value = r[3] ? r[3].v : '';
-                document.getElementById('formExtra2').value = r[4] ? r[4].v : '';
-                
-                const contenidoHtml = r[1] ? r[1].v : '';
-                quill.clipboard.dangerouslyPasteHTML(contenidoHtml);
-            }
+                const cacheIndex = rowId - 2;
+                if (tipo === 'blog') {
+                    const r = cacheBlog[cacheIndex].c;
+                    document.getElementById('formTitulo').value = r[0] ? r[0].v : '';
+                    document.getElementById('formExtra1').value = r[1] ? r[1].v : '';
+                    document.getElementById('formExtra2').value = r[2] ? r[2].v : '';
+                    document.getElementById('formImagenActual').value = r[3] ? r[3].v : '';
+                    
+                    const contenidoHtml = r[4] ? r[4].v : '';
+                    quill.clipboard.dangerouslyPasteHTML(contenidoHtml);
+                } else {
+                    const r = cacheRecursos[cacheIndex].c;
+                    document.getElementById('formTitulo').value = r[0] ? r[0].v : '';
+                    document.getElementById('formImagenActual').value = r[2] ? r[2].v : '';
+                    document.getElementById('formExtra1').value = r[3] ? r[3].v : '';
+                    document.getElementById('formExtra2').value = r[4] ? r[4].v : '';
+                    
+                    const contenidoHtml = r[1] ? r[1].v : '';
+                    quill.clipboard.dangerouslyPasteHTML(contenidoHtml);
+                }
+            }, 50);
         }
 
         function procesarArchivoImagen() {
@@ -327,7 +330,6 @@
         async function enviarDatosFormulario(event) {
             event.preventDefault();
             
-            // Puente: Extrae el HTML del editor visual de Quill y lo inyecta en el campo oculto
             document.getElementById('formContenido').value = quill.root.innerHTML;
 
             const btn = document.getElementById('btnGuardar');
@@ -378,7 +380,7 @@
             } catch(err) { console.error(err); }
 
             try {
-                document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">Eliminando del Drive...</td></tr>`;
+                document.getElementById('tabla-contents').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">Eliminando del Drive...</td></tr>`;
                 
                 await fetch(urlDestino, {
                     method: "POST",
