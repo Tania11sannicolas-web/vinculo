@@ -146,20 +146,19 @@
         let cacheBlog = [], cacheRecursos = [];
         let stringArchivoBase64 = "", nombreArchivoImagen = "";
         let myModal;
-        let quill; // Variable global para controlar el editor de texto
+        let quill; 
 
         document.addEventListener("DOMContentLoaded", function() {
             myModal = new bootstrap.Modal(document.getElementById('formModal'));
             
-            // Inicializar Quill Editor con opciones de Negrita, Cursiva, Listas y Enlaces
             quill = new Quill('#editor-container', {
                 theme: 'snow',
                 placeholder: 'Escribe el contenido con formato aquí...',
                 modules: {
                     toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],        // Negrita, cursiva, subrayado, tachado
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],    // Listas ordenadas y viñetas
-                        ['link', 'clean']                                // Hipervínculos y botón de limpiar formato
+                        ['bold', 'italic', 'underline', 'strike'], 
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }], 
+                        ['link', 'clean'] 
                     ]
                 }
             });
@@ -277,7 +276,6 @@
         function cargarFilaParaEdicion(tipo, rowId) {
             abrirModal(tipo);
             
-            // El setTimeout asegura que el DOM haya procesado 'abrirModal' antes de meterle datos
             setTimeout(() => {
                 document.getElementById('formRowId').value = rowId;
                 document.getElementById('btnGuardar').innerText = "Guardar Cambios Editados";
@@ -340,6 +338,10 @@
             const rowId = document.getElementById('formRowId').value;
             const urlDestino = (tipo === 'blog') ? URL_SCRIPT_BLOG : URL_SCRIPT_RECURSOS;
 
+            const extra1Value = document.getElementById('formExtra1').value;
+            const extra2Value = document.getElementById('formExtra2').value;
+
+            // Enviamos un payload redundante con ambos mapeos de nombres para asegurar compatibilidad total con Apps Script
             const payload = {
                 tipo: tipo,
                 action: rowId ? "edit" : "create",
@@ -348,11 +350,19 @@
                 imagenActual: document.getElementById('formImagenActual').value,
                 fileData: stringArchivoBase64,
                 fileName: nombreArchivoImagen,
-                fecha: tipo === 'blog' ? document.getElementById('formExtra1').value : "",
-                resumen: tipo === 'blog' ? document.getElementById('formExtra2').value : "",
-                linkPdf: tipo === 'recurso' ? document.getElementById('formExtra1').value : "",
-                brevoId: tipo === 'recurso' ? document.getElementById('formExtra2').value : "",
-                contenido: document.getElementById('formContenido').value
+                contenido: document.getElementById('formContenido').value,
+                
+                // Mapeo para Blog
+                fecha: tipo === 'blog' ? extra1Value : "",
+                resumen: tipo === 'blog' ? extra2Value : "",
+                
+                // Mapeo alternativo explícito para Recursos
+                linkPdf: tipo === 'recurso' ? extra1Value : "",
+                brevoId: tipo === 'recurso' ? extra2Value : "",
+                
+                // Nombres genéricos por si el Apps Script los lee directo de los inputs
+                formExtra1: extra1Value,
+                formExtra2: extra2Value
             };
 
             try {
@@ -380,7 +390,7 @@
             } catch(err) { console.error(err); }
 
             try {
-                document.getElementById('tabla-contents').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">Eliminando del Drive...</td></tr>`;
+                document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">Eliminando del Drive...</td></tr>`;
                 
                 await fetch(urlDestino, {
                     method: "POST",
