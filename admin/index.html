@@ -227,7 +227,6 @@
                             <td class="text-muted small">Brevo: ${row.c[4] ? row.c[4].v : '-'}</td>
                             <td class="text-truncate" style="max-width:250px;">${row.c[1] ? row.c[1].v : ''}</td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="cargarFilaParaEdicion('recurso', ${rId})"><i class="fa-solid fa-pen-to-square"></i></button>
                                 <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('recurso', ${rId})"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>`;
@@ -341,7 +340,6 @@
             const extra1Value = document.getElementById('formExtra1').value;
             const extra2Value = document.getElementById('formExtra2').value;
 
-            // Enviamos un payload redundante con ambos mapeos de nombres para asegurar compatibilidad total con Apps Script
             const payload = {
                 tipo: tipo,
                 action: rowId ? "edit" : "create",
