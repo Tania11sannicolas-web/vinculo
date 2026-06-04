@@ -83,7 +83,7 @@
                             </tr>
                         </thead>
                         <tbody id="tabla-contenidos">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -239,7 +239,13 @@
         function abrirModal(tipo) {
             document.getElementById('publicarForm').reset();
             quill.setContents([]); // Limpia el editor de texto enriquecido
-            stringArchivoBase64 = ""; nombreArchivoImagen = "";
+            stringArchivoBase64 = ""; 
+            nombreArchivoImagen = "";
+            
+            // Forzar la limpieza física del input de archivo para evitar bloqueos
+            const fileInput = document.getElementById('formFile');
+            if(fileInput) fileInput.value = "";
+
             document.getElementById('formTipo').value = tipo;
             document.getElementById('formRowId').value = "";
             document.getElementById('formImagenActual').value = "";
@@ -283,7 +289,6 @@
                 document.getElementById('formExtra2').value = r[2] ? r[2].v : '';
                 document.getElementById('formImagenActual').value = r[3] ? r[3].v : '';
                 
-                // Carga el HTML recuperado directamente en el editor visual
                 const contenidoHtml = r[4] ? r[4].v : '';
                 quill.clipboard.dangerouslyPasteHTML(contenidoHtml);
             } else {
@@ -293,7 +298,6 @@
                 document.getElementById('formExtra1').value = r[3] ? r[3].v : '';
                 document.getElementById('formExtra2').value = r[4] ? r[4].v : '';
                 
-                // Carga el HTML recuperado directamente en el editor visual
                 const contenidoHtml = r[1] ? r[1].v : '';
                 quill.clipboard.dangerouslyPasteHTML(contenidoHtml);
             }
@@ -301,15 +305,21 @@
 
         function procesarArchivoImagen() {
             const file = document.getElementById('formFile').files[0];
-            if (!file) return;
+            if (!file) {
+                stringArchivoBase64 = "";
+                nombreArchivoImagen = "";
+                return;
+            }
             
             const btn = document.getElementById('btnGuardar');
             nombreArchivoImagen = file.name;
             const reader = new FileReader();
             reader.onload = function(e) { 
                 stringArchivoBase64 = e.target.result; 
-                btn.removeAttribute('disabled');
-                btn.disabled = false;
+                if(btn) {
+                    btn.removeAttribute('disabled');
+                    btn.disabled = false;
+                }
             };
             reader.readAsDataURL(file);
         }
@@ -318,7 +328,6 @@
             event.preventDefault();
             
             // Puente: Extrae el HTML del editor visual de Quill y lo inyecta en el campo oculto
-            // De este modo 'payload.contenido' recibirá el texto con etiquetas HTML nativas (<b>, <i>, <ul>, etc.)
             document.getElementById('formContenido').value = quill.root.innerHTML;
 
             const btn = document.getElementById('btnGuardar');
