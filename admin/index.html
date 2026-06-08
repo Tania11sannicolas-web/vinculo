@@ -6,7 +6,8 @@
     <title>Panel de Control Virtual | VÍNCULO</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
     <style>
         body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .navbar-brand { font-weight: bold; color: #fff !important; }
@@ -17,10 +18,13 @@
         .badge-recurso { background-color: #2ecc71; color: white; }
         .btn-orange { background-color: #FF7A00 !important; color: white !important; font-weight: 600; opacity: 1 !important; }
         .btn-orange:hover { background-color: #E06B00 !important; color: white !important; }
-        /* Estilos personalizados para adaptar el editor Quill al diseño */
-        .ql-toolbar.ql-snow { border-top-left-radius: 8px; border-top-right-radius: 8px; border-color: #dee2e6; background: #fff; }
-        .ql-container.ql-snow { border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; border-color: #dee2e6; background: #fff; font-family: inherit; }
-        #editor-container { min-height: 200px; font-size: 16px; }
+        
+        /* INTEGRACIÓN LIMPIA DE EASYMDE */
+        .EasyMDEContainer { background: #fff; border-radius: 10px; overflow: hidden; }
+        .editor-toolbar { border-color: #dee2e6 !important; background: #f8f9fa; border-top-left-radius: 8px !important; border-top-right-radius: 8px !important; }
+        .editor-toolbar button { color: #4A4A4A !important; }
+        .editor-toolbar button.active, .editor-toolbar button:hover { background: #FF7A00 !important; color: #fff !important; border-color: #FF7A00 !important; }
+        .CodeMirror { border-color: #dee2e6 !important; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; font-family: inherit; font-size: 15px; min-height: 200px; }
     </style>
 </head>
 <body>
@@ -117,8 +121,7 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold" id="lblContenido">Cuerpo</label>
-                            <input type="hidden" id="formContenido">
-                            <div id="editor-container"></div>
+                            <textarea class="form-control" id="formContenido" rows="6"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -131,13 +134,10 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     <script>
-        // ========================================================
-        // ⚠️ RECUERDA PONER AQUÍ TUS DOS URL DE APPS SCRIPT:
         const URL_SCRIPT_BLOG = 'https://script.google.com/macros/s/AKfycbw2eu8XM2I1sGi9SeHd_oVLc6LI_VYCwj2jQfdGZsSFEoe4oeJV1eubQkDgHSLrEd1u/exec';
         const URL_SCRIPT_RECURSOS = 'https://script.google.com/macros/s/AKfycbwCgKiGaUkQfc5LSgiR02HN9xJhdXtf2rL5E0sSfjPpGDp-PjEeyaWCIGIDiLv3ywQtXw/exec';
-        // ========================================================
 
         const BLOG_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY'; 
         const RECURSOS_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo'; 
@@ -146,23 +146,10 @@
         let cacheBlog = [], cacheRecursos = [];
         let stringArchivoBase64 = "", nombreArchivoImagen = "";
         let myModal;
-        let quill; 
+        let elEditorVisual; 
 
         document.addEventListener("DOMContentLoaded", function() {
             myModal = new bootstrap.Modal(document.getElementById('formModal'));
-            
-            quill = new Quill('#editor-container', {
-                theme: 'snow',
-                placeholder: 'Escribe el contenido con formato aquí...',
-                modules: {
-                    toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'], 
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }], 
-                        ['link', 'clean'] 
-                    ]
-                }
-            });
-
             inicializarDashboard();
         });
 
@@ -224,9 +211,10 @@
                         <tr>
                             <td><span class="badge badge-recurso"><i class="fa-solid fa-gift me-1"></i> Recurso</span></td>
                             <td class="fw-semibold text-dark">${row.c[0].v || ''}</td>
-                            <td class="text-muted small">Brevo: ${row.c[4] ? row.c[4].v : '-'}</td>
+                            <td class="text-muted small">Automatizado (Lista 8)</td>
                             <td class="text-truncate" style="max-width:250px;">${row.c[1] ? row.c[1].v : ''}</td>
                             <td class="text-center">
+                                <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="cargarFilaParaEdicion('recurso', ${rId})"><i class="fa-solid fa-pen-to-square"></i></button>
                                 <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('recurso', ${rId})"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>`;
@@ -236,9 +224,7 @@
 
         function abrirModal(tipo) {
             document.getElementById('publicarForm').reset();
-            quill.setContents([]); 
-            stringArchivoBase64 = ""; 
-            nombreArchivoImagen = "";
+            stringArchivoBase64 = ""; nombreArchivoImagen = "";
             
             const fileInput = document.getElementById('formFile');
             if(fileInput) fileInput.value = "";
@@ -249,8 +235,7 @@
             document.getElementById('modalTitle').innerText = tipo === 'blog' ? '📝 Nueva Entrada de Blog' : '🎁 Nuevo Recurso Descargable';
             
             const btn = document.getElementById('btnGuardar');
-            btn.removeAttribute('disabled');
-            btn.disabled = false;
+            btn.removeAttribute('disabled'); btn.disabled = false;
             btn.innerText = "Publicar Contenido";
 
             const extraRow = document.getElementById('rowCamposEspeciales');
@@ -264,11 +249,24 @@
             } else {
                 document.getElementById('lblTitulo').innerText = "Nombre del Recurso";
                 document.getElementById('lblContenido').innerText = "Descripción Detallada";
+                // 🛑 EL CAMPO ID DE BREVO HA SIDO ELIMINADO VISUALMENTE. AHORA PASA UN INPUT HIDDEN CON VALOR 8.
                 extraRow.innerHTML = `
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Enlace PDF (Drive)</label><input type="url" class="form-control" id="formExtra1" required placeholder="https://drive.google.com/..."></div>
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">ID de Lista Brevo</label><input type="number" class="form-control" id="formExtra2" required placeholder="Ej: 3"></div>
+                    <div class="col-12 mb-3"><label class="form-label fw-bold">Enlace PDF (Drive)</label><input type="url" class="form-control" id="formExtra1" required placeholder="https://drive.google.com/..."></div>
+                    <input type="hidden" id="formExtra2" value="8">
                 `;
             }
+
+            setTimeout(() => {
+                if (elEditorVisual) { elEditorVisual.toTextArea(); elEditorVisual = null; }
+                elEditorVisual = new EasyMDE({
+                    element: document.getElementById('formContenido'),
+                    forceSync: true,
+                    spellChecker: false,
+                    placeholder: tipo === 'blog' ? "Escribe en formato Markdown..." : "Escribe los detalles del recurso...",
+                    toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "preview"]
+                });
+            }, 200);
+
             myModal.show();
         }
 
@@ -281,45 +279,39 @@
                 document.getElementById('modalTitle').innerText = `✏️ Editando Fila #${rowId}`;
 
                 const cacheIndex = rowId - 2;
+                let textoCuerpo = "";
+
                 if (tipo === 'blog') {
                     const r = cacheBlog[cacheIndex].c;
                     document.getElementById('formTitulo').value = r[0] ? r[0].v : '';
                     document.getElementById('formExtra1').value = r[1] ? r[1].v : '';
                     document.getElementById('formExtra2').value = r[2] ? r[2].v : '';
                     document.getElementById('formImagenActual').value = r[3] ? r[3].v : '';
-                    
-                    const contenidoHtml = r[4] ? r[4].v : '';
-                    quill.clipboard.dangerouslyPasteHTML(contenidoHtml);
+                    textoCuerpo = r[4] ? r[4].v : '';
                 } else {
                     const r = cacheRecursos[cacheIndex].c;
                     document.getElementById('formTitulo').value = r[0] ? r[0].v : '';
                     document.getElementById('formImagenActual').value = r[2] ? r[2].v : '';
                     document.getElementById('formExtra1').value = r[3] ? r[3].v : '';
-                    document.getElementById('formExtra2').value = r[4] ? r[4].v : '';
-                    
-                    const contenidoHtml = r[1] ? r[1].v : '';
-                    quill.clipboard.dangerouslyPasteHTML(contenidoHtml);
+                    // Forzar que mantenga el 8 de fondo al editar recursos existentes
+                    document.getElementById('formExtra2').value = "8";
+                    textoCuerpo = r[1] ? r[1].v : '';
                 }
-            }, 50);
+
+                if(elEditorVisual) { elEditorVisual.value(textoCuerpo); }
+            }, 300);
         }
 
         function procesarArchivoImagen() {
             const file = document.getElementById('formFile').files[0];
-            if (!file) {
-                stringArchivoBase64 = "";
-                nombreArchivoImagen = "";
-                return;
-            }
+            if (!file) { stringArchivoBase64 = ""; nombreArchivoImagen = ""; return; }
             
             const btn = document.getElementById('btnGuardar');
             nombreArchivoImagen = file.name;
             const reader = new FileReader();
             reader.onload = function(e) { 
                 stringArchivoBase64 = e.target.result; 
-                if(btn) {
-                    btn.removeAttribute('disabled');
-                    btn.disabled = false;
-                }
+                if(btn) { btn.removeAttribute('disabled'); btn.disabled = false; }
             };
             reader.readAsDataURL(file);
         }
@@ -327,7 +319,7 @@
         async function enviarDatosFormulario(event) {
             event.preventDefault();
             
-            document.getElementById('formContenido').value = quill.root.innerHTML;
+            if (elEditorVisual) { document.getElementById('formContenido').value = elEditorVisual.value(); }
 
             const btn = document.getElementById('btnGuardar');
             btn.disabled = true;
@@ -349,18 +341,12 @@
                 fileData: stringArchivoBase64,
                 fileName: nombreArchivoImagen,
                 contenido: document.getElementById('formContenido').value,
-                
-                // Mapeo para Blog
                 fecha: tipo === 'blog' ? extra1Value : "",
                 resumen: tipo === 'blog' ? extra2Value : "",
-                
-                // Mapeo alternativo explícito para Recursos
-                linkPdf: tipo === 'recurso' ? extra1Value : "",
-                brevoId: tipo === 'recurso' ? extra2Value : "",
-                
-                // Nombres genéricos por si el Apps Script los lee directo de los inputs
+                linkPdf: tipo === 'recurso' ? extra1Value : "8",
+                brevoId: "8", // 👈 Forzado el envío del parámetro 8 al Apps Script
                 formExtra1: extra1Value,
-                formExtra2: extra2Value
+                formExtra2: "8"
             };
 
             try {
@@ -389,7 +375,6 @@
 
             try {
                 document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">Eliminando del Drive...</td></tr>`;
-                
                 await fetch(urlDestino, {
                     method: "POST",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
