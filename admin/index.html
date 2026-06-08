@@ -7,7 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+    
     <style>
         body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .navbar-brand { font-weight: bold; color: #fff !important; }
@@ -19,12 +20,10 @@
         .btn-orange { background-color: #FF7A00 !important; color: white !important; font-weight: 600; opacity: 1 !important; }
         .btn-orange:hover { background-color: #E06B00 !important; color: white !important; }
         
-        /* INTEGRACIÓN LIMPIA DE EASYMDE */
-        .EasyMDEContainer { background: #fff; border-radius: 10px; overflow: hidden; }
-        .editor-toolbar { border-color: #dee2e6 !important; background: #f8f9fa; border-top-left-radius: 8px !important; border-top-right-radius: 8px !important; }
-        .editor-toolbar button { color: #4A4A4A !important; }
-        .editor-toolbar button.active, .editor-toolbar button:hover { background: #FF7A00 !important; color: #fff !important; border-color: #FF7A00 !important; }
-        .CodeMirror { border-color: #dee2e6 !important; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; font-family: inherit; font-size: 15px; min-height: 200px; }
+        /* INTEGRACIÓN ESTÉTICA DEL EDITOR VISUAL DE TEXTO */
+        #contenedor-quill { background: #fff; border-radius: 10px; overflow: hidden; display: none; }
+        .ql-toolbar.ql-snow { border-color: #dee2e6 !important; background: #f8f9fa; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+        .ql-container.ql-snow { border-color: #dee2e6 !important; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; font-family: inherit; font-size: 15px; min-height: 250px; }
     </style>
 </head>
 <body>
@@ -121,7 +120,12 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold" id="lblContenido">Cuerpo</label>
+                            
                             <textarea class="form-control" id="formContenido" rows="6"></textarea>
+                            
+                            <div id="contenedor-quill">
+                                <div id="editor-quill"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -134,7 +138,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+    
     <script>
         const URL_SCRIPT_BLOG = 'https://script.google.com/macros/s/AKfycbw2eu8XM2I1sGi9SeHd_oVLc6LI_VYCwj2jQfdGZsSFEoe4oeJV1eubQkDgHSLrEd1u/exec';
         const URL_SCRIPT_RECURSOS = 'https://script.google.com/macros/s/AKfycbwCgKiGaUkQfc5LSgiR02HN9xJhdXtf2rL5E0sSfjPpGDp-PjEeyaWCIGIDiLv3ywQtXw/exec';
@@ -146,7 +151,7 @@
         let cacheBlog = [], cacheRecursos = [];
         let stringArchivoBase64 = "", nombreArchivoImagen = "";
         let myModal;
-        let elEditorVisual; 
+        let instanciaQuill = null; 
 
         document.addEventListener("DOMContentLoaded", function() {
             myModal = new bootstrap.Modal(document.getElementById('formModal'));
@@ -207,6 +212,7 @@
                 cacheRecursos.forEach((row, idx) => {
                     if(!row || !row.c || !row.c[0]) return;
                     const rId = idx + 2;
+                    // MANTENIDO: El botón de editar (lápiz) ha sido removido de Recursos. Solo acción de eliminar.
                     tbody.innerHTML += `
                         <tr>
                             <td><span class="badge badge-recurso"><i class="fa-solid fa-gift me-1"></i> Recurso</span></td>
@@ -214,7 +220,6 @@
                             <td class="text-muted small">Automatizado (Lista 8)</td>
                             <td class="text-truncate" style="max-width:250px;">${row.c[1] ? row.c[1].v : ''}</td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="cargarFilaParaEdicion('recurso', ${rId})"><i class="fa-solid fa-pen-to-square"></i></button>
                                 <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('recurso', ${rId})"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>`;
@@ -238,34 +243,54 @@
             btn.removeAttribute('disabled'); btn.disabled = false;
             btn.innerText = "Publicar Contenido";
 
+            const textareaContenido = document.getElementById('formContenido');
+            const contenedorQuill = document.getElementById('contenedor-quill');
+
             const extraRow = document.getElementById('rowCamposEspeciales');
             if (tipo === 'blog') {
                 document.getElementById('lblTitulo').innerText = "Título de la Nota";
-                document.getElementById('lblContenido').innerText = "Cuerpo del Artículo";
+                document.getElementById('lblContenido').innerText = "Cuerpo del Artículo (Formato Visual)";
                 extraRow.innerHTML = `
                     <div class="col-md-6 mb-3"><label class="form-label fw-bold">Fecha</label><input type="text" class="form-control" id="formExtra1" required placeholder="Ej: 18 de Mayo, 2026"></div>
                     <div class="col-md-6 mb-3"><label class="form-label fw-bold">Resumen Corto</label><input type="text" class="form-control" id="formExtra2" required placeholder="Frase para la tarjeta..."></div>
                 `;
+                
+                // Switch de visibilidad: Oculta textarea plano y enciende Quill
+                textareaContenido.style.display = "none";
+                contenedorQuill.style.display = "block";
+
+                // Instanciar o limpiar Quill
+                if (!instanciaQuill) {
+                    instanciaQuill = new Quill('#editor-quill', {
+                        theme: 'snow',
+                        placeholder: 'Escribe tu nota aquí como en Word...',
+                        modules: {
+                            toolbar: [
+                                ['bold', 'italic', 'underline'],
+                                [{ 'header': 1 }, { 'header': 2 }],
+                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                ['link', 'clean']
+                            ]
+                        }
+                    });
+                } else {
+                    instanciaQuill.setText('');
+                }
+
             } else {
                 document.getElementById('lblTitulo').innerText = "Nombre del Recurso";
                 document.getElementById('lblContenido').innerText = "Descripción Detallada";
-                // 🛑 EL CAMPO ID DE BREVO HA SIDO ELIMINADO VISUALMENTE. AHORA PASA UN INPUT HIDDEN CON VALOR 8.
                 extraRow.innerHTML = `
                     <div class="col-12 mb-3"><label class="form-label fw-bold">Enlace PDF (Drive)</label><input type="url" class="form-control" id="formExtra1" required placeholder="https://drive.google.com/..."></div>
                     <input type="hidden" id="formExtra2" value="8">
                 `;
+                
+                // Switch de visibilidad: Enciende textarea plano y oculta Quill por completo
+                textareaContenido.style.display = "block";
+                textareaContenido.value = "";
+                textareaContenido.placeholder = "Escribe los detalles informativos de la herramienta...";
+                contenedorQuill.style.display = "none";
             }
-
-            setTimeout(() => {
-                if (elEditorVisual) { elEditorVisual.toTextArea(); elEditorVisual = null; }
-                elEditorVisual = new EasyMDE({
-                    element: document.getElementById('formContenido'),
-                    forceSync: true,
-                    spellChecker: false,
-                    placeholder: tipo === 'blog' ? "Escribe en formato Markdown..." : "Escribe los detalles del recurso...",
-                    toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "preview"]
-                });
-            }, 200);
 
             myModal.show();
         }
@@ -288,17 +313,12 @@
                     document.getElementById('formExtra2').value = r[2] ? r[2].v : '';
                     document.getElementById('formImagenActual').value = r[3] ? r[3].v : '';
                     textoCuerpo = r[4] ? r[4].v : '';
-                } else {
-                    const r = cacheRecursos[cacheIndex].c;
-                    document.getElementById('formTitulo').value = r[0] ? r[0].v : '';
-                    document.getElementById('formImagenActual').value = r[2] ? r[2].v : '';
-                    document.getElementById('formExtra1').value = r[3] ? r[3].v : '';
-                    // Forzar que mantenga el 8 de fondo al editar recursos existentes
-                    document.getElementById('formExtra2').value = "8";
-                    textoCuerpo = r[1] ? r[1].v : '';
+                    
+                    // ACCIÓN MAGICA: Quill toma el string HTML con sus etiquetas y lo renderiza de forma visual (ocultando el código)
+                    if(instanciaQuill) { 
+                        instanciaQuill.clipboard.dangerouslyPasteHTML(textoCuerpo); 
+                    }
                 }
-
-                if(elEditorVisual) { elEditorVisual.value(textoCuerpo); }
             }, 300);
         }
 
@@ -319,13 +339,17 @@
         async function enviarDatosFormulario(event) {
             event.preventDefault();
             
-            if (elEditorVisual) { document.getElementById('formContenido').value = elEditorVisual.value(); }
+            const tipo = document.getElementById('formTipo').value;
+            
+            // Si es blog, extraemos el contenido HTML nativo formateado de Quill para guardarlo en el Sheets
+            if (tipo === 'blog' && instanciaQuill) { 
+                document.getElementById('formContenido').value = instanciaQuill.getSemanticHTML(); 
+            }
 
             const btn = document.getElementById('btnGuardar');
             btn.disabled = true;
             btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Sincronizando...`;
 
-            const tipo = document.getElementById('formTipo').value;
             const rowId = document.getElementById('formRowId').value;
             const urlDestino = (tipo === 'blog') ? URL_SCRIPT_BLOG : URL_SCRIPT_RECURSOS;
 
@@ -344,7 +368,7 @@
                 fecha: tipo === 'blog' ? extra1Value : "",
                 resumen: tipo === 'blog' ? extra2Value : "",
                 linkPdf: tipo === 'recurso' ? extra1Value : "8",
-                brevoId: "8", // 👈 Forzado el envío del parámetro 8 al Apps Script
+                brevoId: "8", 
                 formExtra1: extra1Value,
                 formExtra2: "8"
             };
