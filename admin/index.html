@@ -19,7 +19,7 @@
         .btn-orange { background-color: #FF7A00 !important; color: white !important; font-weight: 600; opacity: 1 !important; }
         .btn-orange:hover { background-color: #E06B00 !important; color: white !important; }
         
-        /* ESTILOS EASYMDE */
+        /* INTEGRACIÓN LIMPIA DE EASYMDE */
         .EasyMDEContainer { background: #fff; border-radius: 10px; overflow: hidden; }
         .editor-toolbar { border-color: #dee2e6 !important; background: #f8f9fa; border-top-left-radius: 8px !important; border-top-right-radius: 8px !important; }
         .editor-toolbar button { color: #4A4A4A !important; }
@@ -207,7 +207,6 @@
                 cacheRecursos.forEach((row, idx) => {
                     if(!row || !row.c || !row.c[0]) return;
                     const rId = idx + 2;
-                    // CORRECCIÓN AQUÍ: Se eliminó el botón de lápiz (edición) de las filas de recursos. Solo queda borrar permanentemente.
                     tbody.innerHTML += `
                         <tr>
                             <td><span class="badge badge-recurso"><i class="fa-solid fa-gift me-1"></i> Recurso</span></td>
@@ -215,6 +214,7 @@
                             <td class="text-muted small">Automatizado (Lista 8)</td>
                             <td class="text-truncate" style="max-width:250px;">${row.c[1] ? row.c[1].v : ''}</td>
                             <td class="text-center">
+                                <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="cargarFilaParaEdicion('recurso', ${rId})"><i class="fa-solid fa-pen-to-square"></i></button>
                                 <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('recurso', ${rId})"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>`;
@@ -238,9 +238,6 @@
             btn.removeAttribute('disabled'); btn.disabled = false;
             btn.innerText = "Publicar Contenido";
 
-            // Destruir siempre cualquier rastro previo del EasyMDE antes de abrir un nuevo modal
-            if (elEditorVisual) { elEditorVisual.toTextArea(); elEditorVisual = null; }
-
             const extraRow = document.getElementById('rowCamposEspeciales');
             if (tipo === 'blog') {
                 document.getElementById('lblTitulo').innerText = "Título de la Nota";
@@ -249,30 +246,26 @@
                     <div class="col-md-6 mb-3"><label class="form-label fw-bold">Fecha</label><input type="text" class="form-control" id="formExtra1" required placeholder="Ej: 18 de Mayo, 2026"></div>
                     <div class="col-md-6 mb-3"><label class="form-label fw-bold">Resumen Corto</label><input type="text" class="form-control" id="formExtra2" required placeholder="Frase para la tarjeta..."></div>
                 `;
-                
-                // SOLO ACTIVA EASYMDE SI ES BLOG
-                setTimeout(() => {
-                    elEditorVisual = new EasyMDE({
-                        element: document.getElementById('formContenido'),
-                        forceSync: true,
-                        spellChecker: false,
-                        placeholder: "Escribe en formato Markdown...",
-                        toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "preview"]
-                    });
-                }, 200);
-
             } else {
                 document.getElementById('lblTitulo').innerText = "Nombre del Recurso";
-                document.getElementById('lblContenido').innerText = "Descripción Detallada (Texto Simple)";
+                document.getElementById('lblContenido').innerText = "Descripción Detallada";
+                // 🛑 EL CAMPO ID DE BREVO HA SIDO ELIMINADO VISUALMENTE. AHORA PASA UN INPUT HIDDEN CON VALOR 8.
                 extraRow.innerHTML = `
                     <div class="col-12 mb-3"><label class="form-label fw-bold">Enlace PDF (Drive)</label><input type="url" class="form-control" id="formExtra1" required placeholder="https://drive.google.com/..."></div>
                     <input type="hidden" id="formExtra2" value="8">
                 `;
-                
-                // SI ES RECURSO, DEJA EL TEXTAREA NATIVO LIMPIO SIN CÓDIGO HTML NI BARRAS DE HERRAMIENTAS
-                const textCuerpo = document.getElementById('formContenido');
-                textCuerpo.placeholder = "Escribe una descripción directa y clara para la herramienta...";
             }
+
+            setTimeout(() => {
+                if (elEditorVisual) { elEditorVisual.toTextArea(); elEditorVisual = null; }
+                elEditorVisual = new EasyMDE({
+                    element: document.getElementById('formContenido'),
+                    forceSync: true,
+                    spellChecker: false,
+                    placeholder: tipo === 'blog' ? "Escribe en formato Markdown..." : "Escribe los detalles del recurso...",
+                    toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "preview"]
+                });
+            }, 200);
 
             myModal.show();
         }
@@ -295,9 +288,17 @@
                     document.getElementById('formExtra2').value = r[2] ? r[2].v : '';
                     document.getElementById('formImagenActual').value = r[3] ? r[3].v : '';
                     textoCuerpo = r[4] ? r[4].v : '';
-                    
-                    if(elEditorVisual) { elEditorVisual.value(textoCuerpo); }
+                } else {
+                    const r = cacheRecursos[cacheIndex].c;
+                    document.getElementById('formTitulo').value = r[0] ? r[0].v : '';
+                    document.getElementById('formImagenActual').value = r[2] ? r[2].v : '';
+                    document.getElementById('formExtra1').value = r[3] ? r[3].v : '';
+                    // Forzar que mantenga el 8 de fondo al editar recursos existentes
+                    document.getElementById('formExtra2').value = "8";
+                    textoCuerpo = r[1] ? r[1].v : '';
                 }
+
+                if(elEditorVisual) { elEditorVisual.value(textoCuerpo); }
             }, 300);
         }
 
@@ -318,16 +319,13 @@
         async function enviarDatosFormulario(event) {
             event.preventDefault();
             
-            // Sincronizar contenido si el editor de Markdown está activo en ese instante
-            const tipo = document.getElementById('formTipo').value;
-            if (tipo === 'blog' && elEditorVisual) { 
-                document.getElementById('formContenido').value = elEditorVisual.value(); 
-            }
+            if (elEditorVisual) { document.getElementById('formContenido').value = elEditorVisual.value(); }
 
             const btn = document.getElementById('btnGuardar');
             btn.disabled = true;
             btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Sincronizando...`;
 
+            const tipo = document.getElementById('formTipo').value;
             const rowId = document.getElementById('formRowId').value;
             const urlDestino = (tipo === 'blog') ? URL_SCRIPT_BLOG : URL_SCRIPT_RECURSOS;
 
@@ -346,7 +344,7 @@
                 fecha: tipo === 'blog' ? extra1Value : "",
                 resumen: tipo === 'blog' ? extra2Value : "",
                 linkPdf: tipo === 'recurso' ? extra1Value : "8",
-                brevoId: "8", 
+                brevoId: "8", // 👈 Forzado el envío del parámetro 8 al Apps Script
                 formExtra1: extra1Value,
                 formExtra2: "8"
             };
