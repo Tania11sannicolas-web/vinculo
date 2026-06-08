@@ -94,6 +94,12 @@
     </footer>
 
     <script>
+        // ========================================================
+        // 🔑 CONFIGURACIÓN INTEGRADA DE API BREVO
+        const BREVO_API_KEY = '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';
+        const ID_LISTA_FIJA = 8; // 👈 Forzado a la lista 8 global siempre
+        // ========================================================
+
         document.addEventListener("DOMContentLoaded", async function() {
             const grid = document.querySelector('.grid-recursos');
             const SHEET_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo';
@@ -120,10 +126,9 @@
                     return '';
                 };
 
-                // Invertimos las filas para que los e-books o guías más nuevas aparezcan primero arriba
                 const listaCronologica = [...filas].reverse();
 
-                listaCronologica.forEach((row) => {
+                listaCronologica.forEach((row, idx) => {
                     if (!row || !row.c) return;
                     
                     const titulo = leerCelda(row.c[0]);
@@ -132,10 +137,14 @@
                     const desc = leerCelda(row.c[1]) || 'Descarga esta herramienta práctica lista para implementar.';
                     const imagen = leerCelda(row.c[2]) || 'https://via.placeholder.com/300x200';
                     const linkPdf = leerCelda(row.c[3]) || '#';
-                    const brevoId = leerCelda(row.c[4]) || '';
 
                     const card = document.createElement('div');
                     card.className = 'card-recurso';
+                    
+                    const formId = `form-rec-${idx}`;
+                    const inputId = `email-rec-${idx}`;
+                    const btnId = `btn-rec-${idx}`;
+
                     card.innerHTML = `
                         <div>
                             <div class="portada-recurso" style="background-image: url('${imagen}');"></div>
@@ -143,24 +152,82 @@
                             <p>${desc}</p>
                         </div>
                         
-                        <form class="form-mini" action="https://sibautomation.com/theform/post?id=${brevoId}" method="POST" target="_blank">
-                            <input type="email" name="EMAIL" placeholder="Tu correo electrónico institucional" required>
-                            <input type="hidden" name="success_url" value="${linkPdf}">
-                            <button type="submit">Validar y Descargar Material</button>
+                        <form class="form-mini" id="${formId}" onsubmit="procesarDescargaInmediata(event, '${inputId}', '${btnId}', '${linkPdf}', '${titulo}')">
+                            <input type="email" id="${inputId}" placeholder="Tu correo electrónico de la organización" required>
+                            <button type="submit" id="${btnId}">Validar e Iniciar Descarga</button>
                         </form>
                     `;
                     grid.appendChild(card);
                 });
 
-                if (grid.innerHTML === "") {
-                    grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente más recursos gratuitos disponibles.</p>`;
-                }
-
             } catch (error) {
                 console.error("Error crítico en recursos:", error);
-                grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos conectar con el servidor de herramientas en este momento.</p>`;
+                grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos conectar con el servidor de herramientas.</p>`;
             }
         });
+
+        // FLUJO DE CAPTACIÓN: GUARDA CONTACTO EN LISTA 8, DISPARA CORREO TRANSACCIONAL Y ABRE EL PDF AL INSTANTE
+        async function procesarDescargaInmediata(event, inputId, btnId, urlPdf, nombreRecurso) {
+            event.preventDefault();
+            
+            const correoIngresado = document.getElementById(inputId).value;
+            const botonEjecutor = document.getElementById(btnId);
+            
+            const textoOriginalBoton = botonEjecutor.innerText;
+            botonEjecutor.disabled = true;
+            botonEjecutor.innerText = "Procesando acceso...";
+
+            // 1. INTRODUCIR AL LEAD EN LA LISTA GLOBAL DE CONTACTOS #8
+            const payloadContacto = {
+                email: correoIngresado,
+                listIds: [ID_LISTA_FIJA], 
+                updateEnabled: true,
+                attributes: { "RECURSO_DESCARGADO": nombreRecurso } 
+            };
+
+            // 2. DISPARAR RESPUESTA TRANSACCIONAL DE RESPALDO CON EL LINK
+            const payloadEmail = {
+                sender: { name: "Mayra Flores | VÍNCULO", email: "mayra.flores@vinculo-ce.com" },
+                to: [{ email: correoIngresado }],
+                subject: `📥 Confirmación de descarga: ${nombreRecurso}`,
+                htmlContent: `
+                    <div style="font-family: sans-serif; padding: 30px; max-width: 600px; margin: 0 auto; border: 1px solid #FAF9F6; border-radius: 12px; color: #1A1A1A;">
+                        <h2 style="color: #FF7A00; font-size: 20px; margin-bottom: 15px;">¡Tu herramienta está lista!</h2>
+                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A;">Confirmamos que has descargado la guía: <strong>${nombreRecurso}</strong> de forma exitosa.</p>
+                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A;">Te sugerimos guardar este enlace directo para que no pierdas el acceso al material cuando lo necesites consultar de nuevo:</p>
+                        <p style="margin: 20px 0; text-align: center;">
+                            <a href="${urlPdf}" target="_blank" style="background-color: #FF7A00; color: white; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 8px; display: inline-block;">Ver PDF en Google Drive</a>
+                        </p>
+                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A;">Periódicamente te compartiremos más recursos y convocatorias estratégicas exclusivas para fortalecer tu causa u organización corporativa.</p>
+                        <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 20px 0;"/>
+                        <p style="font-size: 15px; margin-bottom: 5px; font-weight: bold; color: #1A1A1A;">Mayra Flores Álvarez</p>
+                        <p style="font-size: 13px; color: #FF7A00; margin-top: 0; font-weight: 600;">VÍNCULO Consultoría Estratégica</p>
+                    </div>`
+            };
+
+            try {
+                // Ejecución paralela síncrona mediante fetch
+                await Promise.all([
+                    fetch('https://api.brevo.com/v3/contacts', {
+                        method: 'POST',
+                        headers: { 'accept': 'application/json', 'api-key': BREVO_API_KEY, 'content-type': 'application/json' },
+                        body: JSON.stringify(payloadContacto)
+                    }),
+                    fetch('https://api.brevo.com/v3/smtp/email', {
+                        method: 'POST',
+                        headers: { 'accept': 'application/json', 'api-key': BREVO_API_KEY, 'content-type': 'application/json' },
+                        body: JSON.stringify(payloadEmail)
+                    })
+                ]);
+            } catch (err) {
+                console.error("Error al reportar en Brevo:", err);
+            } finally {
+                // ABRE LA DESCARGA EN INSTANTE (Sin redireccionar la ventana actual)
+                window.open(urlPdf, '_blank');
+                botonEjecutor.disabled = false;
+                botonEjecutor.innerText = textoOriginalBoton;
+            }
+        }
     </script>
 </body>
 </html>
