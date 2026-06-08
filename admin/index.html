@@ -20,7 +20,7 @@
         .btn-orange { background-color: #FF7A00 !important; color: white !important; font-weight: 600; opacity: 1 !important; }
         .btn-orange:hover { background-color: #E06B00 !important; color: white !important; }
         
-        /* INTEGRACIÓN ESTÉTICA DEL EDITOR VISUAL DE TEXTO */
+        /* ESTILOS DE INTEGRACIÓN DEL EDITOR PARA EL BLOG */
         #contenedor-quill { background: #fff; border-radius: 10px; overflow: hidden; display: none; }
         .ql-toolbar.ql-snow { border-color: #dee2e6 !important; background: #f8f9fa; border-top-left-radius: 8px; border-top-right-radius: 8px; }
         .ql-container.ql-snow { border-color: #dee2e6 !important; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; font-family: inherit; font-size: 15px; min-height: 250px; }
@@ -159,6 +159,7 @@
         });
 
         function inicializarDashboard() {
+            document.getElementById('tabla-contents').innerHTML = ''; // Limpieza estructural de seguridad
             document.getElementById('tabla-contenidos').innerHTML = `
                 <tr id="fila-carga-espera">
                     <td colspan="5" class="text-center text-muted py-4">
@@ -212,7 +213,7 @@
                 cacheRecursos.forEach((row, idx) => {
                     if(!row || !row.c || !row.c[0]) return;
                     const rId = idx + 2;
-                    // MANTENIDO: El botón de editar (lápiz) ha sido removido de Recursos. Solo acción de eliminar.
+                    // FIJO: Se eliminó el botón de lápiz de la sección de recursos. Solo opción de remover permanentemente.
                     tbody.innerHTML += `
                         <tr>
                             <td><span class="badge badge-recurso"><i class="fa-solid fa-gift me-1"></i> Recurso</span></td>
@@ -255,15 +256,15 @@
                     <div class="col-md-6 mb-3"><label class="form-label fw-bold">Resumen Corto</label><input type="text" class="form-control" id="formExtra2" required placeholder="Frase para la tarjeta..."></div>
                 `;
                 
-                // Switch de visibilidad: Oculta textarea plano y enciende Quill
+                // CONDICIÓN: Oculta textarea plano y activa el editor Quill para procesar HTML de forma limpia
                 textareaContenido.style.display = "none";
+                textareaContenido.required = false;
                 contenedorQuill.style.display = "block";
 
-                // Instanciar o limpiar Quill
                 if (!instanciaQuill) {
                     instanciaQuill = new Quill('#editor-quill', {
                         theme: 'snow',
-                        placeholder: 'Escribe tu nota aquí como en Word...',
+                        placeholder: 'Escribe tu nota aquí de forma visual...',
                         modules: {
                             toolbar: [
                                 ['bold', 'italic', 'underline'],
@@ -278,17 +279,18 @@
                 }
 
             } else {
+                // CONDICIÓN: Para recursos NO hay editor visual. Queda el cuadro de texto simple (textarea) de forma nativa.
                 document.getElementById('lblTitulo').innerText = "Nombre del Recurso";
-                document.getElementById('lblContenido').innerText = "Descripción Detallada";
+                document.getElementById('lblContenido').innerText = "Descripción del Recurso (Texto Simple)";
                 extraRow.innerHTML = `
                     <div class="col-12 mb-3"><label class="form-label fw-bold">Enlace PDF (Drive)</label><input type="url" class="form-control" id="formExtra1" required placeholder="https://drive.google.com/..."></div>
                     <input type="hidden" id="formExtra2" value="8">
                 `;
                 
-                // Switch de visibilidad: Enciende textarea plano y oculta Quill por completo
                 textareaContenido.style.display = "block";
+                textareaContenido.required = true;
                 textareaContenido.value = "";
-                textareaContenido.placeholder = "Escribe los detalles informativos de la herramienta...";
+                textareaContenido.placeholder = "Escribe una descripción corta para la tarjeta del recurso...";
                 contenedorQuill.style.display = "none";
             }
 
@@ -314,7 +316,7 @@
                     document.getElementById('formImagenActual').value = r[3] ? r[3].v : '';
                     textoCuerpo = r[4] ? r[4].v : '';
                     
-                    // ACCIÓN MAGICA: Quill toma el string HTML con sus etiquetas y lo renderiza de forma visual (ocultando el código)
+                    // Inyecta el HTML existente directo al editor Quill para ocultar las etiquetas del código
                     if(instanciaQuill) { 
                         instanciaQuill.clipboard.dangerouslyPasteHTML(textoCuerpo); 
                     }
@@ -341,7 +343,7 @@
             
             const tipo = document.getElementById('formTipo').value;
             
-            // Si es blog, extraemos el contenido HTML nativo formateado de Quill para guardarlo en el Sheets
+            // Si es blog extraemos el HTML formateado de Quill; si es recurso el valor plano del textarea
             if (tipo === 'blog' && instanciaQuill) { 
                 document.getElementById('formContenido').value = instanciaQuill.getSemanticHTML(); 
             }
