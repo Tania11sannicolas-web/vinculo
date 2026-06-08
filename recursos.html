@@ -35,18 +35,26 @@
         .container-recursos { padding: 60px 8% 80px 8%; max-width: 1200px; margin: 0 auto; }
         .grid-recursos { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px; }
         
-        .card-recurso { background: var(--blanco); border-radius: 24px; padding: 35px; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 10px 30px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; text-align: left; min-height: 520px; }
+        .card-recurso { background: var(--blanco); border-radius: 24px; padding: 35px; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 10px 30px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; text-align: left; min-height: 540px; transition: transform 0.3s; }
+        .card-recurso:hover { transform: translateY(-5px); }
         .portada-recurso { height: 200px; background-size: cover; background-repeat: no-repeat; background-position: center; margin-bottom: 25px; background-color: #FAF9F6; border-radius: 16px; border: 1px solid rgba(0,0,0,0.03); }
         
         .card-recurso h2 { font-size: 22px; font-weight: 700; margin-bottom: 12px; line-height: 1.3; color: var(--oscuro); letter-spacing: -0.5px; }
         .card-recurso p { color: var(--texto); font-size: 14.5px; margin-bottom: 25px; line-height: 1.5; flex-grow: 1; }
 
-        /* FORMULARIO DE CAPTACIÓN SINCALIZADO */
+        /* FORMULARIO DE CAPTACIÓN DOBLE CAMPO */
         .form-mini { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; border-top: 1px solid rgba(0,0,0,0.04); padding-top: 20px; }
-        .form-mini input { width: 100%; padding: 14px 20px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit; font-size: 14px; outline: none; transition: border-color 0.3s; }
-        .form-mini input:focus { border-color: var(--naranja); }
+        .form-mini input { width: 100%; padding: 14px 20px; border-radius: 10px; border: 1px solid #E2E8F0; font-family: inherit; font-size: 14px; outline: none; transition: all 0.3s; }
+        .form-mini input:focus { border-color: var(--naranja); box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.1); }
         .form-mini button { background-color: var(--naranja); color: var(--blanco); padding: 14px 20px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; font-size: 14px; transition: background-color 0.3s; width: 100%; }
         .form-mini button:hover { background-color: var(--naranja-hover); }
+
+        /* BLOQUE MENSAJE DE ÉXITO */
+        .msg-exito-recurso { display: none; background-color: #F0FDF4; border: 1px solid #BBF7D0; padding: 20px; border-radius: 14px; margin-top: 15px; text-align: center; }
+        .msg-exito-recurso h4 { color: #166534; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+        .msg-exito-recurso p { color: #1e293b; font-size: 13.5px; line-height: 1.4; margin-bottom: 12px; }
+        .msg-exito-recurso a { font-size: 13.5px; font-weight: 700; color: var(--naranja); text-decoration: none; }
+        .msg-exito-recurso a:hover { text-decoration: underline; }
 
         footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; margin-top: 80px; }
         footer a { color: var(--naranja); text-decoration: none; margin: 0 10px; }
@@ -97,7 +105,7 @@
         // ========================================================
         // 🔑 CONFIGURACIÓN INTEGRADA DE API BREVO
         const BREVO_API_KEY = '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';
-        const ID_LISTA_FIJA = 8; // 👈 Forzado a la lista 8 global siempre
+        const ID_LISTA_FIJA = 8; 
         // ========================================================
 
         document.addEventListener("DOMContentLoaded", async function() {
@@ -142,8 +150,10 @@
                     card.className = 'card-recurso';
                     
                     const formId = `form-rec-${idx}`;
-                    const inputId = `email-rec-${idx}`;
+                    const nombreId = `name-rec-${idx}`;
+                    const correoId = `email-rec-${idx}`;
                     const btnId = `btn-rec-${idx}`;
+                    const exitoBlockId = `exito-rec-${idx}`;
 
                     card.innerHTML = `
                         <div>
@@ -152,10 +162,17 @@
                             <p>${desc}</p>
                         </div>
                         
-                        <form class="form-mini" id="${formId}" onsubmit="procesarDescargaInmediata(event, '${inputId}', '${btnId}', '${linkPdf}', '${titulo}')">
-                            <input type="email" id="${inputId}" placeholder="Tu correo electrónico de la organización" required>
+                        <form class="form-mini" id="${formId}" onsubmit="procesarDescargaInmediata(event, '${nombreId}', '${correoId}', '${btnId}', '${exitoBlockId}', '${linkPdf}', '${titulo}')">
+                            <input type="text" id="${nombreId}" placeholder="Tu nombre completo" required>
+                            <input type="email" id="${correoId}" placeholder="Tu correo electrónico institucional" required>
                             <button type="submit" id="${btnId}">Validar e Iniciar Descarga</button>
                         </form>
+
+                        <div class="msg-exito-recurso" id="${exitoBlockId}">
+                            <h4>¡Tu descarga inició con éxito! 🎉</h4>
+                            <p>También te enviamos un respaldo directo a tu bandeja de entrada (revisa Promociones o Spam si no lo ves).</p>
+                            <a href="${linkPdf}" target="_blank">¿No inició? Haz clic aquí para forzar la descarga manual</a>
+                        </div>
                     `;
                     grid.appendChild(card);
                 });
@@ -166,34 +183,39 @@
             }
         });
 
-        // FLUJO DE CAPTACIÓN: GUARDA CONTACTO EN LISTA 8, DISPARA CORREO TRANSACCIONAL Y ABRE EL PDF AL INSTANTE
-        async function procesarDescargaInmediata(event, inputId, btnId, urlPdf, nombreRecurso) {
+        // CAPTACIÓN AVANZADA: NOMBRE + EMAIL A LISTA 8 + EMAIL TRANSACCIONAL PERSONALIZADO + MENSAJE DE ÉXITO IN-SITU
+        async function procesarDescargaInmediata(event, nombreId, correoId, btnId, exitoBlockId, urlPdf, nombreRecurso) {
             event.preventDefault();
             
-            const correoIngresado = document.getElementById(inputId).value;
+            const nombreIngresado = document.getElementById(nombreId).value;
+            const correoIngresado = document.getElementById(correoId).value;
             const botonEjecutor = document.getElementById(btnId);
+            const formularioElemento = event.target;
+            const bloqueExito = document.getElementById(exitoBlockId);
             
-            const textoOriginalBoton = botonEjecutor.innerText;
             botonEjecutor.disabled = true;
             botonEjecutor.innerText = "Procesando acceso...";
 
-            // 1. INTRODUCIR AL LEAD EN LA LISTA GLOBAL DE CONTACTOS #8
+            // 1. REGISTRAR NOMBRE Y CORREO EN LISTA 8 CON ATRIBUTO DE SEGUIMIENTO
             const payloadContacto = {
                 email: correoIngresado,
                 listIds: [ID_LISTA_FIJA], 
                 updateEnabled: true,
-                attributes: { "RECURSO_DESCARGADO": nombreRecurso } 
+                attributes: { 
+                    "NOMBRE": nombreIngresado, 
+                    "RECURSO_DESCARGADO": nombreRecurso 
+                } 
             };
 
-            // 2. DISPARAR RESPUESTA TRANSACCIONAL DE RESPALDO CON EL LINK
+            // 2. CORREO TRANSACCIONAL HUMANO E INSTITUCIONAL DE RESPALDO (PERSONALIZADO CON SU NOMBRE)
             const payloadEmail = {
                 sender: { name: "Mayra Flores | VÍNCULO", email: "mayra.flores@vinculo-ce.com" },
-                to: [{ email: correoIngresado }],
+                to: [{ email: correoIngresado, name: nombreIngresado }],
                 subject: `📥 Confirmación de descarga: ${nombreRecurso}`,
                 htmlContent: `
                     <div style="font-family: sans-serif; padding: 30px; max-width: 600px; margin: 0 auto; border: 1px solid #FAF9F6; border-radius: 12px; color: #1A1A1A;">
-                        <h2 style="color: #FF7A00; font-size: 20px; margin-bottom: 15px;">¡Tu herramienta está lista!</h2>
-                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A;">Confirmamos que has descargado la guía: <strong>${nombreRecurso}</strong> de forma exitosa.</p>
+                        <h2 style="color: #FF7A00; font-size: 20px; margin-bottom: 15px;">¡Hola, ${nombreIngresado}! 👋</h2>
+                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A;">Tu herramienta está lista. Confirmamos que has descargado la guía: <strong>${nombreRecurso}</strong> de forma exitosa.</p>
                         <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A;">Te sugerimos guardar este enlace directo para que no pierdas el acceso al material cuando lo necesites consultar de nuevo:</p>
                         <p style="margin: 20px 0; text-align: center;">
                             <a href="${urlPdf}" target="_blank" style="background-color: #FF7A00; color: white; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 8px; display: inline-block;">Ver PDF en Google Drive</a>
@@ -206,7 +228,7 @@
             };
 
             try {
-                // Ejecución paralela síncrona mediante fetch
+                // Ejecución en paralelo directo a la API v3 de Brevo
                 await Promise.all([
                     fetch('https://api.brevo.com/v3/contacts', {
                         method: 'POST',
@@ -222,10 +244,12 @@
             } catch (err) {
                 console.error("Error al reportar en Brevo:", err);
             } finally {
-                // ABRE LA DESCARGA EN INSTANTE (Sin redireccionar la ventana actual)
+                // CAMBIO MAESTRO: Oculta el formulario viejo y despliega el letrero verde institucional
+                formularioElemento.style.display = "none";
+                bloqueExito.style.display = "block";
+                
+                // DISPARO DE VENTANA DE DESCARGA DIRECTA
                 window.open(urlPdf, '_blank');
-                botonEjecutor.disabled = false;
-                botonEjecutor.innerText = textoOriginalBoton;
             }
         }
     </script>
