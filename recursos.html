@@ -155,7 +155,6 @@
                     const btnId = `btn-rec-${idx}`;
                     const exitoBlockId = `exito-rec-${idx}`;
 
-                    // CORRECCIÓN AQUÍ: Se agregaron los inputs HTML para capturar Nombre completo y Correo
                     card.innerHTML = `
                         <div>
                             <div class="portada-recurso" style="background-image: url('${imagen}');"></div>
@@ -212,16 +211,19 @@
                 subject: `📥 Confirmación de descarga: ${nombreRecurso}`,
                 htmlContent: `
                     <div style="font-family: sans-serif; padding: 30px; max-width: 600px; margin: 0 auto; border: 1px solid #FAF9F6; border-radius: 12px; color: #1A1A1A;">
-                        <h2 style="color: #FF7A00; font-size: 20px; margin-bottom: 15px;">¡Hola, ${nombreIngresado}! 👋</h2>
-                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A;">Tu herramienta está lista. Confirmamos que has descargado la guía: <strong>${nombreRecurso}</strong> de forma exitosa.</p>
-                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A;">Te sugerimos guardar este enlace directo para que no pierdas el acceso al material cuando lo necesites consultar de nuevo:</p>
-                        <p style="margin: 20px 0; text-align: center;">
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <img src="https://raw.githubusercontent.com/Tania11sannicolas-web/vinculo/ad2f0eb56180ee3a409dd394fcfbe5ad5061e32c/imagenes/Imagen%20de%20recurso%20-%20Vinculo.png" alt="VÍNCULO" style="max-width: 180px; height: auto;">
+                        </div>
+                        <h2 style="color: #FF7A00; font-size: 20px; margin-bottom: 15px; text-align: left;">¡Hola, ${nombreIngresado}! 👋</h2>
+                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A; text-align: left;">Tu herramienta está lista. Confirmamos que has descargado la guía: <strong>${nombreRecurso}</strong> de forma exitosa.</p>
+                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A; text-align: left;">Te sugerimos guardar este enlace directo para que no pierdas el acceso al material cuando lo necesites consultar de nuevo:</p>
+                        <p style="margin: 25px 0; text-align: center;">
                             <a href="${urlPdf}" target="_blank" style="background-color: #FF7A00; color: white; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 8px; display: inline-block;">Ver PDF en Google Drive</a>
                         </p>
-                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A;">Periódicamente te compartiremos más recursos y convocatorias estratégicas exclusivas para fortalecer tu causa u organización corporativa.</p>
+                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A; text-align: left;">Periódicamente te compartiremos más recursos y convocatorias estratégicas exclusivas para fortalecer tu causa u organización corporativa.</p>
                         <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 20px 0;"/>
-                        <p style="font-size: 15px; margin-bottom: 5px; font-weight: bold; color: #1A1A1A;">Mayra Flores Álvarez</p>
-                        <p style="font-size: 13px; color: #FF7A00; margin-top: 0; font-weight: 600;">VÍNCULO Consultoría Estratégica</p>
+                        <p style="font-size: 15px; margin-bottom: 5px; font-weight: bold; color: #1A1A1A; text-align: left;">Mayra Flores Álvarez</p>
+                        <p style="font-size: 13px; color: #FF7A00; margin-top: 0; font-weight: 600; text-align: left;">VÍNCULO Consultoría Estratégica</p>
                     </div>`
             };
 
