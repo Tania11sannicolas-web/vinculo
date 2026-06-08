@@ -65,10 +65,19 @@
         .cta-banner h3 { font-size: 30px; margin-bottom: 15px; font-weight: 700; }
         .cta-banner p { font-size: 16px; margin-bottom: 25px; max-width: 600px; margin-left: auto; margin-right: auto; opacity: 0.9; }
 
-        /* CONTACTO */
+        /* CONTACTO ESTILIZADO */
         .contacto { padding: 90px 8%; text-align: center; background-color: var(--fondo-claro); }
-        .contacto h2 { font-size: 36px; margin-bottom: 15px; }
-        .contacto-container { max-width: 600px; margin: 40px auto 0 auto; background: var(--blanco); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+        .contacto h2 { font-size: 36px; margin-bottom: 15px; font-weight: 700; }
+        .contacto-container { max-width: 600px; margin: 40px auto 0 auto; background: var(--blanco); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); text-align: left; }
+        
+        .form-grupo { margin-bottom: 20px; }
+        .form-grupo label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: var(--oscuro); }
+        .form-control-vinculo { width: 100%; padding: 14px 18px; border: 1px solid #E2E8F0; border-radius: 10px; font-family: inherit; font-size: 15px; color: var(--oscuro); outline: none; transition: border-color 0.3s; }
+        .form-control-vinculo:focus { border-color: var(--naranja); box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.1); }
+        
+        .msg-alerta { display: none; padding: 15px; border-radius: 10px; font-size: 14px; font-weight: 600; margin-top: 15px; text-align: center; }
+        .msg-success { background-color: #DEF7EC; color: #03543F; }
+        .msg-error { background-color: #FDE8E8; color: #9B1C1C; }
 
         footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; }
         footer a { color: var(--naranja); text-decoration: none; margin: 0 10px; }
@@ -120,7 +129,7 @@
             </div>
             <div class="card-acceso">
                 <h3>Para negocios del futuro: Empresas</h3>
-                <p>Hacer negocios rentables y cuidar tu entorno sí es posible. Te ayudo a integrar estándares ESG y responsabilidad social como una ventaja competitiva real.</p>
+                <p>Hacer negocios rentables y cuidar tu entorno sí es posible. Te ayudo a integrar estándares ESG y responsabilidad social como una ventaja competitive real.</p>
                 <a href="empresas.html" class="link-arrow">Ver soluciones para Empresas <span>→</span></a>
             </div>
         </div>
@@ -176,9 +185,35 @@
 
     <section id="contacto" class="contacto">
         <h2>Demos el primer paso</h2>
-        <p style="color: var(--texto);">Cuéntanos en qué punto se encuentra tu proyecto. Personalmente revisaré tu mensaje para platicar.</p>
+        <p style="color: var(--texto); margin-bottom: 30px;">Cuéntanos en qué punto se encuentra tu proyecto. Personalmente revisaré tu mensaje para platicar.</p>
+        
         <div class="contacto-container">
-            <p style="font-weight: 600; color: var(--naranja);">[Pega aquí el código del formulario de Brevo]</p>
+            <form id="formContactoBrevo" onsubmit="enviarMensajeAFormulario(event)">
+                <div class="form-grupo">
+                    <label style="text-align: left;">Nombre completo</label>
+                    <input type="text" id="txtNombre" class="form-control-vinculo" required placeholder="Ej: Juan Pérez">
+                </div>
+                
+                <div class="form-grupo">
+                    <label style="text-align: left;">Correo electrónico institucional</label>
+                    <input type="email" id="txtEmail" class="form-control-vinculo" required placeholder="Ej: juan@organizacion.org">
+                </div>
+
+                <div class="form-grupo">
+                    <label style="text-align: left;">Nombre de la OSC / Empresa</label>
+                    <input type="text" id="txtProyecto" class="form-control-vinculo" required placeholder="Ej: Fundación Impacto Social AC">
+                </div>
+
+                <div class="form-grupo">
+                    <label style="text-align: left;">¿Cómo te podemos ayudar?</label>
+                    <textarea id="txtMensaje" class="form-control-vinculo" rows="4" required placeholder="Cuéntanos brevemente sobre los retos de tu proyecto..."></textarea>
+                </div>
+
+                <button type="submit" id="btnEnviarContacto" class="btn" style="width: 100%;">Agendar Sesión de Diagnóstico</button>
+                
+                <div id="alertaExito" class="msg-alerta msg-success">¡Mensaje enviado con éxito! Revisa tu bandeja de entrada.</div>
+                <div id="alertaError" class="msg-alerta msg-error">Ocurrió un error al procesar el envío. Por favor, intenta de nuevo por WhatsApp.</div>
+            </form>
         </div>
     </section>
 
@@ -190,6 +225,12 @@
     </footer>
 
     <script>
+        // ========================================================
+        // 🔑 CONFIGURACIÓN INTEGRADA DE API BREVO
+        const BREVO_API_KEY = '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'; 
+        const CORREO_NOTIFICACION_INTERNA = 'tania11sannicolas@gmail.com'; 
+        // ========================================================
+
         document.addEventListener("DOMContentLoaded", async function() {
             const gridHome = document.querySelector('.blog-home-grid');
             const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
@@ -200,7 +241,6 @@
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
                 const filas = data.table.rows.slice(1);
-                
                 gridHome.innerHTML = ""; 
 
                 if (filas.length === 0) {
@@ -209,10 +249,8 @@
                 }
 
                 const ultimasFilas = filas.reverse().slice(0, 3);
-
                 ultimasFilas.forEach((row, index) => {
                     if(!row.c || !row.c[0]) return;
-                    
                     const idFila = filas.length - index + 1;
                     const titulo = row.c[0] ? row.c[0].v : 'Artículo sin título';
                     const resumen = row.c[2] ? row.c[2].v : 'Haz clic para leer la nota completa...';
@@ -231,11 +269,95 @@
                     `;
                     gridHome.appendChild(art);
                 });
-
             } catch (e) {
                 gridHome.innerHTML = "<p style='text-align:center; grid-column:1/-1;'>No se pudieron cargar las novedades del blog.</p>";
             }
         });
+
+        // DISPARO DINÁMICO DE CORREOS TRANSACCIONALES EN PARALELO
+        async function enviarMensajeAFormulario(event) {
+            event.preventDefault();
+
+            const btn = document.getElementById('btnEnviarContacto');
+            const exito = document.getElementById('alertaExito');
+            const error = document.getElementById('alertaError');
+
+            const nombre = document.getElementById('txtNombre').value;
+            const emailCliente = document.getElementById('txtEmail').value;
+            const organizacion = document.getElementById('txtProyecto').value;
+            const mensaje = document.getElementById('txtMensaje').value;
+
+            btn.disabled = true;
+            btn.innerText = "Sincronizando con Brevo...";
+            exito.style.display = "none";
+            error.style.display = "none";
+
+            // 1. REPORTE INTERNO PARA TI / MAYRA
+            const payloadInterno = {
+                sender: { name: "VÍNCULO Web Hub", email: "no-reply@vinculo-ce.com" },
+                to: [{ email: CORREO_NOTIFICACION_INTERNA, name: "Admin Vínculo" }],
+                subject: `🔥 ¡Nuevo Lead de Contacto! - ${nombre}`,
+                htmlContent: `
+                    <div style="font-family: sans-serif; padding: 20px; color: #1A1A1A;">
+                        <h2 style="color: #FF7A00; margin-bottom: 20px;">Tienes un nuevo mensaje desde la web de VÍNCULO</h2>
+                        <p><strong>Nombre del Prospecto:</strong> ${nombre}</p>
+                        <p><strong>Correo del Cliente:</strong> <a href="mailto:${emailCliente}">${emailCliente}</a></p>
+                        <p><strong>OSC / Empresa:</strong> ${organizacion}</p>
+                        <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 20px 0;"/>
+                        <p><strong>Detalle del reto enviado:</strong></p>
+                        <blockquote style="background: #FAF9F6; padding: 15px; border-left: 4px solid #FF7A00; font-style: italic;">
+                            ${mensaje}
+                        </blockquote>
+                        <br/>
+                        <p style="font-size: 12px; color: #A0AEC0;">Este es un reporte automático enviado por la API Transaccional de Brevo.</p>
+                    </div>`
+            };
+
+            // 2. CORREO AUTOMÁTICO AGRADECIENDO AL LEAD
+            const payloadCliente = {
+                sender: { name: "Mayra Flores | VÍNCULO", email: "mayra.flores@vinculo-ce.com" },
+                to: [{ email: emailCliente, name: nombre }],
+                subject: "¡Gracias por escribirnos! Demos el primer paso juntos ✨",
+                htmlContent: `
+                    <div style="font-family: sans-serif; padding: 30px; max-width: 600px; margin: 0 auto; border: 1px solid #FAF9F6; border-radius: 12px; color: #1A1A1A;">
+                        <h2 style="color: #1A1A1A; font-size: 22px;">¡Hola, ${nombre}! 👋</h2>
+                        <p style="font-size: 16px; line-height: 1.6; color: #4A4A4A;">Recibí exitosamente los datos de tu iniciativa/organización: <strong>${organizacion}</strong>.</p>
+                        <p style="font-size: 16px; line-height: 1.6; color: #4A4A4A;">Quiero agradecerte el espacio para compartirme tus metas y tus retos actuales. Sé perfectamente la estructura y el corazón que demanda impulsar un proyecto sostenible, por lo que personalmente estaré revisando tus comentarios en un lapso no mayor a 24 horas.</p>
+                        <p style="font-size: 16px; line-height: 1.6; color: #4A4A4A;">Muy pronto me pondré en contacto contigo para agendar nuestra sesión de diagnóstico estratégico inicial y trazar un camino sólido a la medida.</p>
+                        <br/>
+                        <p style="font-size: 16px; margin-bottom: 5px; font-weight: bold; color: #1A1A1A;">Mayra Flores Álvarez</p>
+                        <p style="font-size: 14px; color: #FF7A00; margin-top: 0; font-weight: 600;">Founder & CEO | VÍNCULO</p>
+                    </div>`
+            };
+
+            try {
+                const [resInterna, resCliente] = await Promise.all([
+                    fetch('https://api.brevo.com/v3/smtp/email', {
+                        method: 'POST',
+                        headers: { 'accept': 'application/json', 'api-key': BREVO_API_KEY, 'content-type': 'application/json' },
+                        body: JSON.stringify(payloadInterno)
+                    }),
+                    fetch('https://api.brevo.com/v3/smtp/email', {
+                        method: 'POST',
+                        headers: { 'accept': 'application/json', 'api-key': BREVO_API_KEY, 'content-type': 'application/json' },
+                        body: JSON.stringify(payloadCliente)
+                    })
+                ]);
+
+                if (resInterna.ok && resCliente.ok) {
+                    exito.style.display = "block";
+                    document.getElementById('formContactoBrevo').reset();
+                } else {
+                    throw new Error("Falla en la respuesta de Brevo");
+                }
+            } catch (err) {
+                console.error("Error en la integración de Brevo:", err);
+                error.style.display = "block";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Agendar Sesión de Diagnóstico";
+            }
+        }
     </script>
 </body>
 </html>
