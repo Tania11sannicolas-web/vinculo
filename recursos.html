@@ -35,7 +35,7 @@
         .container-recursos { padding: 60px 8% 80px 8%; max-width: 1200px; margin: 0 auto; }
         .grid-recursos { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px; }
         
-        .card-recurso { background: var(--blanco); border-radius: 24px; padding: 35px; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 10px 30px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; text-align: left; min-height: 540px; transition: transform 0.3s; }
+        .card-recurso { background: var(--blanco); border-radius: 24px; padding: 35px; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 10px 30px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; text-align: left; min-height: 560px; transition: transform 0.3s; }
         .card-recurso:hover { transform: translateY(-5px); }
         .portada-recurso { height: 200px; background-size: cover; background-repeat: no-repeat; background-position: center; margin-bottom: 25px; background-color: #FAF9F6; border-radius: 16px; border: 1px solid rgba(0,0,0,0.03); }
         
@@ -155,6 +155,7 @@
                     const btnId = `btn-rec-${idx}`;
                     const exitoBlockId = `exito-rec-${idx}`;
 
+                    // CORRECCIÓN AQUÍ: Se agregaron los inputs HTML para capturar Nombre completo y Correo
                     card.innerHTML = `
                         <div>
                             <div class="portada-recurso" style="background-image: url('${imagen}');"></div>
@@ -164,14 +165,14 @@
                         
                         <form class="form-mini" id="${formId}" onsubmit="procesarDescargaInmediata(event, '${nombreId}', '${correoId}', '${btnId}', '${exitoBlockId}', '${linkPdf}', '${titulo}')">
                             <input type="text" id="${nombreId}" placeholder="Tu nombre completo" required>
-                            <input type="email" id="${correoId}" placeholder="Tu correo electrónico institucional" required>
+                            <input type="email" id="${correoId}" placeholder="Tu correo electrónico de la organización" required>
                             <button type="submit" id="${btnId}">Validar e Iniciar Descarga</button>
                         </form>
 
                         <div class="msg-exito-recurso" id="${exitoBlockId}">
                             <h4>¡Tu descarga inició con éxito! 🎉</h4>
                             <p>También te enviamos un respaldo directo a tu bandeja de entrada (revisa Promociones o Spam si no lo ves).</p>
-                            <a href="${linkPdf}" target="_blank">¿No inició? Haz clic aquí para forzar la descarga manual</a>
+                            <a href="${urlPdf}" target="_blank">¿No inició? Haz clic aquí para forzar la descarga manual</a>
                         </div>
                     `;
                     grid.appendChild(card);
@@ -183,7 +184,6 @@
             }
         });
 
-        // CAPTACIÓN AVANZADA: NOMBRE + EMAIL A LISTA 8 + EMAIL TRANSACCIONAL PERSONALIZADO + MENSAJE DE ÉXITO IN-SITU
         async function procesarDescargaInmediata(event, nombreId, correoId, btnId, exitoBlockId, urlPdf, nombreRecurso) {
             event.preventDefault();
             
@@ -196,7 +196,6 @@
             botonEjecutor.disabled = true;
             botonEjecutor.innerText = "Procesando acceso...";
 
-            // 1. REGISTRAR NOMBRE Y CORREO EN LISTA 8 CON ATRIBUTO DE SEGUIMIENTO
             const payloadContacto = {
                 email: correoIngresado,
                 listIds: [ID_LISTA_FIJA], 
@@ -207,7 +206,6 @@
                 } 
             };
 
-            // 2. CORREO TRANSACCIONAL HUMANO E INSTITUCIONAL DE RESPALDO (PERSONALIZADO CON SU NOMBRE)
             const payloadEmail = {
                 sender: { name: "Mayra Flores | VÍNCULO", email: "mayra.flores@vinculo-ce.com" },
                 to: [{ email: correoIngresado, name: nombreIngresado }],
@@ -228,7 +226,6 @@
             };
 
             try {
-                // Ejecución en paralelo directo a la API v3 de Brevo
                 await Promise.all([
                     fetch('https://api.brevo.com/v3/contacts', {
                         method: 'POST',
@@ -244,11 +241,8 @@
             } catch (err) {
                 console.error("Error al reportar en Brevo:", err);
             } finally {
-                // CAMBIO MAESTRO: Oculta el formulario viejo y despliega el letrero verde institucional
                 formularioElemento.style.display = "none";
                 bloqueExito.style.display = "block";
-                
-                // DISPARO DE VENTANA DE DESCARGA DIRECTA
                 window.open(urlPdf, '_blank');
             }
         }
