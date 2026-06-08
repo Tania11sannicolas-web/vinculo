@@ -162,19 +162,29 @@
                             <p>${desc}</p>
                         </div>
                         
-                        <form class="form-mini" id="${formId}" onsubmit="procesarDescargaInmediata(event, '${nombreId}', '${correoId}', '${btnId}', '${exitoBlockId}', '${linkPdf}', '${titulo}')">
+                        <form class="form-mini" id="${formId}">
                             <input type="text" id="${nombreId}" placeholder="Tu nombre completo" required>
                             <input type="email" id="${correoId}" placeholder="Tu correo electrónico de la organización" required>
-                            <button type="submit" id="${btnId}">Validar e Iniciar Descarga</button>
+                            <button type="button" id="${btnId}">Validar e Iniciar Descarga</button>
                         </form>
 
                         <div class="msg-exito-recurso" id="${exitoBlockId}">
                             <h4>¡Tu descarga inició con éxito! 🎉</h4>
                             <p>También te enviamos un respaldo directo a tu bandeja de entrada (revisa Promociones o Spam si no lo ves).</p>
-                            <a href="${urlPdf}" target="_blank">¿No inició? Haz clic aquí para forzar la descarga manual</a>
+                            <a href="${linkPdf}" target="_blank">¿No inició? Haz clic aquí para forzar la descarga manual</a>
                         </div>
                     `;
                     grid.appendChild(card);
+
+                    // Escuchador asignado de forma segura tras inyectar el HTML para evitar errores sintácticos de comillas
+                    document.getElementById(btnId).addEventListener("click", function(e) {
+                        const form = document.getElementById(formId);
+                        if(form.checkValidity()) {
+                            procesarDescargaInmediata(form, nombreId, correoId, btnId, exitoBlockId, linkPdf, titulo);
+                        } else {
+                            form.reportValidity();
+                        }
+                    });
                 });
 
             } catch (error) {
@@ -183,13 +193,10 @@
             }
         });
 
-        async function procesarDescargaInmediata(event, nombreId, correoId, btnId, exitoBlockId, urlPdf, nombreRecurso) {
-            event.preventDefault();
-            
+        async function procesarDescargaInmediata(formularioElemento, nombreId, correoId, btnId, exitoBlockId, urlPdf, nombreRecurso) {
             const nombreIngresado = document.getElementById(nombreId).value;
             const correoIngresado = document.getElementById(correoId).value;
             const botonEjecutor = document.getElementById(btnId);
-            const formularioElemento = event.target;
             const bloqueExito = document.getElementById(exitoBlockId);
             
             botonEjecutor.disabled = true;
