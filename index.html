@@ -20,11 +20,15 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
         
         /* NAVBAR HOMOLOGADO */
-        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
         .logo { display: flex; align-items: center; text-decoration: none; }
-        .logo img { height: 85px; width: auto; object-fit: contain; margin: -15px 0; }
+        .logo img { height: 110px; width: auto; object-fit: contain; margin: -25px 0; }
+        
         nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
         nav a:hover, nav a.active { color: var(--naranja); }
+        
+        /* BOTÓN HAMBURGUESA (Oculto en Desktop) */
+        .menu-toggle { display: none; background: none; border: none; font-size: 30px; color: var(--oscuro); cursor: pointer; outline: none; }
         
         /* HERO */
         .hero { display: flex; align-items: center; padding: 80px 8%; background-color: var(--blanco); }
@@ -82,13 +86,32 @@
         footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; }
         footer a { color: var(--naranja); text-decoration: none; margin: 0 10px; }
 
+        /* RESPONSIVE / DISEÑO MÓVIL */
         @media (max-width: 968px) {
-            header { flex-direction: column; gap: 15px; padding: 15px 8%; }
-            .logo img { height: 65px; margin: -10px 0; }
-            nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-            nav a { margin-left: 0; padding: 5px 10px; }
-            .hero { flex-direction: column; text-align: center; }
+            header { padding: 15px 6%; position: relative; }
+            .logo img { height: 85px; margin: -15px 0; }
+            
+            .menu-toggle { display: block; }
+            
+            nav { 
+                display: none; 
+                flex-direction: column; 
+                width: 100%; 
+                position: absolute; 
+                top: 100%; 
+                left: 0; 
+                background: var(--blanco); 
+                padding: 20px 0; 
+                box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+                z-index: 99;
+            }
+            
+            nav.open { display: flex; }
+            nav a { margin: 12px 0; padding: 0 8%; font-size: 16px; width: 100%; text-align: left; }
+            
+            .hero { flex-direction: column; text-align: center; padding-top: 40px; }
             .hero-content { padding-right: 0; margin-bottom: 40px; }
+            .hero-content h1 { font-size: 34px; }
             .grid-accesos { flex-direction: column; }
         }
     </style>
@@ -99,7 +122,11 @@
         <a href="index.html" class="logo">
             <img src="https://raw.githubusercontent.com/Tania11sannicolas-web/vinculo/40108a99cb66bb940d7132718fb34e6ec4b303af/imagenes/Disen%CC%83o%20sin%20ti%CC%81tulo.png" alt="VÍNCULO">
         </a>
-        <nav>
+        
+        <!-- Botón de Hamburguesa -->
+        <button class="menu-toggle" id="btnMenu" aria-label="Abrir menú">☰</button>
+        
+        <nav id="navbarMenu">
             <a href="index.html" class="active">Inicio</a>
             <a href="nosotros.html">Nosotros</a>
             <a href="osc.html">Para OSC</a>
@@ -232,6 +259,30 @@
         const CORREO_NOTIFICACION_INTERNA = 'mayra.flores@vinculo-ce.com'; 
 
         document.addEventListener("DOMContentLoaded", async function() {
+            /* LÓGICA DEL MENÚ RESPONSIVE DESPLEGABLE */
+            const btnMenu = document.getElementById('btnMenu');
+            const navbarMenu = document.getElementById('navbarMenu');
+            
+            btnMenu.addEventListener('click', function() {
+                navbarMenu.classList.toggle('open');
+                // Alterna entre el icono de hamburguesa (☰) y una equis (✕)
+                if (navbarMenu.classList.contains('open')) {
+                    btnMenu.innerHTML = "✕";
+                } else {
+                    btnMenu.innerHTML = "☰";
+                }
+            });
+
+            // Cierra el menú al hacer clic en cualquier enlace interno (como #contacto)
+            const enlacesMenu = navbarMenu.querySelectorAll('a');
+            enlacesMenu.forEach(enlace => {
+                enlace.addEventListener('click', () => {
+                    navbarMenu.classList.remove('open');
+                    btnMenu.innerHTML = "☰";
+                });
+            });
+
+            /* INTEGRACIÓN DEL BLOG DESDE SPREADSHEETS */
             const gridHome = document.querySelector('.blog-home-grid');
             const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
             const urlBlog = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Blog`;
