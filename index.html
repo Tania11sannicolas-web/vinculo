@@ -21,8 +21,8 @@
         
         /* NAVBAR HOMOLOGADO */
         header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
-        .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; color: var(--oscuro); }
-        .logo span { color: var(--naranja); }
+        .logo { display: flex; align-items: center; text-decoration: none; }
+        .logo img { height: 40px; width: auto; object-fit: contain; }
         nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
         nav a:hover, nav a.active { color: var(--naranja); }
         
@@ -95,7 +95,9 @@
 <body>
 
     <header>
-        <a href="index.html" class="logo">VÍNCULO<span>.</span></a>
+        <a href="index.html" class="logo">
+            <img src="https://raw.githubusercontent.com/Tania11sannicolas-web/vinculo/40108a99cb66bb940d7132718fb34e6ec4b303af/imagenes/Disen%CC%83o%20sin%20ti%CC%81tulo.png" alt="VÍNCULO">
+        </a>
         <nav>
             <a href="index.html" class="active">Inicio</a>
             <a href="nosotros.html">Nosotros</a>
