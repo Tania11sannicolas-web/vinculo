@@ -3,31 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Pago Confirmado! | VÍNCULO</title>
+    <title>Inscripción Recibida | VÍNCULO</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --naranja: #FF7A00; --oscuro: #1A1A1A; --texto: #4A4A4A; --fondo-claro: #FAF9F6; --blanco: #FFFFFF; }
+        :root { --naranja: #FF7A00; --naranja-hover: #E06B00; --oscuro: #1A1A1A; --texto: #4A4A4A; --fondo-claro: #FAF9F6; --blanco: #FFFFFF; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--fondo-claro); line-height: 1.6; display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
         
-        .caja-gracias { background: var(--blanco); padding: 60px 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); max-width: 600px; width: 90%; }
-        .icono-check { font-size: 80px; color: #2ecc71; margin-bottom: 20px; line-height: 1; }
-        .caja-gracias h1 { font-size: 32px; font-weight: 700; margin-bottom: 15px; letter-spacing: -0.5px; }
-        .caja-gracias p { color: var(--texto); font-size: 16px; margin-bottom: 30px; }
+        /* NAVBAR HOMOLOGADO */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; color: var(--oscuro); }
+        .logo span { color: var(--naranja); }
+        nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
+        nav a:hover { color: var(--naranja); }
+
+        /* SECCIÓN DE AGRADECIMIENTO */
+        .gracias-section { padding: 100px 8%; text-align: center; max-width: 800px; margin: 0 auto; }
+        .icono-check { font-size: 70px; color: #2ecc71; margin-bottom: 25px; }
+        .gracias-section h1 { font-size: 40px; font-weight: 700; margin-bottom: 20px; letter-spacing: -1px; }
+        .gracias-section p { color: var(--texto); font-size: 17px; margin-bottom: 15px; }
+        .caja-nota { background: var(--fondo-claro); padding: 30px; border-radius: 16px; margin: 30px 0; border-left: 4px solid var(--naranja); text-align: left; }
         
-        .btn-inicio { background-color: var(--oscuro); color: var(--blanco); padding: 14px 30px; border-radius: 10px; text-decoration: none; font-weight: 700; display: inline-block; transition: 0.3s; }
-        .btn-inicio:hover { background-color: var(--naranja); }
+        .btn-home { background-color: var(--naranja); color: var(--blanco); padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; transition: 0.3s; margin-top: 20px; }
+        .btn-home:hover { background-color: var(--naranja-hover); }
+
+        footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; margin-top: 80px; }
+        footer a { color: var(--naranja); text-decoration: none; margin: 0 10px; }
     </style>
 </head>
 <body>
 
-    <div class="caja-gracias">
+    <header>
+        <a href="index.html" class="logo">VÍNCULO<span>.</span></a>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="nosotros.html">Nosotros</a>
+            <a href="osc.html">Para OSC</a>
+            <a href="empresas.html">Para Empresas</a>
+            <a href="talleres.html">Talleres</a>
+            <a href="recursos.html">Recursos</a>
+            <a href="blog.html">Blog</a>
+        </nav>
+    </header>
+
+    <main class="gracias-section">
         <div class="icono-check">✅</div>
-        <h1>¡Inscripción Confirmada!</h1>
-        <p>Tu pago ha sido procesado con éxito. En breve <strong>recibirás un correo electrónico</strong> con las instrucciones de acceso y los siguientes pasos para el taller.</p>
-        <p style="font-size: 14px; opacity: 0.8;">Por favor, revisa tu carpeta de Spam o Promociones si no lo ves en tu bandeja de entrada principal.</p>
-        <a href="index.html" class="btn-inicio">Volver al Inicio</a>
-    </div>
+        <h1>¡Inscripción recibida con éxito!</h1>
+        <p>Gracias por confiar en VÍNCULO. Hemos recibido los detalles de tu pago correctamente.</p>
+        
+        <div class="caja-nota">
+            <strong>¿Qué sigue ahora?</strong><br>
+            Nuestro equipo realizará una verificación manual de tu transacción en las próximas horas. Una vez confirmado, <strong>te enviaremos un correo electrónico personalizado</strong> directamente desde nuestra oficina con tu acceso al taller, materiales y toda la información necesaria.
+        </div>
+
+        <p>Mientras tanto, te invitamos a seguir explorando nuestros recursos y artículos.</p>
+        <a href="index.html" class="btn-home">Seguir explorando el sitio</a>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
+    </footer>
 
 </body>
 </html>
