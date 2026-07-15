@@ -1,6 +1,189 @@
-async function cargarNotasBlog() {
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel de Control Virtual | VÍNCULO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+    
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .navbar-brand { font-weight: bold; color: #fff !important; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .header-title { color: #2c3e50; font-weight: 700; margin-bottom: 25px; }
+        .table { background: #fff; border-radius: 12px; overflow: hidden; }
+        .badge-blog { background-color: #3498db; color: white; }
+        .badge-recurso { background-color: #2ecc71; color: white; }
+        .badge-taller { background-color: #9b59b6; color: white; } 
+        .btn-orange { background-color: #FF7A00 !important; color: white !important; font-weight: 600; opacity: 1 !important; }
+        .btn-orange:hover { background-color: #E06B00 !important; color: white !important; }
+        
+        #contenedor-quill { background: #fff; border-radius: 10px; overflow: hidden; display: none; }
+        .ql-toolbar.ql-snow { border-color: #dee2e6 !important; background: #f8f9fa; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+        .ql-container.ql-snow { border-color: #dee2e6 !important; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; font-family: inherit; font-size: 15px; min-height: 250px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fa-solid fa-circle-nodes me-2"></i>VÍNCULO Centro de Control</a>
+            <div>
+                <button type="button" class="btn btn-primary btn-sm me-2" onclick="abrirModal('blog')"><i class="fa-solid fa-feather me-2"></i>+ Blog</button>
+                <button type="button" class="btn btn-info btn-sm me-2 text-white" onclick="abrirModal('taller')" style="background-color: #9b59b6; border:none;"><i class="fa-solid fa-chalkboard-user me-2"></i>+ Taller</button>
+                <button type="button" class="btn btn-success btn-sm" onclick="abrirModal('recurso')"><i class="fa-solid fa-gift me-2"></i>+ Recurso</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center text-md-start">
+                <h2 class="header-title">¡Hola, Mayra! 👋</h2>
+                <p class="text-muted">Ecosistema de administración directa. Gestiona tu Blog, Recursos y Talleres.</p>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-5">
+            <div class="col-md-4">
+                <div class="card p-4 bg-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted text-uppercase small">Notas de Blog</h6>
+                            <h3 class="fw-bold m-0" id="total-blog">0</h3>
+                        </div>
+                        <div class="fs-1 text-primary"><i class="fa-solid fa-feather"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 bg-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted text-uppercase small">Talleres Activos</h6>
+                            <h3 class="fw-bold m-0" id="total-talleres">0</h3>
+                        </div>
+                        <div class="fs-1" style="color:#9b59b6;"><i class="fa-solid fa-chalkboard-user"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 bg-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted text-uppercase small">Recursos Publicados</h6>
+                            <h3 class="fw-bold m-0" id="total-recursos">0</h3>
+                        </div>
+                        <div class="fs-1 text-success"><i class="fa-solid fa-gift"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <h4 class="mb-3 fw-bold text-secondary"><i class="fa-solid fa-list-check me-2"></i>Gestión de Publicaciones Activas</h4>
+                <div class="table-responsive card">
+                    <table class="table table-hover align-middle m-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Título / Nombre</th>
+                                <th>Identificador (Fecha/Info)</th>
+                                <th>Detalles del contenido</th>
+                                <th class="text-center" style="width: 220px;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-contenidos">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="formModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius:16px;">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title" id="modalTitle">Formulario</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="publicarForm" onsubmit="enviarDatosFormulario(event)">
+                    <div class="modal-body p-4">
+                        <input type="hidden" id="formTipo">
+                        <input type="hidden" id="formRowId">
+                        <input type="hidden" id="formImagenActual">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" id="lblTitulo">Título</label>
+                            <input type="text" class="form-control" id="formTitulo" required placeholder="Escribe el título aquí...">
+                        </div>
+
+                        <div class="row" id="rowCamposEspeciales"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Imagen de Portada (Opcional)</label>
+                            <input type="file" class="form-control" id="formFile" accept="image/*" onchange="procesarArchivoImagen()">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" id="lblContenido">Cuerpo / Descripción</label>
+                            <textarea class="form-control" id="formContenido" rows="6"></textarea>
+                            <div id="contenedor-quill">
+                                <div id="editor-quill"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-orange" id="btnGuardar">Publicar Contenido</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+    
+    <script>
+        // ¡REMPLAZA ESTA URL POR LA DE TU NUEVA IMPLEMENTACIÓN DE APPS SCRIPT!
+        const URL_SCRIPT_UNIFICADO = 'https://script.google.com/macros/s/AKfycbw2eu8XM2I1sGi9SeHd_oVLc6LI_VYCwj2jQfdGZsSFEoe4oeJV1eubQkDgHSLrEd1u/exec';
+
+        const BLOG_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY'; 
+        const RECURSOS_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo'; 
+        const RECURSOS_GID = '2047829696'; 
+
+        let cacheBlog = [], cacheRecursos = [], cacheTalleres = [];
+        let stringArchivoBase64 = "", nombreArchivoImagen = "";
+        let myModal;
+        let instanciaQuill = null; 
+
+        document.addEventListener("DOMContentLoaded", function() {
+            myModal = new bootstrap.Modal(document.getElementById('formModal'));
+            inicializarDashboard();
+        });
+
+        function inicializarDashboard() {
+            document.getElementById('tabla-contenidos').innerHTML = `
+                <tr id="fila-carga-espera">
+                    <td colspan="5" class="text-center text-muted py-4">
+                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                        Sincronizando con Google Sheets...
+                    </td>
+                </tr>`;
+            
+            Promise.all([cargarNotasBlog(), cargarHerramientasRecursos(), cargarTalleres()]).then(() => {
+                const filaEspera = document.getElementById('fila-carga-espera');
+                if (filaEspera) filaEspera.remove();
+            });
+        }
+
+        async function cargarNotasBlog() {
             try {
-                // Aquí el cambio está al final del link
                 const res = await fetch(`https://docs.google.com/spreadsheets/d/${BLOG_ID}/gviz/tq?tqx=out:json&sheet=Blog&t=${new Date().getTime()}`);
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
@@ -28,7 +211,6 @@ async function cargarNotasBlog() {
 
         async function cargarTalleres() {
             try {
-                // Truco aplicado al final
                 const res = await fetch(`https://docs.google.com/spreadsheets/d/${BLOG_ID}/gviz/tq?tqx=out:json&sheet=Talleres&t=${new Date().getTime()}`);
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
@@ -56,7 +238,6 @@ async function cargarNotasBlog() {
 
         async function cargarHerramientasRecursos() {
             try {
-                // Truco aplicado al final del enlace
                 const res = await fetch(`https://docs.google.com/spreadsheets/d/${RECURSOS_ID}/gviz/tq?tqx=out:json&gid=${RECURSOS_GID}&t=${new Date().getTime()}`);
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
@@ -80,3 +261,197 @@ async function cargarNotasBlog() {
                 });
             } catch (e) { console.error(e); }
         }
+
+        function abrirModal(tipo) {
+            document.getElementById('publicarForm').reset();
+            stringArchivoBase64 = ""; nombreArchivoImagen = "";
+            
+            const fileInput = document.getElementById('formFile');
+            if(fileInput) fileInput.value = "";
+
+            document.getElementById('formTipo').value = tipo;
+            document.getElementById('formRowId').value = "";
+            document.getElementById('formImagenActual').value = "";
+            
+            const btn = document.getElementById('btnGuardar');
+            btn.removeAttribute('disabled'); btn.disabled = false;
+            btn.innerText = "Publicar Contenido";
+
+            const textareaContenido = document.getElementById('formContenido');
+            const contenedorQuill = document.getElementById('contenedor-quill');
+            const extraRow = document.getElementById('rowCamposEspeciales');
+
+            if (tipo === 'blog' || tipo === 'taller') {
+                document.getElementById('modalTitle').innerText = tipo === 'blog' ? '📝 Nueva Entrada de Blog' : '🏫 Nuevo Taller';
+                document.getElementById('lblTitulo').innerText = tipo === 'blog' ? "Título de la Nota" : "Nombre del Taller";
+                document.getElementById('lblContenido').innerText = "Cuerpo del Artículo / Detalles del Taller";
+                
+                let camposHtml = `
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Fecha / Horario</label><input type="text" class="form-control" id="formExtra1" required></div>
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Resumen Corto</label><input type="text" class="form-control" id="formExtra2" required></div>
+                `;
+                
+                if (tipo === 'taller') {
+                    camposHtml += `<div class="col-12 mb-3"><label class="form-label fw-bold">Enlace de Stripe (Pago)</label><input type="url" class="form-control" id="formExtra3" placeholder="https://buy.stripe.com/..." required></div>`;
+                } else {
+                    camposHtml += `<input type="hidden" id="formExtra3" value="">`;
+                }
+                
+                extraRow.innerHTML = camposHtml;
+                
+                textareaContenido.style.display = "none";
+                textareaContenido.required = false;
+                contenedorQuill.style.display = "block";
+
+                if (!instanciaQuill) {
+                    instanciaQuill = new Quill('#editor-quill', {
+                        theme: 'snow',
+                        placeholder: 'Escribe los detalles aquí de forma visual...',
+                        modules: {
+                            toolbar: [
+                                ['bold', 'italic', 'underline'],
+                                [{ 'header': 1 }, { 'header': 2 }],
+                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                ['link', 'clean']
+                            ]
+                        }
+                    });
+                } else {
+                    instanciaQuill.setText('');
+                }
+
+            } else {
+                document.getElementById('modalTitle').innerText = '🎁 Nuevo Recurso Descargable';
+                document.getElementById('lblTitulo').innerText = "Nombre del Recurso";
+                document.getElementById('lblContenido').innerText = "Descripción del Recurso (Texto Simple)";
+                extraRow.innerHTML = `
+                    <div class="col-12 mb-3"><label class="form-label fw-bold">Enlace PDF (Drive)</label><input type="url" class="form-control" id="formExtra1" required></div>
+                    <input type="hidden" id="formExtra2" value="8">
+                    <input type="hidden" id="formExtra3" value="">
+                `;
+                
+                textareaContenido.style.display = "block";
+                textareaContenido.required = true;
+                contenedorQuill.style.display = "none";
+            }
+
+            myModal.show();
+        }
+
+        function cargarFilaParaEdicion(tipo, rowId) {
+            abrirModal(tipo);
+            
+            setTimeout(() => {
+                document.getElementById('formRowId').value = rowId;
+                document.getElementById('btnGuardar').innerText = "Guardar Cambios Editados";
+                document.getElementById('modalTitle').innerText = `✏️ Editando Fila #${rowId}`;
+
+                const cacheIndex = rowId - 2;
+                let textoCuerpo = "";
+
+                if (tipo === 'blog' || tipo === 'taller') {
+                    const r = tipo === 'blog' ? cacheBlog[cacheIndex].c : cacheTalleres[cacheIndex].c;
+                    document.getElementById('formTitulo').value = r[0] ? r[0].v : '';
+                    document.getElementById('formExtra1').value = r[1] ? r[1].v : '';
+                    document.getElementById('formExtra2').value = r[2] ? r[2].v : '';
+                    document.getElementById('formImagenActual').value = r[3] ? r[3].v : '';
+                    
+                    if(tipo === 'taller') {
+                        document.getElementById('formExtra3').value = r[4] ? r[4].v : '';
+                        textoCuerpo = r[5] ? r[5].v : '';
+                    } else {
+                        textoCuerpo = r[4] ? r[4].v : '';
+                    }
+                    
+                    if(instanciaQuill) { 
+                        instanciaQuill.clipboard.dangerouslyPasteHTML(textoCuerpo); 
+                    }
+                }
+            }, 300);
+        }
+
+        function procesarArchivoImagen() {
+            const file = document.getElementById('formFile').files[0];
+            if (!file) { stringArchivoBase64 = ""; nombreArchivoImagen = ""; return; }
+            
+            const btn = document.getElementById('btnGuardar');
+            nombreArchivoImagen = file.name;
+            const reader = new FileReader();
+            reader.onload = function(e) { 
+                stringArchivoBase64 = e.target.result; 
+                if(btn) { btn.removeAttribute('disabled'); btn.disabled = false; }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function enviarDatosFormulario(event) {
+            event.preventDefault();
+            
+            const tipo = document.getElementById('formTipo').value;
+            
+            if ((tipo === 'blog' || tipo === 'taller') && instanciaQuill) { 
+                document.getElementById('formContenido').value = instanciaQuill.getSemanticHTML(); 
+            }
+
+            const btn = document.getElementById('btnGuardar');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Sincronizando...`;
+
+            const rowId = document.getElementById('formRowId').value;
+            
+            const payload = {
+                tipo: tipo,
+                action: rowId ? "edit" : "create",
+                rowId: rowId,
+                titulo: document.getElementById('formTitulo').value,
+                imagenActual: document.getElementById('formImagenActual').value,
+                fileData: stringArchivoBase64,
+                fileName: nombreArchivoImagen,
+                contenido: document.getElementById('formContenido').value,
+                fecha: (tipo === 'blog' || tipo === 'taller') ? document.getElementById('formExtra1').value : "",
+                resumen: (tipo === 'blog' || tipo === 'taller') ? document.getElementById('formExtra2').value : "",
+                linkStripe: tipo === 'taller' ? document.getElementById('formExtra3').value : "",
+                linkPdf: tipo === 'recurso' ? document.getElementById('formExtra1').value : "8",
+                formExtra2: document.getElementById('formExtra2').value
+            };
+
+            try {
+                const res = await fetch(URL_SCRIPT_UNIFICADO, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                });
+                const json = await res.json();
+                
+                if (json.status === "success") {
+                    setTimeout(() => { myModal.hide(); inicializarDashboard(); alert("¡Guardado exitosamente!"); }, 1000);
+                } else {
+                    alert("Error en el servidor: " + json.message);
+                    btn.innerHTML = `Publicar Contenido`;
+                    btn.disabled = false;
+                }
+            } catch (e) { 
+                setTimeout(() => { myModal.hide(); inicializarDashboard(); alert("Petición procesada. Se recargarán los datos."); }, 1500); 
+            }
+        }
+
+        async function borrarFilaDefinitivamente(tipo, rowId) {
+            if (!confirm(`¿Borrar fila permanente de ${tipo}?`)) return;
+            
+            try {
+                document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">Eliminando del Drive...</td></tr>`;
+                
+                await fetch(URL_SCRIPT_UNIFICADO, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ tipo: tipo, action: "delete", rowId: rowId })
+                });
+                
+                setTimeout(() => { inicializarDashboard(); alert("¡Removido exitosamente del Drive!"); }, 2000);
+            } catch (e) { 
+                setTimeout(() => { inicializarDashboard(); }, 2000); 
+            }
+        }
+    </script>
+</body>
+</html>
