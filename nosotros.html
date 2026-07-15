@@ -7,35 +7,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --naranja: #FF7A00;
-            --naranja-hover: #E06B00;
-            --oscuro: #1A1A1A;
-            --texto: #4A4A4A;
-            --fondo-claro: #FAF9F6;
-            --blanco: #FFFFFF;
-        }
-
+        :root { --naranja: #FF7A00; --naranja-hover: #E06B00; --oscuro: #1A1A1A; --texto: #4A4A4A; --fondo-claro: #FAF9F6; --blanco: #FFFFFF; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
         
-        /* NAVBAR HOMOLOGADO CENTRALIZADO */
-        header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
-        .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; color: var(--oscuro); }
-        .logo span { color: var(--naranja); }
+        /* HEADER Y MENÚ */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .logo { display: flex; align-items: center; text-decoration: none; }
+        .logo img { height: 160px; width: auto; object-fit: contain; margin: -40px 0; }
+        nav { display: flex; align-items: center; }
         nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
         nav a:hover, nav a.active { color: var(--naranja); }
-        
-        /* SECCIÓN SOBRE MÍ / HISTORIA */
+        .menu-toggle { display: none; background: none; border: none; font-size: 30px; color: var(--oscuro); cursor: pointer; }
+
+        /* SECCIÓN SOBRE MÍ */
         .sobre-nosotros { padding: 80px 8%; display: flex; align-items: center; gap: 8%; }
         .nosotros-content { flex: 1; }
         .nosotros-content span { color: var(--naranja); font-weight: 700; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; }
-        .nosotros-content h1 { font-size: 40px; font-weight: 700; margin: 10px 0 20px 0; letter-spacing: -1px; line-height: 1.2; color: var(--oscuro); }
+        .nosotros-content h1 { font-size: 40px; font-weight: 700; margin: 10px 0 20px 0; letter-spacing: -1px; color: var(--oscuro); }
         .nosotros-content p { color: var(--texto); font-size: 17px; margin-bottom: 20px; text-align: justify; }
         .nosotros-image { flex: 1; text-align: center; }
         .nosotros-image img { max-width: 85%; height: auto; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.06); }
 
-        /* MISIÓN, VISIÓN, VALORES */
+        /* FILOSOFÍA */
         .filosofia { background-color: var(--fondo-claro); padding: 90px 8%; }
         .grid-filosofia { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
         .bloque-filosofia { background: var(--blanco); padding: 45px 35px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.01); border: 1px solid rgba(0,0,0,0.02); }
@@ -43,38 +37,39 @@
         .bloque-filosofia h3 span { color: var(--naranja); font-size: 26px; }
         .bloque-filosofia p { color: var(--texto); font-size: 15px; line-height: 1.6; }
 
-        /* EXPERIENCIA Y CIFRAS */
+        /* CIFRAS */
         .experiencia-cifras { padding: 80px 8%; text-align: center; }
-        .experiencia-cifras h2 { font-size: 34px; margin-bottom: 50px; font-weight: 700; letter-spacing: -0.5px; }
-        .grid-cifras { display: flex; justify-content: space-around; max-width: 1000px; margin: 0 auto; flex-wrap: wrap; gap: 30px; }
+        .grid-cifras { display: flex; justify-content: space-around; max-width: 1000px; margin: 50px auto 0; flex-wrap: wrap; gap: 30px; }
         .cifra-item h4 { font-size: 56px; color: var(--naranja); font-weight: 700; line-height: 1; margin-bottom: 10px; }
         .cifra-item p { font-size: 15px; color: var(--texto); font-weight: 600; }
 
-        /* CTA BANNER */
-        .cta-nosotros { background: var(--oscuro); color: var(--blanco); padding: 70px 8%; text-align: center; border-radius: 24px; max-width: 1200px; margin: 40px auto; box-shadow: 0 15px 40px rgba(0,0,0,0.05); }
-        .cta-nosotros h3 { font-size: 32px; font-weight: 700; margin-bottom: 15px; }
-        .cta-nosotros p { color: #aaaaaa; font-size: 16px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; }
-        .btn { background-color: var(--naranja); color: var(--blanco); padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(255, 122, 0, 0.2); border: none; font-size: 16px; cursor: pointer; }
-        .btn:hover { background-color: var(--naranja-hover); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(255, 122, 0, 0.3); }
+        /* CTA */
+        .cta-nosotros { background: var(--oscuro); color: var(--blanco); padding: 70px 8%; text-align: center; border-radius: 24px; max-width: 1200px; margin: 40px auto; }
+        .btn { background-color: var(--naranja); color: var(--blanco); padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; transition: 0.3s; }
+        .btn:hover { background-color: var(--naranja-hover); }
 
-        footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; border-top: 1px solid #2a2a2a; }
+        footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; margin-top: 80px; }
         footer a { color: var(--naranja); text-decoration: none; margin: 0 10px; }
 
         @media (max-width: 968px) {
-            header { flex-direction: column; gap: 20px; }
-            nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-            nav a { margin-left: 0; padding: 5px 10px; }
-            .sobre-nosotros { flex-direction: column; text-align: center; padding: 60px 5%; }
-            .nosotros-content { padding-right: 0; margin-bottom: 40px; }
-            .grid-cifras { flex-direction: column; gap: 40px; }
+            header { padding: 15px 6%; position: relative; }
+            .menu-toggle { display: block; }
+            nav { display: none; flex-direction: column; width: 100%; position: absolute; top: 100%; left: 0; background: var(--blanco); padding: 20px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.05); z-index: 99; }
+            nav.open { display: flex; }
+            nav a { margin: 12px 0; padding: 0 8%; font-size: 16px; width: 100%; text-align: left; }
+            .sobre-nosotros { flex-direction: column; text-align: center; }
+            .grid-cifras { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="logo">VÍNCULO<span>.</span></a>
-        <nav>
+        <a href="index.html" class="logo">
+            <img src="https://raw.githubusercontent.com/Tania11sannicolas-web/vinculo/40108a99cb66bb940d7132718fb34e6ec4b303af/imagenes/Disen%CC%83o%20sin%20ti%CC%81tulo.png" alt="VÍNCULO">
+        </a>
+        <button class="menu-toggle" id="btnMenu" aria-label="Abrir menú">☰</button>
+        <nav id="navbarMenu">
             <a href="index.html">Inicio</a>
             <a href="nosotros.html" class="active">Nosotros</a>
             <a href="osc.html">Para OSC</a>
@@ -90,8 +85,8 @@
         <div class="nosotros-content">
             <span>La mente detrás del proyecto</span>
             <h1>Crear puentes para transformar realidades</h1>
-            <p>Detrás de VÍNCULO estoy yo, Mayra Flores. A lo largo de mi trayectoria en el tercer sector y el ámbito corporativo, entendí que las organizaciones sociales y las empresas con propósito comparten un mismo gran reto: la necesidad de estructura para que sus buenas intenciones se conviertan en impactos reales, duraderos y replicables.</p>
-            <p>VÍNCULO nace no como una consultoría fría, abstracta o teórica, sino como un espacio dinámico de acompañamiento cercano y estratégico. Nos integramos profundamente en el núcleo de tus proyectos para co-crear soluciones sólidas, transparentes y sustentables que fortalezcan tu gobernanza, tu equipo y tus canales de financiamiento.</p>
+            <p>Detrás de VÍNCULO estoy yo, Mayra Flores. A lo largo de mi trayectoria, entendí que las organizaciones sociales y empresas con propósito comparten un mismo reto: la necesidad de estructura para que sus intenciones se conviertan en impactos reales.</p>
+            <p>VÍNCULO nace como un espacio de acompañamiento cercano. Nos integramos en el núcleo de tus proyectos para co-crear soluciones sólidas que fortalezcan tu gobernanza y tu impacto.</p>
         </div>
         <div class="nosotros-image">
             <img src="https://raw.githubusercontent.com/Tania11sannicolas-web/vinculo/main/imagenes/Imagen de recurso - Vinculo-2.png" alt="Mayra Flores - Nosotros Vínculo">
@@ -100,55 +95,43 @@
 
     <section class="filosofia">
         <div class="grid-filosofia">
-            
-            <div class="bloque-filosofia">
-                <h3><span>🌱</span> Misión Institucional</h3>
-                <p>Acompañar, profesionalizar y fortalecer a las Organizaciones de la Sociedad Civil y Empresas Responsables a través de estrategias integrales e innovadoras que fusionen la sostenibilidad financiera, el impacto relacional y una transformación interna de largo plazo.</p>
-            </div>
-
-            <div class="bloque-filosofia">
-                <h3><span>✨</span> Visión de Futuro</h3>
-                <p>Consolidarnos como el ecosistema de consultoría estratégica referente en los sectores social y corporativo, reconocidos internacionalmente por humanizar las metodologías de negocio, generar comunidades cohesionadas y multiplicar el bienestar social transformador.</p>
-            </div>
-
-            <div class="bloque-filosofia">
-                <h3><span>🤝</span> Valores Fundamentales</h3>
-                <p>Nos rige firmemente la empatía activa, la transparencia radical, la coherencia profesional y el poder de las alianzas colaborativas. Para VÍNCULO, cada organización posee retos únicos que ameritan soluciones profundamente humanas y estructuradas.</p>
-            </div>
-
+            <div class="bloque-filosofia"><h3><span>🌱</span> Misión</h3><p>Acompañar y fortalecer a organizaciones y empresas mediante estrategias integrales que fusionen la sostenibilidad financiera y el impacto social.</p></div>
+            <div class="bloque-filosofia"><h3><span>✨</span> Visión</h3><p>Consolidarnos como el ecosistema de consultoría referente, reconocidos por humanizar las metodologías de negocio y multiplicar el bienestar.</p></div>
+            <div class="bloque-filosofia"><h3><span>🤝</span> Valores</h3><p>Empatía activa, transparencia radical, coherencia profesional y el poder de las alianzas colaborativas.</p></div>
         </div>
     </section>
 
     <section class="experiencia-cifras">
         <h2>Experiencia que respalda nuestro camino</h2>
         <div class="grid-cifras">
-            <div class="cifra-item">
-                <h4>+10</h4>
-                <p>Años Fortaleciendo Alianzas</p>
-            </div>
-            <div class="cifra-item">
-                <h4>+100</h4>
-                <p>Proyectos de Impacto Exitosos</p>
-            </div>
-            <div class="cifra-item">
-                <h4>100%</h4>
-                <p>Estrategias a la Medida</p>
-            </div>
+            <div class="cifra-item"><h4>+10</h4><p>Años Fortaleciendo Alianzas</p></div>
+            <div class="cifra-item"><h4>+100</h4><p>Proyectos de Impacto Exitosos</p></div>
+            <div class="cifra-item"><h4>100%</h4><p>Estrategias a la Medida</p></div>
         </div>
     </section>
 
     <section class="cta-nosotros">
         <h3>¿Hacemos equipo?</h3>
-        <p>No importa si estás arrancando una iniciativa comunitaria o si buscas reestructurar una firma o fundación consolidada. Analicemos el panorama sin compromisos en una sesión inicial de diagnóstico.</p>
+        <p>Analicemos el panorama sin compromisos en una sesión inicial de diagnóstico.</p>
         <a href="index.html#contacto" class="btn">Agendar un espacio con Mayra</a>
     </section>
 
     <footer>
-        <p style="margin-bottom: 15px;">&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
+        <p>&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
         <div class="redes">
-            <a href="#">LinkedIn</a> | <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | <a href="https://wa.me/525532004855">WhatsApp</a>
+            <a href="https://www.linkedin.com/company/vínculo-consultoría-estratégica/">LinkedIn</a> | 
+            <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | 
+            <a href="https://wa.me/525532004855">WhatsApp</a>
         </div>
     </footer>
 
+    <script>
+        const btnMenu = document.getElementById('btnMenu');
+        const navbarMenu = document.getElementById('navbarMenu');
+        btnMenu.addEventListener('click', () => {
+            navbarMenu.classList.toggle('open');
+            btnMenu.innerHTML = navbarMenu.classList.contains('open') ? "✕" : "☰";
+        });
+    </script>
 </body>
 </html>
