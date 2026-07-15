@@ -6,7 +6,6 @@
     <title>Panel de Control Virtual | VÍNCULO</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
     
     <style>
@@ -17,10 +16,10 @@
         .table { background: #fff; border-radius: 12px; overflow: hidden; }
         .badge-blog { background-color: #3498db; color: white; }
         .badge-recurso { background-color: #2ecc71; color: white; }
+        .badge-taller { background-color: #9b59b6; color: white; } /* Color para talleres */
         .btn-orange { background-color: #FF7A00 !important; color: white !important; font-weight: 600; opacity: 1 !important; }
         .btn-orange:hover { background-color: #E06B00 !important; color: white !important; }
         
-        /* ESTILOS DE INTEGRACIÓN DEL EDITOR PARA EL BLOG */
         #contenedor-quill { background: #fff; border-radius: 10px; overflow: hidden; display: none; }
         .ql-toolbar.ql-snow { border-color: #dee2e6 !important; background: #f8f9fa; border-top-left-radius: 8px; border-top-right-radius: 8px; }
         .ql-container.ql-snow { border-color: #dee2e6 !important; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; font-family: inherit; font-size: 15px; min-height: 250px; }
@@ -32,8 +31,9 @@
         <div class="container">
             <a class="navbar-brand" href="#"><i class="fa-solid fa-circle-nodes me-2"></i>VÍNCULO Centro de Control</a>
             <div>
-                <button type="button" class="btn btn-primary btn-sm me-2" onclick="abrirModal('blog')"><i class="fa-solid fa-feather me-2"></i>+ Redactar Nota</button>
-                <button type="button" class="btn btn-success btn-sm" onclick="abrirModal('recurso')"><i class="fa-solid fa-gift me-2"></i>+ Subir Recurso</button>
+                <button type="button" class="btn btn-primary btn-sm me-2" onclick="abrirModal('blog')"><i class="fa-solid fa-feather me-2"></i>+ Blog</button>
+                <button type="button" class="btn btn-info btn-sm me-2 text-white" onclick="abrirModal('taller')" style="background-color: #9b59b6; border:none;"><i class="fa-solid fa-chalkboard-user me-2"></i>+ Taller</button>
+                <button type="button" class="btn btn-success btn-sm" onclick="abrirModal('recurso')"><i class="fa-solid fa-gift me-2"></i>+ Recurso</button>
             </div>
         </div>
     </nav>
@@ -42,27 +42,38 @@
         <div class="row mb-4">
             <div class="col-12 text-center text-md-start">
                 <h2 class="header-title">¡Hola, Mayra! 👋</h2>
-                <p class="text-muted">Ecosistema de administración directa. Publica, edita y elimina contenido en tiempo real para el Blog y Recursos.</p>
+                <p class="text-muted">Ecosistema de administración directa. Gestiona tu Blog, Recursos y Talleres.</p>
             </div>
         </div>
 
         <div class="row g-3 mb-5">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="card p-4 bg-white">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <h6 class="text-muted text-uppercase small">Notas de Blog Activas</h6>
+                            <h6 class="text-muted text-uppercase small">Notas de Blog</h6>
                             <h3 class="fw-bold m-0" id="total-blog">0</h3>
                         </div>
                         <div class="fs-1 text-primary"><i class="fa-solid fa-feather"></i></div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="card p-4 bg-white">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <h6 class="text-muted text-uppercase small">Recursos Gratuitos Publicados</h6>
+                            <h6 class="text-muted text-uppercase small">Talleres Activos</h6>
+                            <h3 class="fw-bold m-0" id="total-talleres">0</h3>
+                        </div>
+                        <div class="fs-1" style="color:#9b59b6;"><i class="fa-solid fa-chalkboard-user"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 bg-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted text-uppercase small">Recursos Publicados</h6>
                             <h3 class="fw-bold m-0" id="total-recursos">0</h3>
                         </div>
                         <div class="fs-1 text-success"><i class="fa-solid fa-gift"></i></div>
@@ -80,7 +91,7 @@
                             <tr>
                                 <th>Tipo</th>
                                 <th>Título / Nombre</th>
-                                <th>Identificador</th>
+                                <th>Identificador (Fecha/Info)</th>
                                 <th>Detalles del contenido</th>
                                 <th class="text-center" style="width: 220px;">Acciones</th>
                             </tr>
@@ -119,10 +130,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold" id="lblContenido">Cuerpo</label>
-                            
+                            <label class="form-label fw-bold" id="lblContenido">Cuerpo / Descripción</label>
                             <textarea class="form-control" id="formContenido" rows="6"></textarea>
-                            
                             <div id="contenedor-quill">
                                 <div id="editor-quill"></div>
                             </div>
@@ -143,12 +152,16 @@
     <script>
         const URL_SCRIPT_BLOG = 'https://script.google.com/macros/s/AKfycbw2eu8XM2I1sGi9SeHd_oVLc6LI_VYCwj2jQfdGZsSFEoe4oeJV1eubQkDgHSLrEd1u/exec';
         const URL_SCRIPT_RECURSOS = 'https://script.google.com/macros/s/AKfycbwCgKiGaUkQfc5LSgiR02HN9xJhdXtf2rL5E0sSfjPpGDp-PjEeyaWCIGIDiLv3ywQtXw/exec';
+        
+        // ¡IMPORTANTE! Necesitarás crear un script de Google Apps para los talleres. 
+        // Mientras tanto, usamos el del blog asumiendo que modificarás tu script para aceptar una hoja "Talleres".
+        const URL_SCRIPT_TALLERES = URL_SCRIPT_BLOG; 
 
         const BLOG_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY'; 
         const RECURSOS_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo'; 
         const RECURSOS_GID = '2047829696'; 
 
-        let cacheBlog = [], cacheRecursos = [];
+        let cacheBlog = [], cacheRecursos = [], cacheTalleres = [];
         let stringArchivoBase64 = "", nombreArchivoImagen = "";
         let myModal;
         let instanciaQuill = null; 
@@ -167,7 +180,7 @@
                     </td>
                 </tr>`;
             
-            Promise.all([cargarNotasBlog(), cargarHerramientasRecursos()]).then(() => {
+            Promise.all([cargarNotasBlog(), cargarHerramientasRecursos(), cargarTalleres()]).then(() => {
                 const filaEspera = document.getElementById('fila-carga-espera');
                 if (filaEspera) filaEspera.remove();
             });
@@ -200,6 +213,34 @@
             } catch (e) { console.error(e); }
         }
 
+        async function cargarTalleres() {
+            try {
+                // Fetch de la pestaña "Talleres"
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${BLOG_ID}/gviz/tq?tqx=out:json&sheet=Talleres`);
+                const text = await res.text();
+                const data = JSON.parse(text.substr(47).slice(0, -2));
+                cacheTalleres = data.table.rows ? data.table.rows.slice(1) : [];
+                document.getElementById('total-talleres').innerText = cacheTalleres.length;
+
+                const tbody = document.getElementById('tabla-contenidos');
+                cacheTalleres.forEach((row, idx) => {
+                    if(!row || !row.c || !row.c[0]) return;
+                    const rId = idx + 2;
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><span class="badge badge-taller"><i class="fa-solid fa-chalkboard-user me-1"></i> Taller</span></td>
+                            <td class="fw-semibold text-dark">${row.c[0].v || ''}</td>
+                            <td class="text-muted small">${row.c[1] ? row.c[1].v : '-'}</td>
+                            <td class="text-truncate" style="max-width:250px;">${row.c[2] ? row.c[2].v : ''}</td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="cargarFilaParaEdicion('taller', ${rId})"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('taller', ${rId})"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>`;
+                });
+            } catch (e) { console.error("No se encontró la hoja Talleres", e); }
+        }
+
         async function cargarHerramientasRecursos() {
             try {
                 const res = await fetch(`https://docs.google.com/spreadsheets/d/${RECURSOS_ID}/gviz/tq?tqx=out:json&gid=${RECURSOS_GID}`);
@@ -212,12 +253,11 @@
                 cacheRecursos.forEach((row, idx) => {
                     if(!row || !row.c || !row.c[0]) return;
                     const rId = idx + 2;
-                    // FIJO: Se eliminó el botón de lápiz de la sección de recursos. Solo opción de remover permanentemente.
                     tbody.innerHTML += `
                         <tr>
                             <td><span class="badge badge-recurso"><i class="fa-solid fa-gift me-1"></i> Recurso</span></td>
                             <td class="fw-semibold text-dark">${row.c[0].v || ''}</td>
-                            <td class="text-muted small">Automatizado (Lista 8)</td>
+                            <td class="text-muted small">Automatizado</td>
                             <td class="text-truncate" style="max-width:250px;">${row.c[1] ? row.c[1].v : ''}</td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('recurso', ${rId})"><i class="fa-solid fa-trash"></i></button>
@@ -237,7 +277,6 @@
             document.getElementById('formTipo').value = tipo;
             document.getElementById('formRowId').value = "";
             document.getElementById('formImagenActual').value = "";
-            document.getElementById('modalTitle').innerText = tipo === 'blog' ? '📝 Nueva Entrada de Blog' : '🎁 Nuevo Recurso Descargable';
             
             const btn = document.getElementById('btnGuardar');
             btn.removeAttribute('disabled'); btn.disabled = false;
@@ -245,17 +284,27 @@
 
             const textareaContenido = document.getElementById('formContenido');
             const contenedorQuill = document.getElementById('contenedor-quill');
-
             const extraRow = document.getElementById('rowCamposEspeciales');
-            if (tipo === 'blog') {
-                document.getElementById('lblTitulo').innerText = "Título de la Nota";
-                document.getElementById('lblContenido').innerText = "Cuerpo del Artículo (Formato Visual)";
-                extraRow.innerHTML = `
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Fecha</label><input type="text" class="form-control" id="formExtra1" required placeholder="Ej: 18 de Mayo, 2026"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Resumen Corto</label><input type="text" class="form-control" id="formExtra2" required placeholder="Frase para la tarjeta..."></div>
+
+            if (tipo === 'blog' || tipo === 'taller') {
+                document.getElementById('modalTitle').innerText = tipo === 'blog' ? '📝 Nueva Entrada de Blog' : '🏫 Nuevo Taller';
+                document.getElementById('lblTitulo').innerText = tipo === 'blog' ? "Título de la Nota" : "Nombre del Taller";
+                document.getElementById('lblContenido').innerText = "Cuerpo del Artículo / Detalles del Taller";
+                
+                let camposHtml = `
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Fecha / Horario</label><input type="text" class="form-control" id="formExtra1" required></div>
+                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Resumen Corto</label><input type="text" class="form-control" id="formExtra2" required></div>
                 `;
                 
-                // CONDICIÓN: Oculta textarea plano y activa el editor Quill para procesar HTML de forma limpia
+                if (tipo === 'taller') {
+                    // Agregamos el campo para Stripe en talleres
+                    camposHtml += `<div class="col-12 mb-3"><label class="form-label fw-bold">Enlace de Stripe (Pago)</label><input type="url" class="form-control" id="formExtra3" placeholder="https://buy.stripe.com/..." required></div>`;
+                } else {
+                    camposHtml += `<input type="hidden" id="formExtra3" value="">`;
+                }
+                
+                extraRow.innerHTML = camposHtml;
+                
                 textareaContenido.style.display = "none";
                 textareaContenido.required = false;
                 contenedorQuill.style.display = "block";
@@ -263,7 +312,7 @@
                 if (!instanciaQuill) {
                     instanciaQuill = new Quill('#editor-quill', {
                         theme: 'snow',
-                        placeholder: 'Escribe tu nota aquí de forma visual...',
+                        placeholder: 'Escribe los detalles aquí de forma visual...',
                         modules: {
                             toolbar: [
                                 ['bold', 'italic', 'underline'],
@@ -278,18 +327,18 @@
                 }
 
             } else {
-                // CONDICIÓN: Para recursos NO hay editor visual. Queda el cuadro de texto simple (textarea) de forma nativa.
+                // Recursos
+                document.getElementById('modalTitle').innerText = '🎁 Nuevo Recurso Descargable';
                 document.getElementById('lblTitulo').innerText = "Nombre del Recurso";
                 document.getElementById('lblContenido').innerText = "Descripción del Recurso (Texto Simple)";
                 extraRow.innerHTML = `
-                    <div class="col-12 mb-3"><label class="form-label fw-bold">Enlace PDF (Drive)</label><input type="url" class="form-control" id="formExtra1" required placeholder="https://drive.google.com/..."></div>
+                    <div class="col-12 mb-3"><label class="form-label fw-bold">Enlace PDF (Drive)</label><input type="url" class="form-control" id="formExtra1" required></div>
                     <input type="hidden" id="formExtra2" value="8">
+                    <input type="hidden" id="formExtra3" value="">
                 `;
                 
                 textareaContenido.style.display = "block";
                 textareaContenido.required = true;
-                textareaContenido.value = "";
-                textareaContenido.placeholder = "Escribe una descripción corta para la tarjeta del recurso...";
                 contenedorQuill.style.display = "none";
             }
 
@@ -307,15 +356,20 @@
                 const cacheIndex = rowId - 2;
                 let textoCuerpo = "";
 
-                if (tipo === 'blog') {
-                    const r = cacheBlog[cacheIndex].c;
+                if (tipo === 'blog' || tipo === 'taller') {
+                    const r = tipo === 'blog' ? cacheBlog[cacheIndex].c : cacheTalleres[cacheIndex].c;
                     document.getElementById('formTitulo').value = r[0] ? r[0].v : '';
                     document.getElementById('formExtra1').value = r[1] ? r[1].v : '';
                     document.getElementById('formExtra2').value = r[2] ? r[2].v : '';
                     document.getElementById('formImagenActual').value = r[3] ? r[3].v : '';
-                    textoCuerpo = r[4] ? r[4].v : '';
                     
-                    // Inyecta el HTML existente directo al editor Quill para ocultar las etiquetas del código
+                    if(tipo === 'taller') {
+                        document.getElementById('formExtra3').value = r[4] ? r[4].v : '';
+                        textoCuerpo = r[5] ? r[5].v : '';
+                    } else {
+                        textoCuerpo = r[4] ? r[4].v : '';
+                    }
+                    
                     if(instanciaQuill) { 
                         instanciaQuill.clipboard.dangerouslyPasteHTML(textoCuerpo); 
                     }
@@ -342,8 +396,7 @@
             
             const tipo = document.getElementById('formTipo').value;
             
-            // Si es blog extraemos el HTML formateado de Quill; si es recurso el valor plano del textarea
-            if (tipo === 'blog' && instanciaQuill) { 
+            if ((tipo === 'blog' || tipo === 'taller') && instanciaQuill) { 
                 document.getElementById('formContenido').value = instanciaQuill.getSemanticHTML(); 
             }
 
@@ -352,26 +405,30 @@
             btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Sincronizando...`;
 
             const rowId = document.getElementById('formRowId').value;
-            const urlDestino = (tipo === 'blog') ? URL_SCRIPT_BLOG : URL_SCRIPT_RECURSOS;
+            let urlDestino = URL_SCRIPT_BLOG;
+            if (tipo === 'recurso') urlDestino = URL_SCRIPT_RECURSOS;
+            if (tipo === 'taller') urlDestino = URL_SCRIPT_TALLERES;
 
-            const extra1Value = document.getElementById('formExtra1').value;
-            const extra2Value = document.getElementById('formExtra2').value;
+            // Enviar un identificador de hoja ('hojaDestino') en tu script de Apps Script
+            let nombreHoja = 'Blog';
+            if(tipo === 'taller') nombreHoja = 'Talleres';
 
             const payload = {
                 tipo: tipo,
                 action: rowId ? "edit" : "create",
                 rowId: rowId,
+                hojaDestino: nombreHoja, // <- Dato clave para el App Script
                 titulo: document.getElementById('formTitulo').value,
                 imagenActual: document.getElementById('formImagenActual').value,
                 fileData: stringArchivoBase64,
                 fileName: nombreArchivoImagen,
                 contenido: document.getElementById('formContenido').value,
-                fecha: tipo === 'blog' ? extra1Value : "",
-                resumen: tipo === 'blog' ? extra2Value : "",
-                linkPdf: tipo === 'recurso' ? extra1Value : "8",
-                brevoId: "8", 
-                formExtra1: extra1Value,
-                formExtra2: "8"
+                fecha: (tipo === 'blog' || tipo === 'taller') ? document.getElementById('formExtra1').value : "",
+                resumen: (tipo === 'blog' || tipo === 'taller') ? document.getElementById('formExtra2').value : "",
+                linkStripe: tipo === 'taller' ? document.getElementById('formExtra3').value : "",
+                linkPdf: tipo === 'recurso' ? document.getElementById('formExtra1').value : "8",
+                formExtra1: document.getElementById('formExtra1').value,
+                formExtra2: document.getElementById('formExtra2').value
             };
 
             try {
@@ -386,24 +443,19 @@
 
         async function borrarFilaDefinitivamente(tipo, rowId) {
             if (!confirm(`¿Borrar fila permanente de ${tipo}?`)) return;
-            const urlDestino = (tipo === 'blog') ? URL_SCRIPT_BLOG : URL_SCRIPT_RECURSOS;
             
-            let tituloABorrar = "";
-            try {
-                const cacheIndex = rowId - 2;
-                if (tipo === 'blog' && cacheBlog[cacheIndex]) {
-                    tituloABorrar = cacheBlog[cacheIndex].c[0].v;
-                } else if (tipo === 'recurso' && cacheRecursos[cacheIndex]) {
-                    tituloABorrar = cacheRecursos[cacheIndex].c[0].v;
-                }
-            } catch(err) { console.error(err); }
-
+            let urlDestino = URL_SCRIPT_BLOG;
+            if (tipo === 'recurso') urlDestino = URL_SCRIPT_RECURSOS;
+            if (tipo === 'taller') urlDestino = URL_SCRIPT_TALLERES;
+            
+            let nombreHoja = tipo === 'taller' ? 'Talleres' : 'Blog';
+            
             try {
                 document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">Eliminando del Drive...</td></tr>`;
                 await fetch(urlDestino, {
                     method: "POST",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ tipo: tipo, action: "delete", rowId: rowId, titulo: tituloABorrar })
+                    body: JSON.stringify({ tipo: tipo, action: "delete", rowId: rowId, hojaDestino: nombreHoja })
                 });
                 setTimeout(() => { inicializarDashboard(); alert("¡Removido exitosamente del Drive!"); }, 2000);
             } catch (e) { setTimeout(() => { inicializarDashboard(); }, 2000); }
