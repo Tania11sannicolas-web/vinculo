@@ -11,132 +11,23 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
         
-        /* HEADER */
+        /* NAVBAR HOMOLOGADO */
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
         .logo { display: flex; align-items: center; text-decoration: none; }
         .logo img { height: 160px; width: auto; object-fit: contain; margin: -40px 0; }
+        
         nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
         nav a:hover, nav a.active { color: var(--naranja); }
-        .menu-toggle { display: none; background: none; border: none; font-size: 30px; color: var(--oscuro); cursor: pointer; }
-
+        
+        /* BOTÓN HAMBURGUESA (Oculto en Desktop) */
+        .menu-toggle { display: none; background: none; border: none; font-size: 30px; color: var(--oscuro); cursor: pointer; outline: none; }
+        
         .blog-header { background-color: var(--fondo-claro); padding: 80px 8%; text-align: center; }
         .blog-header span { color: var(--naranja); font-weight: 700; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; }
         .blog-header h1 { font-size: 40px; font-weight: 700; margin: 10px 0 20px 0; letter-spacing: -1px; }
+        .blog-header p { color: var(--texto); font-size: 18px; max-width: 600px; margin: 0 auto; }
+
         .blog-container { padding: 60px 8% 80px 8%; max-width: 1200px; margin: 0 auto; }
         .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px; margin-top: 20px; }
         
-        .card-post { background: var(--blanco); border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.04); transition: all 0.3s ease; display: flex; flex-direction: column; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.01); }
-        .card-post:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.04); }
-        .post-image { height: 200px; background-size: cover; background-position: center; background-color: #eee; }
-        .post-body { padding: 30px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 240px; }
-        .post-meta { font-size: 13px; color: var(--naranja); font-weight: 600; margin-bottom: 10px; }
-        .post-body h3 { font-size: 20px; font-weight: 700; margin-bottom: 12px; line-height: 1.4; }
-        .post-body a { text-decoration: none; color: var(--oscuro); }
-        .link-leer { color: #FF7A00; text-decoration: none; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; }
-
-        footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; }
-        footer a { color: var(--naranja); text-decoration: none; margin: 0 10px; }
-
-        @media (max-width: 968px) {
-            header { padding: 15px 6%; position: relative; }
-            .menu-toggle { display: block; }
-            nav { display: none; flex-direction: column; width: 100%; position: absolute; top: 100%; left: 0; background: var(--blanco); padding: 20px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.05); z-index: 99; }
-            nav.open { display: flex; }
-            nav a { margin: 12px 0; padding: 0 8%; font-size: 16px; width: 100%; text-align: left; }
-            .blog-grid { grid-template-columns: 1fr; }
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <a href="index.html" class="logo">
-            <img src="https://raw.githubusercontent.com/Tania11sannicolas-web/vinculo/40108a99cb66bb940d7132718fb34e6ec4b303af/imagenes/Disen%CC%83o%20sin%20ti%CC%81tulo.png" alt="VÍNCULO">
-        </a>
-        <button class="menu-toggle" id="btnMenu" aria-label="Abrir menú">☰</button>
-        <nav id="navbarMenu">
-            <a href="index.html">Inicio</a>
-            <a href="nosotros.html">Nosotros</a>
-            <a href="osc.html">Para OSC</a>
-            <a href="empresas.html">Para Empresas</a>
-            <a href="talleres.html" class="active">Talleres</a>
-            <a href="recursos.html">Recursos Gratuitos</a>
-            <a href="blog.html">Blog</a>
-            <a href="index.html#contacto">Contacto</a>
-        </nav>
-    </header>
-
-    <section class="blog-header">
-        <span>Formación Continua</span>
-        <h1>Talleres y Capacitaciones</h1>
-        <p>Aprende de manera práctica a impulsar el corazón de tus proyectos sociales y corporativos.</p>
-    </section>
-
-    <main class="blog-container">
-        <h2>Próximas Sesiones</h2>
-        <div class="blog-grid">
-            <p style="text-align: center; color: #4A4A4A; grid-column: 1/-1;">Conectando con Google Sheets...</p>
-        </div>
-    </main>
-
-    <footer>
-        <p style="margin-bottom: 15px;">&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
-        <div class="redes">
-            <a href="https://www.linkedin.com/company/vínculo-consultoría-estratégica/">LinkedIn</a> | 
-            <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | 
-            <a href="https://wa.me/525532004855">WhatsApp</a>
-        </div>
-    </footer>
-
-    <script>
-        // Lógica del Menú
-        const btnMenu = document.getElementById('btnMenu');
-        const navbarMenu = document.getElementById('navbarMenu');
-        btnMenu.addEventListener('click', () => {
-            navbarMenu.classList.toggle('open');
-            btnMenu.innerHTML = navbarMenu.classList.contains('open') ? "✕" : "☰";
-        });
-
-        // Carga de Talleres
-        document.addEventListener("DOMContentLoaded", async function() {
-            const grid = document.querySelector('.blog-grid');
-            const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
-            const urlTalleres = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Talleres`;
-            
-            try {
-                const res = await fetch(urlTalleres);
-                const text = await res.text();
-                const data = JSON.parse(text.substr(47).slice(0, -2));
-                const filas = data.table.rows.slice(1); 
-                grid.innerHTML = ""; 
-
-                if (!filas || filas.length === 0) {
-                    grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente abriremos nuevos talleres.</p>`;
-                    return;
-                }
-
-                filas.reverse().forEach((row, index) => {
-                    if (!row.c || !row.c[0]) return; 
-                    const idFila = filas.length - index + 1; 
-                    const card = document.createElement('article');
-                    card.className = 'card-post';
-                    card.innerHTML = `
-                        <div class="post-image" style="background-image: url('${row.c[3] ? row.c[3].v : ''}');"></div>
-                        <div class="post-body">
-                            <div>
-                                <span class="post-meta">🗓️ ${row.c[1] ? row.c[1].v : ''}</span>
-                                <h3><a href="taller.html?id=${idFila}">${row.c[0].v}</a></h3>
-                                <p>${row.c[2] ? row.c[2].v : ''}</p>
-                            </div>
-                            <a href="taller.html?id=${idFila}" class="link-leer">Ver información e inscribirse <span>→</span></a>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-            } catch (error) {
-                grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos cargar los talleres.</p>`;
-            }
-        });
-    </script>
-</body>
-</html>
+        .card-post { background: var(--blanco); border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.04); transition: all 0.3s ease; display: flex; flex-direction: column; text-align: left; box
