@@ -7,62 +7,49 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --naranja: #FF7A00;
-            --naranja-hover: #E06B00;
-            --oscuro: #1A1A1A;
-            --texto: #4A4A4A;
-            --fondo-claro: #FAF9F6;
-            --blanco: #FFFFFF;
-        }
-
+        :root { --naranja: #FF7A00; --naranja-hover: #E06B00; --oscuro: #1A1A1A; --texto: #4A4A4A; --fondo-claro: #FAF9F6; --blanco: #FFFFFF; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
         
-        /* NAVBAR HOMOLOGADO CENTRALIZADO */
-        header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
-        .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; color: var(--oscuro); }
-        .logo span { color: var(--naranja); }
+        /* HEADER Y MENÚ */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .logo { display: flex; align-items: center; text-decoration: none; }
+        .logo img { height: 160px; width: auto; object-fit: contain; margin: -40px 0; }
+        nav { display: flex; align-items: center; }
         nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
         nav a:hover, nav a.active { color: var(--naranja); }
-        
-        /* HEADER DE SECCIÓN */
+        .menu-toggle { display: none; background: none; border: none; font-size: 30px; color: var(--oscuro); cursor: pointer; }
+
+        /* SECCIÓN */
         .section-header { background-color: var(--fondo-claro); padding: 80px 8%; text-align: center; }
         .section-header span { color: var(--naranja); font-weight: 700; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; }
         .section-header h1 { font-size: 40px; font-weight: 700; margin: 10px 0 20px 0; letter-spacing: -1px; }
         .section-header p { color: var(--texto); font-size: 18px; max-width: 750px; margin: 0 auto; }
 
-        /* GRID DE SERVICIOS */
         .servicios-container { padding: 80px 8%; }
         .grid-servicios { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
         
-        .card-servicio { background: var(--blanco); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.04); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; }
-        .card-servicio:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(255, 122, 0, 0.05); border-color: rgba(255, 122, 0, 0.1); }
-        
-        .badge-numero { background-color: rgba(255, 122, 0, 0.1); color: var(--naranja); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 700; font-size: 14px; margin-bottom: 20px; }
-        .card-servicio h3 { font-size: 21px; font-weight: 700; margin-bottom: 15px; color: var(--oscuro); line-height: 1.3; }
-        .card-servicio p { color: var(--texto); font-size: 14.5px; margin-bottom: 20px; flex-grow: 1; }
-        
-        .lista-detalles { list-style: none; margin-bottom: 25px; border-top: 1px solid rgba(0,0,0,0.04); padding-top: 15px; }
-        .lista-detalles li { font-size: 14px; color: var(--texto); margin-bottom: 10px; display: flex; align-items: flex-start; gap: 8px; line-height: 1.4; }
-        .lista-detalles li::before { content: "✓"; color: var(--naranja); font-weight: 700; margin-top: 1px; }
+        .card-servicio { background: var(--blanco); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.04); transition: all 0.3s ease; display: flex; flex-direction: column; }
+        .card-servicio:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(255, 122, 0, 0.05); }
+        .badge-numero { background-color: rgba(255, 122, 0, 0.1); color: var(--naranja); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 700; margin-bottom: 20px; }
+        .card-servicio h3 { font-size: 21px; font-weight: 700; margin-bottom: 15px; }
+        .lista-detalles { list-style: none; margin-top: 20px; border-top: 1px solid rgba(0,0,0,0.04); padding-top: 15px; }
+        .lista-detalles li { font-size: 14px; color: var(--texto); margin-bottom: 10px; display: flex; gap: 8px; }
+        .lista-detalles li::before { content: "✓"; color: var(--naranja); font-weight: 700; }
 
-        /* BANNER DE RECURSOS (CTA DESTACADO) */
-        .cta-recursos { background: var(--oscuro); color: var(--blanco); padding: 70px 8%; text-align: center; border-radius: 24px; max-width: 1200px; margin: 40px auto; box-shadow: 0 15px 40px rgba(0,0,0,0.05); }
-        .cta-recursos h3 { font-size: 32px; font-weight: 700; margin-bottom: 15px; }
-        .cta-recursos p { color: #aaaaaa; font-size: 16px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; }
-        
-        .btn { background-color: var(--naranja); color: var(--blanco); padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(255, 122, 0, 0.2); border: none; font-size: 16px; text-align: center; }
-        .btn:hover { background-color: var(--naranja-hover); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(255, 122, 0, 0.3); }
+        .cta-recursos { background: var(--oscuro); color: var(--blanco); padding: 70px 8%; text-align: center; border-radius: 24px; max-width: 1200px; margin: 40px auto; }
+        .btn { background-color: var(--naranja); color: var(--blanco); padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; transition: 0.3s; border: none; font-size: 16px; }
+        .btn:hover { background-color: var(--naranja-hover); }
 
-        footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; border-top: 1px solid #2a2a2a; }
+        footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; margin-top: 80px; }
         footer a { color: var(--naranja); text-decoration: none; margin: 0 10px; }
 
         @media (max-width: 968px) {
-            header { flex-direction: column; gap: 20px; }
-            nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-            nav a { margin-left: 0; padding: 5px 10px; }
-            .section-header h1 { font-size: 32px; }
+            header { padding: 15px 6%; position: relative; }
+            .menu-toggle { display: block; }
+            nav { display: none; flex-direction: column; width: 100%; position: absolute; top: 100%; left: 0; background: var(--blanco); padding: 20px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.05); z-index: 99; }
+            nav.open { display: flex; }
+            nav a { margin: 12px 0; padding: 0 8%; font-size: 16px; width: 100%; text-align: left; }
             .grid-servicios { grid-template-columns: 1fr; }
         }
     </style>
@@ -70,8 +57,11 @@
 <body>
 
     <header>
-        <a href="index.html" class="logo">VÍNCULO<span>.</span></a>
-        <nav>
+        <a href="index.html" class="logo">
+            <img src="https://raw.githubusercontent.com/Tania11sannicolas-web/vinculo/40108a99cb66bb940d7132718fb34e6ec4b303af/imagenes/Disen%CC%83o%20sin%20ti%CC%81tulo.png" alt="VÍNCULO">
+        </a>
+        <button class="menu-toggle" id="btnMenu" aria-label="Abrir menú">☰</button>
+        <nav id="navbarMenu">
             <a href="index.html">Inicio</a>
             <a href="nosotros.html">Nosotros</a>
             <a href="osc.html" class="active">Para OSC</a>
@@ -86,132 +76,62 @@
     <section class="section-header">
         <span>Acompañamiento Institucional de Fondo</span>
         <h1>Soluciones para Organizaciones de la Sociedad Civil</h1>
-        <p>Acompañamos la transformación de las organizaciones sociales hacia modelos sostenibles, eficientes y con un impacto social verificable. Co-creamos herramientas prácticas que protegen tu causa e impulsan tu misión en el tiempo.</p>
+        <p>Acompañamos la transformación de las organizaciones sociales hacia modelos sostenibles, eficientes y con un impacto social verificable.</p>
     </section>
 
     <section class="servicios-container">
         <div class="grid-servicios">
-            
             <div class="card-servicio">
                 <div>
                     <div class="badge-numero">01</div>
-                    <h3>Fortalecimiento Organizacional Estratégico</h3>
-                    <p>Ordenamos la estructura interna de tu organización mediante un diagnóstico y diseño operativo que robustece el funcionamiento relacional y directivo.</p>
+                    <h3>Fortalecimiento Organizacional</h3>
+                    <p>Ordenamos la estructura interna mediante un diagnóstico y diseño operativo que robustece tu funcionamiento.</p>
                     <ul class="lista-detalles">
-                        <li>Realización de un diagnóstico organizacional completo y estructural</li>
-                        <li>Diseño de planes estratégicos multianuales alineados a la misión</li>
-                        <li>Estructuración de manuales operativos y delimitación clara de puestos</li>
-                        <li>Modelos de gobernanza eficientes y asambleas institucionales funcionales</li>
+                        <li>Diagnóstico organizacional completo</li>
+                        <li>Planes estratégicos multianuales</li>
+                        <li>Manuales operativos</li>
                     </ul>
                 </div>
-                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
+                <a href="index.html#contacto" class="btn">Consultar este pilar</a>
             </div>
-
             <div class="card-servicio">
                 <div>
                     <div class="badge-numero">02</div>
-                    <h3>Gestión de Proyectos de Impacto Social</h3>
-                    <p>Estructuramos técnicamente los programas sociales de tu OSC bajo enfoques metodológicos rigurosos orientados al monitoreo y la comprobación de resultados.</p>
+                    <h3>Gestión de Proyectos</h3>
+                    <p>Estructuramos técnicamente tus programas sociales para garantizar monitoreo y resultados.</p>
                     <ul class="lista-detalles">
-                        <li>Diseño de modelos de intervención basados en metodologías de evidencia</li>
-                        <li>Formulación técnica de proyectos para convocatorias nacionales y globales</li>
-                        <li>Desarrollo de matrices de indicadores de impacto y metas claras</li>
-                        <li>Diseño e implementación de sistemas de monitoreo y evaluación continua</li>
+                        <li>Formulación para convocatorias</li>
+                        <li>Matrices de indicadores</li>
+                        <li>Sistemas de evaluación</li>
                     </ul>
                 </div>
-                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
+                <a href="index.html#contacto" class="btn">Consultar este pilar</a>
             </div>
-
-            <div class="card-servicio">
-                <div>
-                    <div class="badge-numero">03</div>
-                    <h3>Estrategia de Procuración de Fondos y Alianzas</h3>
-                    <p>Diversificamos tus ingresos institucionales diseñando planes sustentables de captación económica para que la causa no dependa de un único donante.</p>
-                    <ul class="lista-detalles">
-                        <li>Mapeo estratégico de donantes corporativos, fundaciones e internacionales</li>
-                        <li>Elaboración del plan institucional anual de procuración de fondos</li>
-                        <li>Diseño y conceptualización de campañas de fondeo y eventos de impacto</li>
-                        <li>Estrategias de vinculación y retención a largo plazo con aliados clave</li>
-                    </ul>
-                </div>
-                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
-            </div>
-
-            <div class="card-servicio">
-                <div>
-                    <div class="badge-numero">04</div>
-                    <h3>Estructuración de Programas de Voluntariado</h3>
-                    <p>Canalizamos el entusiasmo comunitario en una fuerza operativa estructurada, disminuyendo la rotación y aumentando el compromiso real del equipo de voluntarios.</p>
-                    <ul class="lista-detalles">
-                        <li>Desarrollo integral del manual operativo para el área de voluntariado</li>
-                        <li>Establecimiento de mecanismos técnicos de convocatoria y selección</li>
-                        <li>Estrategias formativas de seguimiento, inducción y retención</li>
-                        <li>Modelos de evaluación de desempeño y sistemas de reconocimiento</li>
-                    </ul>
-                </div>
-                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
-            </div>
-
-            <div class="card-servicio">
-                <div>
-                    <div class="badge-numero">05</div>
-                    <h3>Atracción de Talento para Desarrollo Institucional</h3>
-                    <p>Identificamos y seleccionamos a los perfiles profesionales adecuados para potenciar las áreas de recaudación de fondos y comunicación institucional de tu OSC.</p>
-                    <ul class="lista-detalles">
-                        <li>Elaboración técnica del perfil de puesto según tus retos operativos</li>
-                        <li>Coordinación de los procesos de reclutamiento y búsquedas focalizadas</li>
-                        <li>Aplicación de filtros evaluativos técnicos y entrevistas por competencias</li>
-                        <li>Acompañamiento en los procesos iniciales de inducción e integración al cargo</li>
-                    </ul>
-                </div>
-                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
-            </div>
-
-            <div class="card-servicio">
-                <div>
-                    <div class="badge-numero">06</div>
-                    <h3>Acompañamiento Sistémico Relacional para Líderes sociales</h3>
-                    <p>Abordamos de raíz los desórdenes internos y los bloqueos relacionales crónicos que merman el desempeño de los equipos operativos y directivos en las OSC.</p>
-                    <ul class="lista-detalles">
-                        <li>Mapeo relacional profundo mediante metodologías de representación espacial</li>
-                        <li>Identificación de lealtades invisibles, fatiga por compasión y desgaste de liderazgo</li>
-                        <li>Sesiones de intervención focalizada para desatar bloqueos en la toma de decisiones</li>
-                        <li>Modelos de contención humana para directores, fundadores y patronatos</li>
-                    </ul>
-                </div>
-                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
-            </div>
-
-            <div class="card-servicio">
-                <div>
-                    <div class="badge-numero">07</div>
-                    <h3>Modelos de Buen Gobierno y Cumplimiento Regulatorio</h3>
-                    <p>Preparamos institucionalmente a tu organización para auditorías externas, incrementando tus niveles de transparencia y legitimidad en el ecosistema.</p>
-                    <ul class="lista-detalles">
-                        <li>Estructuración de políticas internas de transparencia y códigos de ética</li>
-                        <li>Alineación con manuales e indicadores de debida diligencia institucional</li>
-                        <li>Profesionalización del Consejo Directivo y delimitación de roles con Dirección</li>
-                        <li>Estrategias de cumplimiento normativo técnico para donatarias autorizadas</li>
-                    </ul>
-                </div>
-                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px;">Consultar este pilar</a>
-            </div>
-
         </div>
     </section>
 
     <section class="cta-recursos">
         <h3>¿Quieres herramientas listas para usar?</h3>
-        <p>En nuestra sección de recursos compartimos constantemente guías prácticas sobre convocatorias, procuración de fondos y plantillas de planeación completamente gratis.</p>
+        <p>En nuestra sección de recursos compartimos guías prácticas sobre procuración de fondos.</p>
         <a href="recursos.html" class="btn">Explorar Recursos Gratuitos</a>
     </section>
 
     <footer>
-        <p style="margin-bottom: 15px;">&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
+        <p>&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
         <div class="redes">
-            <a href="#">LinkedIn</a> | <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | <a href="https://wa.me/525532004855">WhatsApp</a>
+            <a href="https://www.linkedin.com/company/vínculo-consultoría-estratégica/">LinkedIn</a> | 
+            <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | 
+            <a href="https://wa.me/525532004855">WhatsApp</a>
         </div>
     </footer>
 
+    <script>
+        const btnMenu = document.getElementById('btnMenu');
+        const navbarMenu = document.getElementById('navbarMenu');
+        btnMenu.addEventListener('click', () => {
+            navbarMenu.classList.toggle('open');
+            btnMenu.innerHTML = navbarMenu.classList.contains('open') ? "✕" : "☰";
+        });
+    </script>
 </body>
 </html>
