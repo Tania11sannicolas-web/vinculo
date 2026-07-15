@@ -5,64 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artículo | VÍNCULO</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
-        :root {
-            --naranja: #FF7A00;
-            --naranja-hover: #E06B00;
-            --oscuro: #1A1A1A;
-            --texto: #4A4A4A;
-            --fondo-claro: #FAF9F6;
-            --blanco: #FFFFFF;
-        }
-
+        :root { --naranja: #FF7A00; --naranja-hover: #E06B00; --oscuro: #1A1A1A; --texto: #4A4A4A; --fondo-claro: #FAF9F6; --blanco: #FFFFFF; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
         
-        /* NAVBAR HOMOLOGADO CENTRALIZADO */
-        header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
-        .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; color: var(--oscuro); }
-        .logo span { color: var(--naranja); }
+        /* HEADER Y MENÚ */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .logo { display: flex; align-items: center; text-decoration: none; }
+        .logo img { height: 160px; width: auto; object-fit: contain; margin: -40px 0; }
+        nav { display: flex; align-items: center; }
         nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; transition: color 0.3s; }
         nav a:hover, nav a.active { color: var(--naranja); }
+        .menu-toggle { display: none; background: none; border: none; font-size: 30px; color: var(--oscuro); cursor: pointer; }
 
-        /* DISEÑO DEL ARTÍCULO DE FONDO */
+        /* ARTÍCULO */
         .article-container { max-width: 800px; margin: 60px auto; padding: 0 20px; text-align: left; }
         .article-meta { color: var(--naranja); font-weight: 600; font-size: 14px; text-transform: uppercase; display: block; margin-bottom: 15px; letter-spacing: 0.5px; }
-        .article-title { font-size: 42px; font-weight: 700; line-height: 1.2; margin-bottom: 30px; letter-spacing: -1px; color: var(--oscuro); }
+        .article-title { font-size: 42px; font-weight: 700; line-height: 1.2; margin-bottom: 30px; letter-spacing: -1px; }
         .article-banner { width: 100%; height: 400px; background-size: cover; background-position: center; border-radius: 20px; margin-bottom: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.03); display: none; }
-        
-        /* Estilos renderizados para el cuerpo del texto convertido desde Google Sheets */
         .article-content { color: var(--texto); font-size: 17px; line-height: 1.8; }
-        .article-content p { margin-bottom: 25px; }
-        .article-content h2 { font-size: 26px; font-weight: 700; margin: 40px 0 20px 0; color: var(--oscuro); letter-spacing: -0.5px; }
-        .article-content h3 { font-size: 22px; font-weight: 700; margin: 30px 0 15px 0; color: var(--oscuro); }
-        .article-content ul, .article-content ol { margin-left: 25px; margin-bottom: 25px; }
-        .article-content li { margin-bottom: 10px; }
-
-        .btn-regresar { display: inline-flex; align-items: center; gap: 8px; color: var(--texto); text-decoration: none; font-weight: 600; margin-bottom: 40px; font-size: 15px; transition: color 0.3s; }
+        .article-content h2 { font-size: 26px; font-weight: 700; margin: 40px 0 20px 0; color: var(--oscuro); }
+        
+        .btn-regresar { display: inline-flex; align-items: center; gap: 8px; color: var(--texto); text-decoration: none; font-weight: 600; margin-bottom: 40px; }
         .btn-regresar:hover { color: var(--naranja); }
 
-        /* FOOTER HOMOLOGADO */
         footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; margin-top: 100px; }
         footer a { color: var(--naranja); text-decoration: none; margin: 0 10px; }
 
         @media (max-width: 968px) {
-            header { flex-direction: column; gap: 20px; }
-            nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-            nav a { margin-left: 0; padding: 5px 10px; }
+            header { padding: 15px 6%; position: relative; }
+            .menu-toggle { display: block; }
+            nav { display: none; flex-direction: column; width: 100%; position: absolute; top: 100%; left: 0; background: var(--blanco); padding: 20px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.05); z-index: 99; }
+            nav.open { display: flex; }
+            nav a { margin: 12px 0; padding: 0 8%; font-size: 16px; width: 100%; text-align: left; }
             .article-title { font-size: 32px; }
-            .article-banner { height: 260px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="logo">VÍNCULO<span>.</span></a>
-        <nav>
+        <a href="index.html" class="logo">
+            <img src="https://raw.githubusercontent.com/Tania11sannicolas-web/vinculo/40108a99cb66bb940d7132718fb34e6ec4b303af/imagenes/Disen%CC%83o%20sin%20ti%CC%81tulo.png" alt="VÍNCULO">
+        </a>
+        <button class="menu-toggle" id="btnMenu" aria-label="Abrir menú">☰</button>
+        <nav id="navbarMenu">
             <a href="index.html">Inicio</a>
             <a href="nosotros.html">Nosotros</a>
             <a href="osc.html">Para OSC</a>
@@ -76,66 +66,51 @@
 
     <main class="article-container">
         <a href="blog.html" class="btn-regresar">← Volver al blog</a>
-        
         <span class="article-meta" id="art-fecha">Cargando...</span>
         <h1 class="article-title" id="art-titulo">Cargando artículo...</h1>
         <div class="article-banner" id="art-banner"></div>
-        
         <div class="article-content" id="art-cuerpo"></div>
     </main>
 
     <footer>
-        <p style="margin-bottom: 15px;">&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
+        <p>&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
         <div class="redes">
-            <a href="#">LinkedIn</a> | <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | <a href="https://wa.me/525532004855">WhatsApp</a>
+            <a href="https://www.linkedin.com/company/vínculo-consultoría-estratégica/">LinkedIn</a> | 
+            <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | 
+            <a href="https://wa.me/525532004855">WhatsApp</a>
         </div>
     </footer>
 
     <script>
+        const btnMenu = document.getElementById('btnMenu');
+        const navbarMenu = document.getElementById('navbarMenu');
+        btnMenu.addEventListener('click', () => {
+            navbarMenu.classList.toggle('open');
+            btnMenu.innerHTML = navbarMenu.classList.contains('open') ? "✕" : "☰";
+        });
+
         document.addEventListener("DOMContentLoaded", async function() {
             const params = new URLSearchParams(window.location.search);
-            const idFila = params.get('id'); 
-            
-            // Si por alguna razón no viene un ID en el enlace, ponemos la fila 2 por defecto
-            const filaFinal = idFila ? idFila : "2";
-            
+            const idFila = params.get('id') || "2";
             const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
-            const urlArticulo = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Blog&range=A${filaFinal}:E${filaFinal}`;
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Blog&range=A${idFila}:E${idFila}`;
 
             try {
-                const res = await fetch(urlArticulo);
+                const res = await fetch(url);
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
-                
-                if (!data.table.rows || data.table.rows.length === 0) {
-                    throw new Error("Fila vacía");
-                }
-                
-                const celdas = data.table.rows[0].c;
+                const c = data.table.rows[0].c;
 
-                const titulo = (celdas[0] && celdas[0].v) ? celdas[0].v : 'Artículo sin título';
-                const fecha = (celdas[1] && celdas[1].v) ? celdas[1].v : 'Reciente';
-                const imagen = (celdas[3] && celdas[3].v) ? celdas[3].v : '';
-                const cuerpoTexto = (celdas[4] && celdas[4].v) ? celdas[4].v : 'Esta nota no contiene texto todavía.';
-
-                // Pintamos los datos en la plantilla
-                document.getElementById('art-titulo').innerText = titulo;
-                document.title = `${titulo} | VÍNCULO`;
-                document.getElementById('art-fecha').innerText = `${fecha} | Conocimiento Compartido`;
-                
-                if (imagen) {
+                document.getElementById('art-titulo').innerText = c[0].v;
+                document.getElementById('art-fecha').innerText = `${c[1].v} | Conocimiento Compartido`;
+                if (c[3]?.v) {
                     const banner = document.getElementById('art-banner');
-                    banner.style.backgroundImage = `url('${imagen}')`;
+                    banner.style.backgroundImage = `url('${c[3].v}')`;
                     banner.style.display = 'block';
                 }
-
-                // Convertimos el contenido largo de Markdown a HTML nativo
-                document.getElementById('art-cuerpo').innerHTML = marked.parse(cuerpoTexto);
-
+                document.getElementById('art-cuerpo').innerHTML = marked.parse(c[4].v);
             } catch (e) {
-                console.error(e);
                 document.getElementById('art-titulo').innerText = "Artículo no encontrado";
-                document.getElementById('art-cuerpo').innerHTML = "<p>No pudimos cargar la publicación. Por favor, regresa al blog e intenta de nuevo.</p>";
             }
         });
     </script>
