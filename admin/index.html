@@ -16,7 +16,7 @@
         .table { background: #fff; border-radius: 12px; overflow: hidden; }
         .badge-blog { background-color: #3498db; color: white; }
         .badge-recurso { background-color: #2ecc71; color: white; }
-        .badge-taller { background-color: #9b59b6; color: white; } /* Color para talleres */
+        .badge-taller { background-color: #9b59b6; color: white; } 
         .btn-orange { background-color: #FF7A00 !important; color: white !important; font-weight: 600; opacity: 1 !important; }
         .btn-orange:hover { background-color: #E06B00 !important; color: white !important; }
         
@@ -138,7 +138,7 @@
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn-secondary btn" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-orange" id="btnGuardar">Publicar Contenido</button>
                     </div>
                 </form>
@@ -150,12 +150,8 @@
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
     
     <script>
-        const URL_SCRIPT_BLOG = 'https://script.google.com/macros/s/AKfycbw2eu8XM2I1sGi9SeHd_oVLc6LI_VYCwj2jQfdGZsSFEoe4oeJV1eubQkDgHSLrEd1u/exec';
-        const URL_SCRIPT_RECURSOS = 'https://script.google.com/macros/s/AKfycbwCgKiGaUkQfc5LSgiR02HN9xJhdXtf2rL5E0sSfjPpGDp-PjEeyaWCIGIDiLv3ywQtXw/exec';
-        
-        // ¡IMPORTANTE! Necesitarás crear un script de Google Apps para los talleres. 
-        // Mientras tanto, usamos el del blog asumiendo que modificarás tu script para aceptar una hoja "Talleres".
-        const URL_SCRIPT_TALLERES = URL_SCRIPT_BLOG; 
+        // ÚNICA URL UNIFICADA
+        const URL_SCRIPT_UNIFICADO = 'https://script.google.com/macros/s/AKfycbw2eu8XM2I1sGi9SeHd_oVLc6LI_VYCwj2jQfdGZsSFEoe4oeJV1eubQkDgHSLrEd1u/exec';
 
         const BLOG_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY'; 
         const RECURSOS_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo'; 
@@ -215,7 +211,6 @@
 
         async function cargarTalleres() {
             try {
-                // Fetch de la pestaña "Talleres"
                 const res = await fetch(`https://docs.google.com/spreadsheets/d/${BLOG_ID}/gviz/tq?tqx=out:json&sheet=Talleres`);
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
@@ -297,7 +292,6 @@
                 `;
                 
                 if (tipo === 'taller') {
-                    // Agregamos el campo para Stripe en talleres
                     camposHtml += `<div class="col-12 mb-3"><label class="form-label fw-bold">Enlace de Stripe (Pago)</label><input type="url" class="form-control" id="formExtra3" placeholder="https://buy.stripe.com/..." required></div>`;
                 } else {
                     camposHtml += `<input type="hidden" id="formExtra3" value="">`;
@@ -327,7 +321,6 @@
                 }
 
             } else {
-                // Recursos
                 document.getElementById('modalTitle').innerText = '🎁 Nuevo Recurso Descargable';
                 document.getElementById('lblTitulo').innerText = "Nombre del Recurso";
                 document.getElementById('lblContenido').innerText = "Descripción del Recurso (Texto Simple)";
@@ -405,19 +398,11 @@
             btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Sincronizando...`;
 
             const rowId = document.getElementById('formRowId').value;
-            let urlDestino = URL_SCRIPT_BLOG;
-            if (tipo === 'recurso') urlDestino = URL_SCRIPT_RECURSOS;
-            if (tipo === 'taller') urlDestino = URL_SCRIPT_TALLERES;
-
-            // Enviar un identificador de hoja ('hojaDestino') en tu script de Apps Script
-            let nombreHoja = 'Blog';
-            if(tipo === 'taller') nombreHoja = 'Talleres';
-
+            
             const payload = {
                 tipo: tipo,
                 action: rowId ? "edit" : "create",
                 rowId: rowId,
-                hojaDestino: nombreHoja, // <- Dato clave para el App Script
                 titulo: document.getElementById('formTitulo').value,
                 imagenActual: document.getElementById('formImagenActual').value,
                 fileData: stringArchivoBase64,
@@ -427,38 +412,46 @@
                 resumen: (tipo === 'blog' || tipo === 'taller') ? document.getElementById('formExtra2').value : "",
                 linkStripe: tipo === 'taller' ? document.getElementById('formExtra3').value : "",
                 linkPdf: tipo === 'recurso' ? document.getElementById('formExtra1').value : "8",
-                formExtra1: document.getElementById('formExtra1').value,
                 formExtra2: document.getElementById('formExtra2').value
             };
 
             try {
-                await fetch(urlDestino, {
+                const res = await fetch(URL_SCRIPT_UNIFICADO, {
                     method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify(payload)
                 });
-                setTimeout(() => { myModal.hide(); inicializarDashboard(); alert("¡Actualizado con éxito!"); }, 2000);
-            } catch (e) { alert("Sincronizado correctamente."); myModal.hide(); inicializarDashboard(); }
+                const json = await res.json();
+                
+                if (json.status === "success") {
+                    setTimeout(() => { myModal.hide(); inicializarDashboard(); alert("¡Guardado exitosamente!"); }, 1000);
+                } else {
+                    alert("Error en el servidor: " + json.message);
+                    btn.innerHTML = `Publicar Contenido`;
+                    btn.disabled = false;
+                }
+            } catch (e) { 
+                // Si existe política CORS en la redirección, se notifica pero de todas formas se intenta recargar
+                setTimeout(() => { myModal.hide(); inicializarDashboard(); alert("Petición procesada. Se recargarán los datos."); }, 1500); 
+            }
         }
 
         async function borrarFilaDefinitivamente(tipo, rowId) {
             if (!confirm(`¿Borrar fila permanente de ${tipo}?`)) return;
             
-            let urlDestino = URL_SCRIPT_BLOG;
-            if (tipo === 'recurso') urlDestino = URL_SCRIPT_RECURSOS;
-            if (tipo === 'taller') urlDestino = URL_SCRIPT_TALLERES;
-            
-            let nombreHoja = tipo === 'taller' ? 'Talleres' : 'Blog';
-            
             try {
                 document.getElementById('tabla-contenidos').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger">Eliminando del Drive...</td></tr>`;
-                await fetch(urlDestino, {
+                
+                await fetch(URL_SCRIPT_UNIFICADO, {
                     method: "POST",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ tipo: tipo, action: "delete", rowId: rowId, hojaDestino: nombreHoja })
+                    body: JSON.stringify({ tipo: tipo, action: "delete", rowId: rowId })
                 });
+                
                 setTimeout(() => { inicializarDashboard(); alert("¡Removido exitosamente del Drive!"); }, 2000);
-            } catch (e) { setTimeout(() => { inicializarDashboard(); }, 2000); }
+            } catch (e) { 
+                setTimeout(() => { inicializarDashboard(); }, 2000); 
+            }
         }
     </script>
 </body>
