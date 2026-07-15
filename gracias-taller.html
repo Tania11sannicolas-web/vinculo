@@ -4,30 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripción Recibida | VÍNCULO</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --naranja: #FF7A00; --naranja-hover: #E06B00; --oscuro: #1A1A1A; --texto: #4A4A4A; --fondo-claro: #FAF9F6; --blanco: #FFFFFF; }
+        :root { --naranja: #FF7A00; --oscuro: #1A1A1A; --texto: #4A4A4A; --fondo-claro: #FAF9F6; --blanco: #FFFFFF; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
         
-        header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
-        .logo { font-size: 22px; font-weight: 700; text-decoration: none; color: var(--oscuro); }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; background: var(--blanco); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-decoration: none; color: var(--oscuro); }
         .logo span { color: var(--naranja); }
         nav a { margin-left: 25px; text-decoration: none; color: var(--texto); font-weight: 500; font-size: 15px; }
+        nav a:hover { color: var(--naranja); }
 
-        .container-gracias { padding: 80px 8%; max-width: 900px; margin: 0 auto; }
-        .hero-gracias { border-bottom: 1px solid #eee; padding-bottom: 40px; margin-bottom: 40px; }
-        .hero-gracias h1 { font-size: 44px; font-weight: 700; margin-bottom: 15px; color: var(--oscuro); }
+        /* DISEÑO PREMIUM */
+        .gracias-section { padding: 100px 8%; max-width: 700px; margin: 0 auto; text-align: left; }
         
-        /* TIMELINE DE PROCESO */
-        .proceso { display: flex; justify-content: space-between; gap: 20px; margin-top: 40px; }
-        .paso { flex: 1; padding: 20px; background: var(--fondo-claro); border-radius: 12px; }
-        .paso-num { width: 30px; height: 30px; background: var(--naranja); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; font-weight: 700; }
+        /* Línea decorativa minimalista en lugar de ícono */
+        .decor-line { width: 60px; height: 4px; background: var(--naranja); margin-bottom: 30px; border-radius: 2px; }
         
-        /* CONTACTO HUMANO */
-        .contacto-humano { background: var(--oscuro); color: white; padding: 40px; border-radius: 16px; margin-top: 40px; display: flex; align-items: center; gap: 20px; }
+        .gracias-section h1 { font-size: 48px; font-weight: 800; margin-bottom: 25px; line-height: 1.1; letter-spacing: -1.5px; }
+        .gracias-section p { color: var(--texto); font-size: 18px; margin-bottom: 20px; }
         
-        .btn-home { background-color: var(--naranja); color: white; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: 700; display: inline-block; margin-top: 30px; }
+        .caja-nota { 
+            background: var(--fondo-claro); 
+            padding: 40px; 
+            border-radius: 20px; 
+            margin: 40px 0; 
+            border: 1px solid rgba(255, 122, 0, 0.15); 
+        }
+        .caja-nota strong { color: var(--oscuro); display: block; margin-bottom: 10px; font-size: 18px; }
+        
+        .steps { margin-top: 40px; }
+        .step-item { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; }
+        .step-num { font-weight: 800; color: var(--naranja); font-size: 18px; }
+        
+        .btn-home { background-color: var(--oscuro); color: var(--blanco); padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; transition: 0.3s; margin-top: 30px; }
+        .btn-home:hover { background-color: var(--naranja); }
+
+        footer { padding: 40px 8%; color: var(--texto); font-size: 13px; border-top: 1px solid rgba(0,0,0,0.05); text-align: center; }
     </style>
 </head>
 <body>
@@ -35,46 +50,39 @@
     <header>
         <a href="index.html" class="logo">VÍNCULO<span>.</span></a>
         <nav>
-            <a href="talleres.html" class="active">Talleres</a>
             <a href="index.html">Inicio</a>
+            <a href="talleres.html">Talleres</a>
+            <a href="index.html#contacto">Contacto</a>
         </nav>
     </header>
 
-    <main class="container-gracias">
-        <section class="hero-gracias">
-            <h1 style="color: var(--naranja);">¡Hemos recibido tu pago!</h1>
-            <p>Tu inscripción al taller está registrada en nuestro sistema. Ahora iniciaremos la validación de tu lugar para brindarte una atención personalizada.</p>
-        </section>
+    <main class="gracias-section">
+        <div class="decor-line"></div>
+        <h1>Inscripción recibida.</h1>
+        <p>Hemos procesado tu solicitud de inscripción. Gracias por confiar en la metodología y estructura de VÍNCULO.</p>
+        
+        <div class="caja-nota">
+            <strong>¿Qué sucede ahora?</strong>
+            Nuestro equipo técnico está realizando la validación manual de tu transacción. Este es un proceso de seguridad que garantiza el control de calidad en nuestros talleres. En el transcurso de las próximas horas, recibirás un correo electrónico directo de nuestra oficina con los accesos, materiales y cronograma.
+        </div>
 
-        <h3>¿Qué sigue ahora?</h3>
-        <div class="proceso">
-            <div class="paso">
-                <div class="paso-num">1</div>
-                <strong>Validación</strong>
-                <p style="font-size: 14px;">Nuestro equipo verifica el pago manualmente.</p>
+        <div class="steps">
+            <div class="step-item">
+                <div class="step-num">01</div>
+                <p><strong>Validación:</strong> Estamos verificando tu pago en nuestro sistema.</p>
             </div>
-            <div class="paso">
-                <div class="paso-num">2</div>
-                <strong>Asignación</strong>
-                <p style="font-size: 14px;">Generamos tus accesos y materiales exclusivos.</p>
-            </div>
-            <div class="paso">
-                <div class="paso-num">3</div>
-                <strong>Contacto</strong>
-                <p style="font-size: 14px;">Te enviaremos todo por correo electrónico.</p>
+            <div class="step-item">
+                <div class="step-num">02</div>
+                <p><strong>Atención personalizada:</strong> Mayra o nuestro equipo operativo se pondrán en contacto contigo.</p>
             </div>
         </div>
 
-        <div class="contacto-humano">
-            <div>
-                <h4 style="color: var(--naranja);">Seguimiento personalizado</h4>
-                <p style="font-size: 14px; color: #ddd; margin-bottom: 0;">En VÍNCULO, valoramos la cercanía. Si tienes alguna duda urgente sobre tu inscripción, Mayra Flores y su equipo están a un mensaje de distancia.</p>
-            </div>
-            <a href="https://wa.me/525532004855" class="btn-home" style="margin-top:0;">WhatsApp Directo</a>
-        </div>
-
-        <a href="index.html" class="btn-home">Explorar más contenidos</a>
+        <a href="index.html" class="btn-home">Regresar al portal principal</a>
     </main>
+
+    <footer>
+        <p>© 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
+    </footer>
 
 </body>
 </html>
