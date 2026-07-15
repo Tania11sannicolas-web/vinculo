@@ -11,7 +11,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--oscuro); background-color: var(--blanco); line-height: 1.6; }
         
-        /* HEADER Y MENÚ */
+        /* HEADER */
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 8%; background: var(--blanco); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
         .logo { display: flex; align-items: center; text-decoration: none; }
         .logo img { height: 160px; width: auto; object-fit: contain; margin: -40px 0; }
@@ -20,27 +20,32 @@
         nav a:hover, nav a.active { color: var(--naranja); }
         .menu-toggle { display: none; background: none; border: none; font-size: 30px; color: var(--oscuro); cursor: pointer; }
 
-        /* SECCIÓN */
+        /* HEADER DE SECCIÓN */
         .section-header { background-color: var(--fondo-claro); padding: 80px 8%; text-align: center; }
         .section-header span { color: var(--naranja); font-weight: 700; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; }
         .section-header h1 { font-size: 40px; font-weight: 700; margin: 10px 0 20px 0; letter-spacing: -1px; }
         .section-header p { color: var(--texto); font-size: 18px; max-width: 750px; margin: 0 auto; }
 
+        /* GRID DE SERVICIOS */
         .servicios-container { padding: 80px 8%; }
         .grid-servicios { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
-        .card-servicio { background: var(--blanco); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.04); transition: all 0.3s ease; display: flex; flex-direction: column; }
-        .card-servicio:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(255, 122, 0, 0.05); }
-        .badge-numero { background-color: rgba(255, 122, 0, 0.1); color: var(--naranja); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 700; margin-bottom: 20px; }
-        .card-servicio h3 { font-size: 21px; font-weight: 700; margin-bottom: 15px; }
-        .lista-detalles { list-style: none; margin-top: 20px; border-top: 1px solid rgba(0,0,0,0.04); padding-top: 15px; }
-        .lista-detalles li { font-size: 14px; color: var(--texto); margin-bottom: 10px; display: flex; gap: 8px; }
-        .lista-detalles li::before { content: "✓"; color: var(--naranja); font-weight: 700; }
+        .card-servicio { background: var(--blanco); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.04); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; }
+        .card-servicio:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(255, 122, 0, 0.05); border-color: rgba(255, 122, 0, 0.1); }
+        .badge-numero { background-color: rgba(255, 122, 0, 0.1); color: var(--naranja); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 700; font-size: 14px; margin-bottom: 20px; }
+        .card-servicio h3 { font-size: 21px; font-weight: 700; margin-bottom: 15px; color: var(--oscuro); line-height: 1.3; }
+        .card-servicio p { color: var(--texto); font-size: 14.5px; margin-bottom: 20px; flex-grow: 1; }
+        .lista-detalles { list-style: none; margin-bottom: 25px; border-top: 1px solid rgba(0,0,0,0.04); padding-top: 15px; }
+        .lista-detalles li { font-size: 14px; color: var(--texto); margin-bottom: 10px; display: flex; align-items: flex-start; gap: 8px; line-height: 1.4; }
+        .lista-detalles li::before { content: "✓"; color: var(--naranja); font-weight: 700; margin-top: 1px; }
 
+        /* CTA */
         .cta-diagnostico { background: var(--oscuro); color: var(--blanco); padding: 70px 8%; text-align: center; border-radius: 24px; max-width: 1200px; margin: 40px auto; }
-        .btn { background-color: var(--naranja); color: var(--blanco); padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; transition: 0.3s; border: none; font-size: 16px; text-align: center; }
-        .btn:hover { background-color: var(--naranja-hover); }
+        .cta-diagnostico h3 { font-size: 32px; font-weight: 700; margin-bottom: 15px; }
+        .cta-diagnostico p { color: #aaaaaa; font-size: 16px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .btn { background-color: var(--naranja); color: var(--blanco); padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(255, 122, 0, 0.2); border: none; font-size: 16px; }
+        .btn:hover { background-color: var(--naranja-hover); transform: translateY(-3px); }
 
-        footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; border-top: 1px solid #2a2a2a; margin-top: 80px; }
+        footer { background: var(--oscuro); color: rgba(255,255,255,0.6); text-align: center; padding: 40px 20px; font-size: 14px; border-top: 1px solid #2a2a2a; }
         footer a { color: var(--naranja); text-decoration: none; margin: 0 10px; }
 
         @media (max-width: 968px) {
@@ -49,6 +54,7 @@
             nav { display: none; flex-direction: column; width: 100%; position: absolute; top: 100%; left: 0; background: var(--blanco); padding: 20px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.05); z-index: 99; }
             nav.open { display: flex; }
             nav a { margin: 12px 0; padding: 0 8%; font-size: 16px; width: 100%; text-align: left; }
+            .section-header h1 { font-size: 32px; }
             .grid-servicios { grid-template-columns: 1fr; }
         }
     </style>
@@ -75,41 +81,113 @@
     <section class="section-header">
         <span>Evolución y Sostenibilidad Corporativa</span>
         <h1>Soluciones con Enfoque en RSE, ESG y Sostenibilidad</h1>
-        <p>Aceleramos la evolución empresarial hacia modelos sostenibles, competitivos y socialmente responsables.</p>
+        <p>Aceleramos la evolución empresarial hacia modelos sostenibles, competitivos y socialmente responsables. Integramos la rentabilidad financiera con un impacto positivo verificado en tu entorno relacional y ambiental.</p>
     </section>
 
     <section class="servicios-container">
         <div class="grid-servicios">
-            <!-- Servicio 1 -->
             <div class="card-servicio">
                 <div>
                     <div class="badge-numero">01</div>
-                    <h3>Estrategias de Sostenibilidad y ESG</h3>
-                    <p>Alineamos tus operaciones con marcos de inversión globales para convertir criterios ESG en ventajas competitivas.</p>
+                    <h3>Diseño e Implementación de Estrategias de Sostenibilidad y ESG</h3>
+                    <p>Alineamos las operaciones de la empresa con los marcos de sostenibilidad e inversión globales más rigurosos, convirtiendo los criterios ESG en verdaderas ventajas competitivas.</p>
                     <ul class="lista-detalles">
-                        <li>Identificación de riesgos ESG</li>
-                        <li>Definición de metas sostenibles</li>
-                        <li>Hoja de ruta estratégica</li>
+                        <li>Identificación minuciosa de riesgos y oportunidades ESG materiales</li>
+                        <li>Definición de metas corporativas sustentables e indicadores clave</li>
+                        <li>Desarrollo e implementación de la hoja de ruta estratégica integral</li>
+                        <li>Posicionamiento y legitimación con inversionistas y stakeholders</li>
                     </ul>
                 </div>
-                <a href="index.html#contacto" class="btn">Consultar este pilar</a>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Consultar este pilar</a>
             </div>
-            <!-- (Añade el resto de tus tarjetas aquí siguiendo este mismo estilo) -->
+
+            <div class="card-servicio">
+                <div>
+                    <div class="badge-numero">02</div>
+                    <h3>Reportes de Sostenibilidad y Comunicación de Impacto</h3>
+                    <p>Fortalecemos la transparencia, confianza y reputación corporativa en el mercado mediante la estructuración y narrativa visual de informes de nivel internacional.</p>
+                    <ul class="lista-detalles">
+                        <li>Diagnóstico profundo y ordenamiento de la información interna disponible</li>
+                        <li>Redacción y estructuración basada en estándares GRI, SASB y ODS</li>
+                        <li>Diseño gráfico editorial y redacción narrativa de alto impacto institucional</li>
+                        <li>Estrategias efectivas para la rendición de cuentas e informes públicos</li>
+                    </ul>
+                </div>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Consultar este pilar</a>
+            </div>
+
+            <div class="card-servicio">
+                <div>
+                    <div class="badge-numero">03</div>
+                    <h3>Consultoría Sistémica Organizacional</h3>
+                    <p>Abordamos y resolvemos problemas relacionales e institucionales internos desde la raíz. Metodología ideal para desórdenes complejos en estructuras corporativas.</p>
+                    <ul class="lista-detalles">
+                        <li>Mapeo y diagnóstico con herramientas avanzadas de representación espacial</li>
+                        <li>Identificación de exclusiones, roles incongruentes y jerarquías rotas</li>
+                        <li>Intervención mediante sesiones estratégicas facilitadas (1 a 3 sesiones)</li>
+                        <li>Especial para empresas familiares o con retos en sucesión generacional</li>
+                    </ul>
+                </div>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Consultar este pilar</a>
+            </div>
+
+            <div class="card-servicio">
+                <div>
+                    <div class="badge-numero">04</div>
+                    <h3>Gestión del Cambio y Transformación Cultural</h3>
+                    <p>Acompañamos procesos críticos de transformación institucional minimizando la fricción y resistencia operativa, uniendo al talento bajo metas comunes.</p>
+                    <ul class="lista-detalles">
+                        <li>Diagnóstico cultural sistémico y detección de focos de resistencia</li>
+                        <li>Talleres enfocados de liderazgo adaptativo y alineación interna</li>
+                        <li>Estrategias de cohesión orientadas a la renovación de propósitos</li>
+                        <li>Acompañamiento en procesos de fusión, adquisición o alta rotación</li>
+                    </ul>
+                </div>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Consultar este pilar</a>
+            </div>
+
+            <div class="card-servicio">
+                <div>
+                    <div class="badge-numero">05</div>
+                    <h3>Inversión Social Estratégica y Alianzas con OSC</h3>
+                    <p>Diseñamos e implementamos convocatorias, fondos y vínculos estratégicos para que la inversión social comunitaria de tu empresa genere retornos sociales medibles.</p>
+                    <ul class="lista-detalles">
+                        <li>Estructuración de convocatorias públicas de inversión social</li>
+                        <li>Filtros técnicos de selección y debida diligencia para aliados (OSC)</li>
+                        <li>Monitoreo, auditoría de fondos y evaluación del impacto social</li>
+                        <li>Modelos eficientes de voluntariado corporativo estratégico</li>
+                    </ul>
+                </div>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Consultar este pilar</a>
+            </div>
+
+            <div class="card-servicio">
+                <div>
+                    <div class="badge-numero">06</div>
+                    <h3>Diagnóstico e Índices de Responsabilidad Social (RSE)</h3>
+                    <p>Evaluamos el estado de madurez de tu organización frente a distintivos y certificaciones de responsabilidad social, preparando al negocio para auditorías.</p>
+                    <ul class="lista-detalles">
+                        <li>Auditorías internas bajo normativas e índices de RSE nacionales</li>
+                        <li>Detección de brechas operativas en derechos humanos y ética</li>
+                        <li>Manuales de cumplimiento normativo y políticas anticorrupción</li>
+                        <li>Hojas de ruta de gobernanza para comités directivos de sostenibilidad</li>
+                    </ul>
+                </div>
+                <a href="index.html#contacto" class="btn" style="padding: 12px 20px; font-size: 14px; text-align:center;">Consultar este pilar</a>
+            </div>
         </div>
     </section>
 
     <section class="cta-diagnostico">
         <h3>Lleva tu negocio al siguiente nivel de impacto</h3>
-        <p>Analicemos juntos el panorama actual de tu empresa en una sesión de diagnóstico inicial.</p>
+        <p>Analicemos juntos el panorama actual de tu empresa, detectemos puntos de mejora y tracemos una hoja de ruta sostenible en una sesión de diagnóstico inicial.</p>
         <a href="index.html#contacto" class="btn">Agendar Diagnóstico Corporativo</a>
     </section>
 
     <footer>
-        <p>&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
+        <p style="margin-bottom: 15px;">&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
         <div class="redes">
-            <a href="https://www.linkedin.com/company/vínculo-consultoría-estratégica/">LinkedIn</a> | 
-            <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | 
-            <a href="https://wa.me/525532004855">WhatsApp</a>
+            <a href="#">LinkedIn</a> | <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | <a href="https://wa.me/525532004855">WhatsApp</a>
         </div>
     </footer>
 
