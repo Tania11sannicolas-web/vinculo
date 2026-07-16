@@ -94,69 +94,134 @@
     </footer>
 
     <script>
-        // Lógica Menú
-        const btnMenu = document.getElementById('btnMenu');
-        const navbarMenu = document.getElementById('navbarMenu');
-        btnMenu.addEventListener('click', () => {
-            navbarMenu.classList.toggle('open');
-            btnMenu.innerHTML = navbarMenu.classList.contains('open') ? "✕" : "☰";
-        });
 
-        // Lógica Recursos
+        // ========================================================
+
+        // 🔑 CONFIGURACIÓN INTEGRADA DE API BREVO
+
         const BREVO_API_KEY = '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';
         const ID_LISTA_FIJA = 8; 
-
+        // ========================================================
         document.addEventListener("DOMContentLoaded", async function() {
             const grid = document.querySelector('.grid-recursos');
-            const urlRecursos = `https://docs.google.com/spreadsheets/d/18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo/gviz/tq?tqx=out:json&gid=2047829696`;
-            
+            const SHEET_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo';
+            const MI_GID_REAL = '2047829696';
+            const urlRecursos = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${MI_GID_REAL}`;
             try {
                 const res = await fetch(urlRecursos);
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
                 const filas = data.table.rows.slice(1);
                 grid.innerHTML = ""; 
-
-                filas.reverse().forEach((row, idx) => {
-                    if (!row.c || !row.c[0]) return;
-                    const titulo = row.c[0].v;
-                    const desc = row.c[1]?.v || 'Descarga esta herramienta';
-                    const imagen = row.c[2]?.v || 'https://via.placeholder.com/300x200';
-                    const linkPdf = row.c[3]?.v || '#';
-
+                if (!filas || filas.length === 0) {
+                    grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente más recursos gratuitos disponibles.</p>`;
+                    return;
+                }
+                const leerCelda = (celda) => {
+                    if (!celda) return '';
+                    if (celda.v !== undefined && celda.v !== null) return celda.v;
+                    if (celda.f !== undefined && celda.f !== null) return celda.f;
+                    return '';
+                };
+                const listaCronologica = [...filas].reverse();
+                listaCronologica.forEach((row, idx) => {
+                    if (!row || !row.c) return;
+                    const titulo = leerCelda(row.c[0]);
+                    if (!titulo || titulo.trim() === "" || titulo.toLowerCase() === "título") return;
+                    const desc = leerCelda(row.c[1]) || 'Descarga esta herramienta práctica lista para implementar.';
+                    const imagen = leerCelda(row.c[2]) || 'https://via.placeholder.com/300x200';
+                    const linkPdf = leerCelda(row.c[3]) || '#';
                     const card = document.createElement('div');
                     card.className = 'card-recurso';
+                    const formId = `form-rec-${idx}`;
+                    const nombreId = `name-rec-${idx}`;
+                    const correoId = `email-rec-${idx}`;
+                    const btnId = `btn-rec-${idx}`;
+                    const exitoBlockId = `exito-rec-${idx}`;
                     card.innerHTML = `
                         <div>
                             <div class="portada-recurso" style="background-image: url('${imagen}');"></div>
                             <h2>${titulo}</h2>
                             <p>${desc}</p>
                         </div>
-                        <form class="form-mini" onsubmit="procesarDescarga(event, '${linkPdf}', '${titulo}')">
-                            <input type="text" placeholder="Nombre completo" required>
-                            <input type="email" placeholder="Correo institucional" required>
-                            <button type="submit">Validar e Iniciar Descarga</button>
+                        <form class="form-mini" id="${formId}" onsubmit="procesarDescargaInmediata(event, '${nombreId}', '${correoId}', '${btnId}', '${exitoBlockId}', '${linkPdf}', '${titulo}')">
+                            <input type="text" id="${nombreId}" placeholder="Tu nombre completo" required>
+                            <input type="email" id="${correoId}" placeholder="Tu correo electrónico de la organización" required>
+                            <button type="submit" id="${btnId}">Validar e Iniciar Descarga</button>
                         </form>
-                        <div class="msg-exito-recurso">
-                            <h4>¡Descarga en camino! 🎉</h4>
-                            <p>También enviamos un respaldo a tu correo.</p>
-                            <a href="${linkPdf}" target="_blank">¿No inició? Haz clic aquí</a>
+                        <div class="msg-exito-recurso" id="${exitoBlockId}">
+                            <h4>¡Tu descarga inició con éxito! 🎉</h4>
+                            <p>También te enviamos un respaldo directo a tu bandeja de entrada (revisa Promociones o Spam si no lo ves).</p>
+                            <a href="${linkPdf}" target="_blank">¿No inició? Haz clic aquí para forzar la descarga manual</a>
                         </div>
                     `;
                     grid.appendChild(card);
                 });
-            } catch (e) { grid.innerHTML = "Error al cargar recursos."; }
+            } catch (error) {
+                console.error("Error crítico en recursos:", error);
+                grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos conectar con el servidor de herramientas.</p>`;
+            }
         });
-
-        async function procesarDescarga(e, url, titulo) {
-            e.preventDefault();
-            const form = e.target;
-            const exito = form.nextElementSibling;
-            form.style.display = "none";
-            exito.style.display = "block";
-            window.open(url, '_blank');
-            // La lógica de Brevo se mantiene...
-        }
-    </script>
+        async function procesarDescargaInmediata(event, nombreId, correoId, btnId, exitoBlockId, urlPdf, nombreRecurso) {
+            event.preventDefault();
+            const nombreIngresado = document.getElementById(nombreId).value;
+            const correoIngresado = document.getElementById(correoId).value;
+            const botonEjecutor = document.getElementById(btnId);
+            const formularioElemento = event.target;
+            const bloqueExito = document.getElementById(exitoBlockId);
+            botonEjecutor.disabled = true;
+            botonEjecutor.innerText = "Procesando acceso...";
+            const payloadContacto = {
+                email: correoIngresado,
+                listIds: [ID_LISTA_FIJA], 
+                updateEnabled: true,
+                attributes: { 
+                    "NOMBRE": nombreIngresado, 
+                    "RECURSO_DESCARGADO": nombreRecurso 
+                } 
+            };
+            const payloadEmail = {
+                sender: { name: "Mayra Flores | VÍNCULO", email: "mayra.flores@vinculo-ce.com" },
+                to: [{ email: correoIngresado, name: nombreIngresado }],
+                subject: `📥 Confirmación de descarga: ${nombreRecurso}`,
+                htmlContent: `
+                    <div style="font-family: sans-serif; padding: 30px; max-width: 600px; margin: 0 auto; border: 1px solid #E2E8F0; border-radius: 12px; color: #1A1A1A; background-color: #FFFFFF;"> 
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <img src="https://raw.githubusercontent.com/Tania11sannicolas-web/vinculo/89ea1d3675df8fc1d0fcb138081ad6cfd2bb771e/imagenes/Imagen%20de%20recurso%20-%20Vinculo.png" alt="VÍNCULO" style="max-width: 220px; height: auto; display: inline-block;">
+                        </div>
+                        <h2 style="color: #FF7A00; font-size: 20px; margin-bottom: 15px;">¡Hola, ${nombreIngresado}! 👋</h2> 
+                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A;">Tu herramienta está lista. Confirmamos que has descargado la guía: <strong>${nombreRecurso}</strong> de forma exitosa.</p> 
+                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A;">Te sugerimos guardar este enlace directo para que no pierdas el acceso al material cuando lo necesites consultar de nuevo:</p> 
+                        <p style="margin: 25px 0; text-align: center;"> 
+                            <a href="${urlPdf}" target="_blank" style="background-color: #FF7A00; color: white; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 8px; display: inline-block;">Ver PDF en Google Drive</a> 
+                        </p> 
+                        <p style="font-size: 15px; line-height: 1.6; color: #4A4A4A;">Periódicamente te compartiremos más recursos y convocatorias estratégicas exclusivas para fortalecer tu causa u organización corporativa.</p> 
+                        <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 25px 0;"/> 
+                        <p style="font-size: 15px; margin-bottom: 5px; font-weight: bold; color: #1A1A1A;">Mayra Flores Álvarez</p> 
+                        <p style="font-size: 13px; color: #FF7A00; margin-top: 0; font-weight: 600;">VÍNCULO Consultoría Estratégica</p> 
+                    </div>` 
+            }; 
+            try { 
+                await Promise.all([ 
+                    fetch('https://api.brevo.com/v3/contacts', { 
+                        method: 'POST', 
+                        headers: { 'accept': 'application/json', 'api-key': BREVO_API_KEY, 'content-type': 'application/json' }, 
+                        body: JSON.stringify(payloadContacto) 
+                    }), 
+                    fetch('https://api.brevo.com/v3/smtp/email', { 
+                        method: 'POST', 
+                        headers: { 'accept': 'application/json', 'api-key': BREVO_API_KEY, 'content-type': 'application/json' }, 
+                        body: JSON.stringify(payloadEmail) 
+                    }) 
+                ]); 
+            } catch (err) { 
+                console.error("Error al reportar en Brevo:", err); 
+            } finally { 
+                formularioElemento.style.display = "none"; 
+                bloqueExito.style.display = "block"; 
+                window.open(urlPdf, '_blank'); 
+            } 
+        } 
+    </script> 
 </body>
-</html>
+</html> 
