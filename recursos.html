@@ -94,15 +94,25 @@
     </footer>
 
     <script>
-
         // ========================================================
-
         // 🔑 CONFIGURACIÓN INTEGRADA DE API BREVO
-
         const BREVO_API_KEY = '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';
         const ID_LISTA_FIJA = 8; 
         // ========================================================
+        
         document.addEventListener("DOMContentLoaded", async function() {
+            
+            // --- CÓDIGO AGREGADO PARA QUE FUNCIONE EL MENÚ MÓVIL ---
+            const btnMenu = document.getElementById('btnMenu');
+            const navbarMenu = document.getElementById('navbarMenu');
+            
+            if (btnMenu && navbarMenu) {
+                btnMenu.addEventListener('click', function() {
+                    navbarMenu.classList.toggle('open');
+                });
+            }
+            // --------------------------------------------------------
+
             const grid = document.querySelector('.grid-recursos');
             const SHEET_ID = '18e8HPDxl432odUk6mfYuUJKjc41qWANvF4xqEvqlWmo';
             const MI_GID_REAL = '2047829696';
@@ -162,6 +172,7 @@
                 grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos conectar con el servidor de herramientas.</p>`;
             }
         });
+        
         async function procesarDescargaInmediata(event, nombreId, correoId, btnId, exitoBlockId, urlPdf, nombreRecurso) {
             event.preventDefault();
             const nombreIngresado = document.getElementById(nombreId).value;
@@ -224,4 +235,4 @@
         } 
     </script> 
 </body>
-</html> 
+</html>
