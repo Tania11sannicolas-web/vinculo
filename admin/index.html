@@ -138,7 +138,7 @@
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
-                        <button type="button" class="btn-secondary" data-bs-dismiss="modal" class="btn">Cancelar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-orange" id="btnGuardar">Publicar Contenido</button>
                     </div>
                 </form>
@@ -359,15 +359,14 @@
                     document.getElementById('formExtra2').value = r[2] ? r[2].v : '';
                     document.getElementById('formImagenActual').value = r[3] ? r[3].v : '';
                     
-                    // MODIFICACIÓN: Desarmamos el enlace oculto si tiene ambos (Stripe y Forms)
+                    // MODIFICACIÓN: Separamos las variables limpiamente con los índices de columna correspondientes.
                     if(tipo === 'taller') {
-                        let linkRaw = r[4] ? r[4].v : '';
-                        let linkParts = linkRaw.split('|||');
-                        document.getElementById('formExtra3').value = linkParts[0] || '';
-                        if(document.getElementById('formExtra4')) {
-                            document.getElementById('formExtra4').value = linkParts[1] || '';
-                        }
+                        document.getElementById('formExtra3').value = r[4] ? r[4].v : '';
                         textoCuerpo = r[5] ? r[5].v : '';
+                        if(document.getElementById('formExtra4')) {
+                            // Ahora el formulario opcional vivirá sin estorbar en el índice 6 (Columna G)
+                            document.getElementById('formExtra4').value = r[6] ? r[6].v : '';
+                        }
                     } else {
                         textoCuerpo = r[4] ? r[4].v : '';
                     }
@@ -408,6 +407,7 @@
 
             const rowId = document.getElementById('formRowId').value;
             
+            // MODIFICACIÓN: Separamos y asignamos limpiamente el enlace de Formulario para que no corrompa el de Stripe
             const payload = {
                 tipo: tipo,
                 action: rowId ? "edit" : "create",
@@ -419,8 +419,8 @@
                 contenido: document.getElementById('formContenido').value,
                 fecha: (tipo === 'blog' || tipo === 'taller') ? document.getElementById('formExtra1').value : "",
                 resumen: (tipo === 'blog' || tipo === 'taller') ? document.getElementById('formExtra2').value : "",
-                // MODIFICACIÓN: Unimos los dos enlaces en uno solo separado por ||| antes de mandarlo al Drive
-                linkStripe: tipo === 'taller' ? (document.getElementById('formExtra4').value ? document.getElementById('formExtra3').value + '|||' + document.getElementById('formExtra4').value : document.getElementById('formExtra3').value) : "",
+                linkStripe: tipo === 'taller' ? document.getElementById('formExtra3').value : "",
+                linkForm: tipo === 'taller' ? document.getElementById('formExtra4').value : "",
                 linkPdf: tipo === 'recurso' ? document.getElementById('formExtra1').value : "8",
                 formExtra2: document.getElementById('formExtra2').value
             };
