@@ -110,7 +110,21 @@
                 const res = await fetch(urlTalleres);
                 const text = await res.text();
                 const data = JSON.parse(text.substr(47).slice(0, -2));
-                const filas = data.table.rows.slice(1); 
+
+                /*
+                 * IMPORTANTE:
+                 * Google Visualization ya devuelve las filas de datos
+                 * sin incluir la fila de encabezados.
+                 * Por eso NO usamos .slice(1).
+                 *
+                 * Cada índice del arreglo corresponde a:
+                 * índice 0 = fila 2 de Google Sheets
+                 * índice 1 = fila 3
+                 * índice 2 = fila 4
+                 * etc.
+                 */
+                const filas = data.table.rows ? data.table.rows : [];
+
                 grid.innerHTML = ""; 
 
                 if (!filas || filas.length === 0) {
@@ -118,9 +132,22 @@
                     return;
                 }
 
-                filas.reverse().forEach((row, index) => {
+                /*
+                 * Creamos una copia para invertir el orden visual,
+                 * pero conservamos el índice original de cada fila.
+                 * Así el ID siempre corresponde a la fila real de Sheets.
+                 */
+                const filasConId = filas.map((row, index) => ({
+                    row: row,
+                    idFila: index + 2
+                }));
+
+                filasConId.reverse().forEach((item) => {
+                    const row = item.row;
+                    const idFila = item.idFila;
+
                     if (!row.c || !row.c[0]) return; 
-                    const idFila = filas.length - index + 1; 
+
                     const card = document.createElement('article');
                     card.className = 'card-post';
                     card.innerHTML = `
@@ -137,6 +164,7 @@
                     grid.appendChild(card);
                 });
             } catch (error) {
+                console.error("Error al cargar talleres:", error);
                 grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos cargar los talleres.</p>`;
             }
         });
