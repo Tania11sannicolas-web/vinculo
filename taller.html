@@ -169,7 +169,7 @@
             const filaFinal = idFila ? idFila : "2";
             
             const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
-            const urlArticulo = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Talleres&range=A${filaFinal}:F${filaFinal}`;
+            const urlArticulo = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Talleres&range=A${filaFinal}:G${filaFinal}`;
 
             try {
                 const res = await fetch(urlArticulo);
@@ -185,14 +185,10 @@
                 const titulo = (celdas[0] && celdas[0].v) ? celdas[0].v : 'Taller sin título';
                 const fecha = (celdas[1] && celdas[1].v) ? celdas[1].v : 'Por definir';
                 const imagen = (celdas[3] && celdas[3].v) ? celdas[3].v : '';
+                const linkStripe = (celdas[4] && celdas[4].v) ? celdas[4].v : '';
                 const cuerpoTexto = (celdas[5] && celdas[5].v) ? celdas[5].v : 'Pronto subiremos más detalles de este taller.';
+                const linkFormulario = (celdas[6] && celdas[6].v) ? celdas[6].v : '';
                 
-                // MODIFICACIÓN: Separamos los enlaces que se guardaron en la misma celda
-                const enlacesBrutos = (celdas[4] && celdas[4].v) ? celdas[4].v : '';
-                const enlacesArray = enlacesBrutos.split('|||');
-                const linkStripe = enlacesArray[0] || '';
-                const linkFormulario = enlacesArray[1] || '';
-
                 document.getElementById('art-titulo').innerText = titulo;
                 document.title = `${titulo} | VÍNCULO Talleres`;
                 document.getElementById('art-fecha').innerText = `🗓️ ${fecha}`;
