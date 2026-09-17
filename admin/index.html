@@ -216,40 +216,57 @@
             }
         }
 
-        async function cargarTalleres() {
-            try {
-                const res = await fetch(`https://docs.google.com/spreadsheets/d/${BLOG_ID}/gviz/tq?tqx=out:json&sheet=Talleres&t=${new Date().getTime()}`);
-                const text = await res.text();
-                const data = JSON.parse(text.substr(47).slice(0, -2));
+      async function cargarTalleres() {
+    try {
+        const res = await fetch(`https://docs.google.com/spreadsheets/d/${BLOG_ID}/gviz/tq?tqx=out:json&headers=0&range=A1:G&sheet=Talleres&t=${new Date().getTime()}`);
+        const text = await res.text();
+        const data = JSON.parse(text.substr(47).slice(0, -2));
 
-                cacheTalleres = data.table.rows ? data.table.rows : [];
+        /*
+         * Con headers=0 Google Sheets devuelve también la fila 1,
+         * que contiene los encabezados.
+         *
+         * Por eso aquí eliminamos explícitamente SOLO esa primera fila.
+         *
+         * Resultado:
+         * índice 0 → fila 2 de Google Sheets
+         * índice 1 → fila 3
+         * índice 2 → fila 4
+         */
+        const todasLasFilas = data.table.rows ? data.table.rows : [];
+        cacheTalleres = todasLasFilas.slice(1);
 
-                document.getElementById('total-talleres').innerText = cacheTalleres.length;
+        document.getElementById('total-talleres').innerText = cacheTalleres.length;
 
-                const tbody = document.getElementById('tabla-contenidos');
+        const tbody = document.getElementById('tabla-contenidos');
 
-                cacheTalleres.forEach((row, idx) => {
-                    if(!row || !row.c || !row.c[0]) return;
+        cacheTalleres.forEach((row, idx) => {
+            if(!row || !row.c || !row.c[0]) return;
 
-                    const rId = idx + 2;
+            /*
+             * Como cacheTalleres comienza con la fila 2,
+             * el índice 0 corresponde a la fila 2,
+             * el índice 1 a la fila 3, etc.
+             */
+            const rId = idx + 2;
 
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><span class="badge badge-taller"><i class="fa-solid fa-chalkboard-user me-1"></i> Taller</span></td>
-                            <td class="fw-semibold text-dark">${row.c[0].v || ''}</td>
-                            <td class="text-muted small">${row.c[1] ? row.c[1].v : '-'}</td>
-                            <td class="text-truncate" style="max-width:250px;">${row.c[2] ? row.c[2].v : ''}</td>
-                            <td class="text-center">
-                                <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="cargarFilaParaEdicion('taller', ${rId})"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('taller', ${rId})"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>`;
-                });
+            tbody.innerHTML += `
+                <tr>
+                    <td><span class="badge badge-taller"><i class="fa-solid fa-chalkboard-user me-1"></i> Taller</span></td>
+                    <td class="fw-semibold text-dark">${row.c[0].v || ''}</td>
+                    <td class="text-muted small">${row.c[1] ? row.c[1].v : '-'}</td>
+                    <td class="text-truncate" style="max-width:250px;">${row.c[2] ? row.c[2].v : ''}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-1" onclick="cargarFilaParaEdicion('taller', ${rId})"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarFilaDefinitivamente('taller', ${rId})"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`;
+        });
 
-            } catch (e) {
-                console.error("No se encontró la hoja Talleres", e);
-            }
-        }
+    } catch (e) {
+        console.error("No se encontró la hoja Talleres", e);
+    }
+}
 
         async function cargarHerramientasRecursos() {
             try {
