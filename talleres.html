@@ -27,7 +27,10 @@
         
         .card-post { background: var(--blanco); border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.04); transition: all 0.3s ease; display: flex; flex-direction: column; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.01); }
         .card-post:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.04); }
-        .post-image { height: 200px; background-size: cover; background-position: center; background-color: #eee; }
+        
+        /* MODIFICACIÓN AQUÍ: contain y no-repeat para que la imagen se vea completa y no se repita */
+        .post-image { height: 200px; background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #eee; }
+        
         .post-body { padding: 30px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 240px; }
         .post-meta { font-size: 13px; color: var(--naranja); font-weight: 600; margin-bottom: 10px; }
         .post-body h3 { font-size: 20px; font-weight: 700; margin-bottom: 12px; line-height: 1.4; }
