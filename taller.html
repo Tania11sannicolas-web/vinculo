@@ -110,43 +110,67 @@
         
         <div class="article-content" id="art-cuerpo"></div>
 
-        <!-- MODIFICACIÓN AQUÍ: Contenedor del Formulario que se muestra primero si existe -->
+        <!-- FORMULARIO -->
         <div id="contenedor-formulario" class="cta-form" style="display:none;">
             <h3>Paso 1: Completa tu registro</h3>
-            <p style="color: var(--texto); margin-bottom: 25px;">Por favor, llena el siguiente formulario. Al enviarlo, se habilitará automáticamente tu opción de pago seguro.</p>
+            <p style="color: var(--texto); margin-bottom: 25px;">
+                Por favor, llena el siguiente formulario. Al enviarlo, se habilitará automáticamente tu opción de pago seguro.
+            </p>
             
             <div style="position: relative; overflow: hidden; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px;">
-                <iframe id="iframe-form" width="100%" height="800" frameborder="0" marginheight="0" marginwidth="0" style="background: white; border: none;">Cargando formulario...</iframe>
+                <iframe 
+                    id="iframe-form" 
+                    width="100%" 
+                    height="800" 
+                    frameborder="0" 
+                    marginheight="0" 
+                    marginwidth="0" 
+                    style="background: white; border: none;">
+                    Cargando formulario...
+                </iframe>
             </div>
             
-            <!-- Botón de respaldo por si el navegador bloquea la carga automática del iframe -->
-            <button id="btn-ya-llene" style="background: transparent; border: 1px solid var(--naranja); color: var(--naranja); padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.3s ease; margin-top: 10px;">
+            <button 
+                id="btn-ya-llene" 
+                style="background: transparent; border: 1px solid var(--naranja); color: var(--naranja); padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.3s ease; margin-top: 10px;">
                 Ya envié mis respuestas, continuar al pago →
             </button>
         </div>
 
+        <!-- PAGO -->
         <div class="cta-pago" id="caja-pago" style="display:none;">
             <h3 id="pago-titulo">Asegura tu lugar hoy mismo</h3>
-            <p id="pago-desc" style="color: var(--texto); margin-bottom: 20px;">Al realizar tu pago, el acceso y las instrucciones te llegarán directamente a tu correo electrónico.</p>
-            <a href="#" id="link-stripe" class="btn-stripe">Pagar con Stripe 💳</a>
+            <p id="pago-desc" style="color: var(--texto); margin-bottom: 20px;">
+                Al realizar tu pago, el acceso y las instrucciones te llegarán directamente a tu correo electrónico.
+            </p>
+            <a href="#" id="link-stripe" class="btn-stripe">
+                Pagar con Stripe 💳
+            </a>
         </div>
     </main>
 
     <footer>
         <p style="margin-bottom: 15px;">&copy; 2026 VÍNCULO. Transformando propósitos en impacto sostenible.</p>
         <div class="redes">
-            <a href="https://www.linkedin.com/company/vínculo-consultoría-estratégica/">LinkedIn</a> | <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | <a href="https://wa.me/525532004855">WhatsApp</a>
+            <a href="https://www.linkedin.com/company/vínculo-consultoría-estratégica/">LinkedIn</a> | 
+            <a href="mailto:mayra.flores@vinculo-ce.com">Email</a> | 
+            <a href="https://wa.me/525532004855">WhatsApp</a>
         </div>
     </footer>
 
     <script>
         document.addEventListener("DOMContentLoaded", async function() {
-            /* LÓGICA DEL MENÚ RESPONSIVE DESPLEGABLE */
+
+            /* ==========================================
+               MENÚ RESPONSIVE
+            ========================================== */
+
             const btnMenu = document.getElementById('btnMenu');
             const navbarMenu = document.getElementById('navbarMenu');
             
             btnMenu.addEventListener('click', function() {
                 navbarMenu.classList.toggle('open');
+
                 if (navbarMenu.classList.contains('open')) {
                     btnMenu.innerHTML = "✕";
                 } else {
@@ -155,6 +179,7 @@
             });
 
             const enlacesMenu = navbarMenu.querySelectorAll('a');
+
             enlacesMenu.forEach(enlace => {
                 enlace.addEventListener('click', () => {
                     navbarMenu.classList.remove('open');
@@ -162,95 +187,283 @@
                 });
             });
 
-            /* LÓGICA DEL DETALLE DEL TALLER (GOOGLE SHEETS) */
+
+            /* ==========================================
+               DATOS DEL TALLER
+            ========================================== */
+
             const params = new URLSearchParams(window.location.search);
-            const idFila = params.get('id'); 
-            
+            const idFila = params.get('id');
+
+            // Si no se especifica ID, usamos la fila 2
             const filaFinal = idFila ? idFila : "2";
-            
+
             const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
-            const urlArticulo = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&headers=0&sheet=Talleres&range=A${filaFinal}:G${filaFinal}&t=${Date.now()}`;
+
+            const urlArticulo =
+                `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq` +
+                `?tqx=out:json&headers=0&sheet=Talleres&range=A${filaFinal}:G${filaFinal}&t=${Date.now()}`;
+
+
+            try {
+
+                /* CONSULTAR GOOGLE SHEETS */
+                const res = await fetch(urlArticulo);
+
+                if (!res.ok) {
+                    throw new Error("Google Sheets respondió con error: " + res.status);
+                }
+
                 const text = await res.text();
-                const data = JSON.parse(text.substr(47).slice(0, -2));
-                
-                if (!data.table.rows || data.table.rows.length === 0) {
+
+                // Extraemos el objeto JSON de la respuesta de Google GViz.
+                const inicio = text.indexOf('{');
+                const fin = text.lastIndexOf('}');
+
+                if (inicio === -1 || fin === -1) {
+                    throw new Error("Respuesta inválida de Google Sheets.");
+                }
+
+                const data = JSON.parse(text.substring(inicio, fin + 1));
+
+                if (!data.table || !data.table.rows || data.table.rows.length === 0) {
                     throw new Error("Fila vacía");
                 }
-                
-                const celdas = data.table.rows[0].c;
 
-                const titulo = (celdas[0] && celdas[0].v) ? celdas[0].v : 'Taller sin título';
-                const fecha = (celdas[1] && celdas[1].v) ? celdas[1].v : 'Por definir';
-                const imagen = (celdas[3] && celdas[3].v) ? celdas[3].v : '';
-                let linkStripe = (celdas[4] && celdas[4].v) ? celdas[4].v : '';
-const cuerpoTexto = (celdas[5] && celdas[5].v) ? celdas[5].v : 'Pronto subiremos más detalles de este taller.';
-let linkFormulario = (celdas[6] && celdas[6].v) ? celdas[6].v : '';
+                const celdas = data.table.rows[0].c || [];
 
-// Compatibilidad con talleres creados con el formato antiguo:
-// Stripe|||Google Forms
-if (linkStripe.includes('|||')) {
-    const partes = linkStripe.split('|||');
 
-    linkStripe = partes[0] || '';
+                /* ==========================================
+                   LEER COLUMNAS DE GOOGLE SHEETS
+                   
+                   A = Título
+                   B = Fecha/Horario
+                   C = Resumen
+                   D = Imagen
+                   E = Stripe
+                   F = Contenido
+                   G = Google Forms
+                ========================================== */
 
-    if (!linkFormulario) {
-        linkFormulario = partes[1] || '';
-    }
-}
-                document.getElementById('art-titulo').innerText = titulo;
-                document.title = `${titulo} | VÍNCULO Talleres`;
-                document.getElementById('art-fecha').innerText = `🗓️ ${fecha}`;
-                
-                if (imagen) {
-                    const banner = document.getElementById('art-banner');
-                    banner.src = imagen;
-                    banner.style.display = 'block';
-                }
+                const titulo =
+                    (celdas[0] && celdas[0].v)
+                    ? celdas[0].v
+                    : 'Taller sin título';
 
-                document.getElementById('art-cuerpo').innerHTML = marked.parse(cuerpoTexto);
+                const fecha =
+                    (celdas[1] && celdas[1].v)
+                    ? celdas[1].v
+                    : 'Por definir';
 
-                // LÓGICA DE MOSTRADO: Formulario vs Stripe
-                if(linkStripe) {
-                    document.getElementById('link-stripe').href = linkStripe;
-                    
-                    // Si existe un link de formulario en la base de datos
-                    if (linkFormulario) {
-                        document.getElementById('contenedor-formulario').style.display = 'block';
-                        document.getElementById('iframe-form').src = linkFormulario;
-                        
-                        // Modificar textos de la caja de Stripe para que tenga sentido después del formulario
-                        document.getElementById('pago-titulo').innerText = "Paso 2: Realiza tu pago";
-                        document.getElementById('pago-desc').innerText = "Gracias por registrarte. Haz clic abajo para ir a la plataforma de pago seguro y confirmar tu lugar.";
-                        
-                        // TRUCO: Detectar envío. La primera vez carga el formulario. La segunda vez carga la página de confirmación.
-                        let cargasIframe = 0;
-                        document.getElementById('iframe-form').onload = function() {
-                            cargasIframe++;
-                            if (cargasIframe > 1) {
-                                document.getElementById('caja-pago').style.display = 'block';
-                                document.getElementById('btn-ya-llene').style.display = 'none';
-                                document.getElementById('caja-pago').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }
-                        };
-                        
-                        // Si falla la detección, este es el botón manual de respaldo
-                        document.getElementById('btn-ya-llene').addEventListener('click', function() {
-                            document.getElementById('caja-pago').style.display = 'block';
-                            this.style.display = 'none';
-                            document.getElementById('caja-pago').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        });
-                        
-                    } else {
-                        // Si NO hay formulario, mostrar la caja de Stripe directamente como siempre
-                        document.getElementById('caja-pago').style.display = 'block';
+                const imagen =
+                    (celdas[3] && celdas[3].v)
+                    ? celdas[3].v
+                    : '';
+
+                let linkStripe =
+                    (celdas[4] && celdas[4].v)
+                    ? celdas[4].v
+                    : '';
+
+                const cuerpoTexto =
+                    (celdas[5] && celdas[5].v)
+                    ? celdas[5].v
+                    : 'Pronto subiremos más detalles de este taller.';
+
+                let linkFormulario =
+                    (celdas[6] && celdas[6].v)
+                    ? celdas[6].v
+                    : '';
+
+
+                /* ==========================================
+                   COMPATIBILIDAD CON FORMATO ANTIGUO
+
+                   E = Stripe|||Google Forms
+                ========================================== */
+
+                if (linkStripe.includes('|||')) {
+
+                    const partes = linkStripe.split('|||');
+
+                    linkStripe = partes[0] || '';
+
+                    if (!linkFormulario) {
+                        linkFormulario = partes[1] || '';
                     }
                 }
 
+
+                /* ==========================================
+                   MOSTRAR INFORMACIÓN DEL TALLER
+                ========================================== */
+
+                document.getElementById('art-titulo').innerText = titulo;
+
+                document.title = `${titulo} | VÍNCULO Talleres`;
+
+                document.getElementById('art-fecha').innerText = `🗓️ ${fecha}`;
+
+
+                /* IMAGEN */
+
+                const banner = document.getElementById('art-banner');
+
+                if (imagen) {
+                    banner.src = imagen;
+                    banner.style.display = 'block';
+                } else {
+                    banner.src = '';
+                    banner.style.display = 'none';
+                }
+
+
+                /* CONTENIDO */
+
+                document.getElementById('art-cuerpo').innerHTML =
+                    marked.parse(cuerpoTexto);
+
+
+                /* ==========================================
+                   REINICIAR ESTADOS VISUALES
+
+                   Esto es importante cuando un taller se edita
+                   y se elimina el formulario.
+                ========================================== */
+
+                const contenedorFormulario =
+                    document.getElementById('contenedor-formulario');
+
+                const iframeForm =
+                    document.getElementById('iframe-form');
+
+                const btnYaLlene =
+                    document.getElementById('btn-ya-llene');
+
+                const cajaPago =
+                    document.getElementById('caja-pago');
+
+                const linkStripeElemento =
+                    document.getElementById('link-stripe');
+
+                // Ocultar formulario inicialmente
+                contenedorFormulario.style.display = 'none';
+
+                // Ocultar pago inicialmente
+                cajaPago.style.display = 'none';
+
+                // Limpiar iframe
+                iframeForm.src = '';
+
+                // Mostrar botón de respaldo
+                btnYaLlene.style.display = 'inline-block';
+
+
+                /* ==========================================
+                   LÓGICA FORMULARIO + STRIPE
+                ========================================== */
+
+                if (linkStripe) {
+
+                    linkStripeElemento.href = linkStripe;
+
+
+                    /* ------------------------------------------
+                       SI EXISTE GOOGLE FORMS
+                    ------------------------------------------ */
+
+                    if (linkFormulario) {
+
+                        contenedorFormulario.style.display = 'block';
+
+                        iframeForm.src = linkFormulario;
+
+
+                        document.getElementById('pago-titulo').innerText =
+                            "Paso 2: Realiza tu pago";
+
+                        document.getElementById('pago-desc').innerText =
+                            "Gracias por registrarte. Haz clic abajo para ir a la plataforma de pago seguro y confirmar tu lugar.";
+
+
+                        /*
+                         * Detectar una segunda carga del iframe.
+                         * Se mantiene el botón manual como respaldo.
+                         */
+
+                        let cargasIframe = 0;
+
+                        iframeForm.onload = function() {
+
+                            cargasIframe++;
+
+                            if (cargasIframe > 1) {
+
+                                cajaPago.style.display = 'block';
+
+                                btnYaLlene.style.display = 'none';
+
+                                cajaPago.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }
+                        };
+
+
+                        /*
+                         * BOTÓN MANUAL DE RESPALDO
+                         */
+
+                        btnYaLlene.onclick = function() {
+
+                            cajaPago.style.display = 'block';
+
+                            this.style.display = 'none';
+
+                            cajaPago.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        };
+
+                    }
+
+
+                    /* ------------------------------------------
+                       SI NO EXISTE GOOGLE FORMS
+                    ------------------------------------------ */
+
+                    else {
+
+                        contenedorFormulario.style.display = 'none';
+
+                        iframeForm.src = '';
+
+                        btnYaLlene.style.display = 'none';
+
+                        document.getElementById('pago-titulo').innerText =
+                            "Asegura tu lugar hoy mismo";
+
+                        document.getElementById('pago-desc').innerText =
+                            "Al realizar tu pago, el acceso y las instrucciones te llegarán directamente a tu correo electrónico.";
+
+                        cajaPago.style.display = 'block';
+                    }
+                }
+
+
             } catch (e) {
-                console.error(e);
-                document.getElementById('art-titulo').innerText = "Taller no encontrado";
-                document.getElementById('art-cuerpo').innerHTML = "<p>No pudimos cargar la información. Regresa a la lista e intenta de nuevo.</p>";
+
+                console.error("Error cargando taller:", e);
+
+                document.getElementById('art-titulo').innerText =
+                    "Taller no encontrado";
+
+                document.getElementById('art-cuerpo').innerHTML =
+                    "<p>No pudimos cargar la información. Regresa a la lista e intenta de nuevo.</p>";
             }
+
         });
     </script>
 </body>
