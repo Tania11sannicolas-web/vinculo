@@ -95,7 +95,7 @@
 const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
 
 async function cargarTalleres() {
-    const grid = document.getElementById('talleres-grid');
+    const grid = document.querySelector('.blog-grid');
 
     try {
         const urlTalleres =
@@ -112,25 +112,22 @@ async function cargarTalleres() {
 
         const text = await res.text();
 
-        console.log("Respuesta recibida de Google Sheets");
-
-        // Extraer únicamente el objeto JSON de la respuesta GViz
+        // Google GViz devuelve la información dentro de una función.
+        // Extraemos únicamente el objeto JSON.
         const inicio = text.indexOf('{');
         const fin = text.lastIndexOf('}');
 
         if (inicio === -1 || fin === -1) {
-            throw new Error("No se encontró JSON válido en la respuesta de Google Sheets.");
+            throw new Error("No se encontró JSON válido en la respuesta.");
         }
 
-        const json = text.substring(inicio, fin + 1);
-        const data = JSON.parse(json);
+        const data = JSON.parse(text.substring(inicio, fin + 1));
 
         const filas = data.table && data.table.rows
             ? data.table.rows
             : [];
 
         console.log("Talleres encontrados:", filas.length);
-        console.log(filas);
 
         grid.innerHTML = '';
 
@@ -138,9 +135,10 @@ async function cargarTalleres() {
 
             if (!row || !row.c || !row.c[0]) return;
 
-            // A2 = fila real 2 de Sheets
-            // A3 = fila real 3
-            // A4 = fila real 4
+            // Como la consulta empieza en A2:
+            // index 0 = fila 2
+            // index 1 = fila 3
+            // index 2 = fila 4
             const idFila = index + 2;
 
             const titulo = row.c[0]?.v || '';
@@ -148,37 +146,42 @@ async function cargarTalleres() {
             const resumen = row.c[2]?.v || '';
             const imagen = row.c[3]?.v || '';
 
-            const tarjeta = document.createElement('a');
-
-            tarjeta.href = `taller.html?id=${idFila}`;
-            tarjeta.className = 'tarjeta-taller';
+            const tarjeta = document.createElement('div');
+            tarjeta.className = 'card-post';
 
             tarjeta.innerHTML = `
                 ${imagen ? `
-                    <img
-                        src="${imagen}"
-                        alt="${titulo}"
-                        class="imagen-taller"
-                    >
-                ` : ''}
+                    <div 
+                        class="post-image" 
+                        style="background-image: url('${imagen}');">
+                    </div>
+                ` : `
+                    <div class="post-image"></div>
+                `}
 
-                <div class="contenido-taller">
+                <div class="post-body">
 
-                    <h3>${titulo}</h3>
+                    <div>
+                        ${fecha ? `
+                            <div class="post-meta">
+                                ${fecha}
+                            </div>
+                        ` : ''}
 
-                    ${fecha ? `
-                        <div class="fecha-taller">
-                            ${fecha}
-                        </div>
-                    ` : ''}
+                        <h3>${titulo}</h3>
 
-                    ${resumen ? `
-                        <p>${resumen}</p>
-                    ` : ''}
+                        ${resumen ? `
+                            <p style="margin-bottom: 20px;">
+                                ${resumen}
+                            </p>
+                        ` : ''}
+                    </div>
 
-                    <span class="ver-taller">
+                    <a 
+                        href="taller.html?id=${idFila}" 
+                        class="link-leer">
                         Ver taller →
-                    </span>
+                    </a>
 
                 </div>
             `;
@@ -188,7 +191,9 @@ async function cargarTalleres() {
 
         if (filas.length === 0) {
             grid.innerHTML = `
-                <p>No hay talleres disponibles.</p>
+                <p style="text-align:center; color:#4A4A4A; grid-column:1/-1;">
+                    No hay talleres disponibles.
+                </p>
             `;
         }
 
@@ -197,7 +202,7 @@ async function cargarTalleres() {
         console.error("Error al cargar talleres:", error);
 
         grid.innerHTML = `
-            <p>
+            <p style="text-align:center; color:#4A4A4A; grid-column:1/-1;">
                 No se pudieron cargar los talleres.
             </p>
         `;
