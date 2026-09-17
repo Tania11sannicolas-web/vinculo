@@ -91,83 +91,84 @@
         </div>
     </footer>
 
-    <script>
-        // Lógica del Menú
-        const btnMenu = document.getElementById('btnMenu');
-        const navbarMenu = document.getElementById('navbarMenu');
-        btnMenu.addEventListener('click', () => {
-            navbarMenu.classList.toggle('open');
-            btnMenu.innerHTML = navbarMenu.classList.contains('open') ? "✕" : "☰";
-        });
+<script>
+const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
 
-        // Carga de Talleres
-        document.addEventListener("DOMContentLoaded", async function() {
-            const grid = document.querySelector('.blog-grid');
-            const SHEET_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY';
-            const urlTalleres = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Talleres`;
-            
-            try {
-                const res = await fetch(urlTalleres);
-                const text = await res.text();
-                const data = JSON.parse(text.substr(47).slice(0, -2));
+async function cargarTalleres() {
+    const grid = document.getElementById('talleres-grid');
 
-                /*
-                 * IMPORTANTE:
-                 * Google Visualization ya devuelve las filas de datos
-                 * sin incluir la fila de encabezados.
-                 * Por eso NO usamos .slice(1).
-                 *
-                 * Cada índice del arreglo corresponde a:
-                 * índice 0 = fila 2 de Google Sheets
-                 * índice 1 = fila 3
-                 * índice 2 = fila 4
-                 * etc.
-                 */
-                const filas = data.table.rows ? data.table.rows : [];
+    try {
+        const urlTalleres =
+            `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq` +
+            `?tqx=out:json&headers=0&range=A2:G&sheet=Talleres&t=${Date.now()}`;
 
-                grid.innerHTML = ""; 
+        const res = await fetch(urlTalleres);
+        const text = await res.text();
 
-                if (!filas || filas.length === 0) {
-                    grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">Próximamente abriremos nuevos talleres.</p>`;
-                    return;
-                }
+        const data = JSON.parse(text.substring(47).slice(0, -2));
 
-                /*
-                 * Creamos una copia para invertir el orden visual,
-                 * pero conservamos el índice original de cada fila.
-                 * Así el ID siempre corresponde a la fila real de Sheets.
-                 */
-                const filasConId = filas.map((row, index) => ({
-                    row: row,
-                    idFila: index + 2
-                }));
+        const filas = data.table.rows || [];
 
-                filasConId.reverse().forEach((item) => {
-                    const row = item.row;
-                    const idFila = item.idFila;
+        grid.innerHTML = '';
 
-                    if (!row.c || !row.c[0]) return; 
+        // A2 corresponde a la fila 2 real de Google Sheets.
+        // Por eso el primer registro tiene ID 2.
+        filas.forEach((row, index) => {
 
-                    const card = document.createElement('article');
-                    card.className = 'card-post';
-                    card.innerHTML = `
-                        <div class="post-image" style="background-image: url('${row.c[3] ? row.c[3].v : ''}');"></div>
-                        <div class="post-body">
-                            <div>
-                                <span class="post-meta">🗓️ ${row.c[1] ? row.c[1].v : ''}</span>
-                                <h3><a href="taller.html?id=${idFila}">${row.c[0].v}</a></h3>
-                                <p>${row.c[2] ? row.c[2].v : ''}</p>
-                            </div>
-                            <a href="taller.html?id=${idFila}" class="link-leer">Ver información e inscribirse <span>→</span></a>
+            if (!row || !row.c || !row.c[0]) return;
+
+            const idFila = index + 2;
+
+            const titulo = row.c[0]?.v || '';
+            const fecha = row.c[1]?.v || '';
+            const resumen = row.c[2]?.v || '';
+            const imagen = row.c[3]?.v || '';
+
+            const tarjeta = document.createElement('a');
+
+            tarjeta.href = `taller.html?id=${idFila}`;
+            tarjeta.className = 'tarjeta-taller';
+
+            tarjeta.innerHTML = `
+                ${imagen ? `
+                    <img 
+                        src="${imagen}" 
+                        alt="${titulo}"
+                        class="imagen-taller"
+                    >
+                ` : ''}
+
+                <div class="contenido-taller">
+                    <h3>${titulo}</h3>
+
+                    ${fecha ? `
+                        <div class="fecha-taller">
+                            ${fecha}
                         </div>
-                    `;
-                    grid.appendChild(card);
-                });
-            } catch (error) {
-                console.error("Error al cargar talleres:", error);
-                grid.innerHTML = `<p style="text-align: center; grid-column: 1/-1; color: var(--texto);">No pudimos cargar los talleres.</p>`;
-            }
+                    ` : ''}
+
+                    ${resumen ? `
+                        <p>${resumen}</p>
+                    ` : ''}
+
+                    <span class="ver-taller">
+                        Ver taller →
+                    </span>
+                </div>
+            `;
+
+            grid.appendChild(tarjeta);
         });
-    </script>
+
+    } catch (error) {
+        console.error('Error al cargar talleres:', error);
+        grid.innerHTML = `
+            <p>No se pudieron cargar los talleres.</p>
+        `;
+    }
+}
+
+cargarTalleres();
+</script>
 </body>
 </html>
