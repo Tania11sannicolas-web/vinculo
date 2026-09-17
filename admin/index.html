@@ -292,9 +292,20 @@
                 `;
                 
                 if (tipo === 'taller') {
-                    camposHtml += `<div class="col-12 mb-3"><label class="form-label fw-bold">Enlace de Stripe (Pago)</label><input type="url" class="form-control" id="formExtra3" placeholder="https://buy.stripe.com/..." required></div>`;
+                    camposHtml += `
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-bold">Enlace de Stripe (Pago)</label>
+                            <input type="url" class="form-control" id="formExtra3" placeholder="https://buy.stripe.com/..." required>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-bold">Enlace de Google Forms (Registro)</label>
+                            <input type="url" class="form-control" id="formLinkForm" placeholder="https://docs.google.com/forms/d/e/..." >
+                            <div class="form-text">Opcional. Si agregas un formulario, aparecerá antes del pago en la página del taller.</div>
+                        </div>
+                    `;
                 } else {
                     camposHtml += `<input type="hidden" id="formExtra3" value="">`;
+                    camposHtml += `<input type="hidden" id="formLinkForm" value="">`;
                 }
                 
                 extraRow.innerHTML = camposHtml;
@@ -328,6 +339,7 @@
                     <div class="col-12 mb-3"><label class="form-label fw-bold">Enlace PDF (Drive)</label><input type="url" class="form-control" id="formExtra1" required></div>
                     <input type="hidden" id="formExtra2" value="8">
                     <input type="hidden" id="formExtra3" value="">
+                    <input type="hidden" id="formLinkForm" value="">
                 `;
                 
                 textareaContenido.style.display = "block";
@@ -358,6 +370,7 @@
                     
                     if(tipo === 'taller') {
                         document.getElementById('formExtra3').value = r[4] ? r[4].v : '';
+                        document.getElementById('formLinkForm').value = r[6] ? r[6].v : '';
                         textoCuerpo = r[5] ? r[5].v : '';
                     } else {
                         textoCuerpo = r[4] ? r[4].v : '';
@@ -411,6 +424,7 @@
                 fecha: (tipo === 'blog' || tipo === 'taller') ? document.getElementById('formExtra1').value : "",
                 resumen: (tipo === 'blog' || tipo === 'taller') ? document.getElementById('formExtra2').value : "",
                 linkStripe: tipo === 'taller' ? document.getElementById('formExtra3').value : "",
+                linkForm: tipo === 'taller' ? document.getElementById('formLinkForm').value : "",
                 linkPdf: tipo === 'recurso' ? document.getElementById('formExtra1').value : "8",
                 formExtra2: document.getElementById('formExtra2').value
             };
