@@ -99,8 +99,8 @@ async function cargarTalleres() {
 
     try {
         const urlTalleres =
-            `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq` +
-            `?tqx=out:json&range=A2:G&sheet=Talleres&t=${Date.now()}`;
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq` +
+    `?tqx=out:json&headers=0&range=A2:G&sheet=Talleres&t=${Date.now()}`;
 
         console.log("Consultando Google Sheets:", urlTalleres);
 
