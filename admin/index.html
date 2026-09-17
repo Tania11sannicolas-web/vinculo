@@ -150,7 +150,6 @@
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
     
     <script>
-        // ¡REMPLAZA ESTA URL POR LA DE TU NUEVA IMPLEMENTACIÓN DE APPS SCRIPT!
         const URL_SCRIPT_UNIFICADO = 'https://script.google.com/macros/s/AKfycbw2eu8XM2I1sGi9SeHd_oVLc6LI_VYCwj2jQfdGZsSFEoe4oeJV1eubQkDgHSLrEd1u/exec';
 
         const BLOG_ID = '12t2rdI0mZJOR4bdhZ0aZuKpcH95x1jGbpHYE_zQYxbY'; 
@@ -291,7 +290,6 @@
                     <div class="col-md-6 mb-3"><label class="form-label fw-bold">Resumen Corto</label><input type="text" class="form-control" id="formExtra2" required></div>
                 `;
                 
-                // MODIFICACIÓN: Aquí agregamos el campo dual de Stripe y Formulario
                 if (tipo === 'taller') {
                     camposHtml += `<div class="col-md-6 mb-3"><label class="form-label fw-bold">Enlace de Stripe (Pago)</label><input type="url" class="form-control" id="formExtra3" placeholder="https://buy.stripe.com/..." required></div>`;
                     camposHtml += `<div class="col-md-6 mb-3"><label class="form-label fw-bold">Formulario Google (Opcional)</label><input type="url" class="form-control" id="formExtra4" placeholder="https://docs.google.com/forms/..."></div>`;
@@ -359,12 +357,10 @@
                     document.getElementById('formExtra2').value = r[2] ? r[2].v : '';
                     document.getElementById('formImagenActual').value = r[3] ? r[3].v : '';
                     
-                    // MODIFICACIÓN: Separamos las variables limpiamente con los índices de columna correspondientes.
                     if(tipo === 'taller') {
                         document.getElementById('formExtra3').value = r[4] ? r[4].v : '';
                         textoCuerpo = r[5] ? r[5].v : '';
                         if(document.getElementById('formExtra4')) {
-                            // Ahora el formulario opcional vivirá sin estorbar en el índice 6 (Columna G)
                             document.getElementById('formExtra4').value = r[6] ? r[6].v : '';
                         }
                     } else {
@@ -407,7 +403,6 @@
 
             const rowId = document.getElementById('formRowId').value;
             
-            // MODIFICACIÓN: Separamos y asignamos limpiamente el enlace de Formulario para que no corrompa el de Stripe
             const payload = {
                 tipo: tipo,
                 action: rowId ? "edit" : "create",
